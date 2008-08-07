@@ -403,10 +403,10 @@ namespace BackLinq
         }
 
         /// <summary>
-        /// Creates an array from an <see cref="IEnumerable{T}"/>.
+        /// Creates a <see cref="List{T}"/> from an <see cref="IEnumerable{T}"/>.
         /// </summary>
 
-        public static TSource[] ToArray<TSource>(
+        public static List<TSource> ToList<TSource>(
             IEnumerable<TSource> source)
         {
             CheckNotNull(source, "source");
@@ -415,7 +415,17 @@ namespace BackLinq
             foreach (var item in source)
                 list.Add(item);
 
-            return list.ToArray();
+            return list;
+        }
+
+        /// <summary>
+        /// Creates an array from an <see cref="IEnumerable{T}"/>.
+        /// </summary>
+
+        public static TSource[] ToArray<TSource>(
+            IEnumerable<TSource> source)
+        {
+            return ToList(source).ToArray();
         }
         
         private static void CheckNotNull<T>(T value, string name) where T : class

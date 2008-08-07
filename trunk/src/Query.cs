@@ -97,6 +97,7 @@ namespace BackLinq
         public Query<R> Cast<R>() { return new Query<R>(Enumerable.Cast<R>(source)); }
         public Query<T> Concat(IEnumerable<T> second) { return new Query<T>(Enumerable.Concat(source, second)); }
         public T[] ToArray() { return Enumerable.ToArray(source); }
+        public List<T> ToList() { return Enumerable.ToList(source); }
 
         public IEnumerator<T> GetEnumerator()
         {
