@@ -1,4 +1,4 @@
-#Summary Implementation status of all Standard Query Operators
+#summary Implementation status of all Standard Query Operators
 
 = Operators Implementation Status =
 
