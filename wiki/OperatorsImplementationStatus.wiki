@@ -24,7 +24,7 @@ Legend:
 == Concatenation operator ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Concat.aspx Concat]
 == Ordering operators ==
-  * OrderBy / ThenBy
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OrderBy.aspx OrderBy] / [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ThenBy.aspx ThenBy]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Reverse.aspx Reverse]
 == Grouping operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupBy.aspx GroupBy]
