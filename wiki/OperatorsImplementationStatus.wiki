@@ -1,0 +1,71 @@
+#Summary Implementation status of all Standard Query Operators
+
+= Operators Implementation Status =
+
+Legend:
+
+  * Operator = pending implementation
+  * *Operator* = done and available for use
+  * ~~Operator~~ = not expected to be implemented
+
+== Restriction operators ==
+  * Where
+== Projection operators ==
+  * Select
+  * SelectMany
+== Partitioning operators ==
+  * Take
+  * Skip
+  * TakeWhile
+  * SkipWhile
+== Join operators ==
+  * Join
+  * GroupJoin
+== Concatenation operator ==
+  * Concat
+== Ordering operators ==
+  * OrderBy / ThenBy
+  * Reverse
+== Grouping operators ==
+  * GroupBy
+== Set operators ==
+  * Distinct
+  * Union
+  * Intersect
+  * Except
+== Conversion operators ==
+  * ToSequence
+  * ToArray
+  * ToList
+  * ToDictionary
+  * ToLookup
+  * OfType
+  * Cast
+== Equality operator ==
+  * EqualAll
+== Element operators ==
+  * First
+  * FirstOrDefault
+  * Last
+  * LastOrDefault
+  * Single
+  * SingleOrDefault
+  * ElementAt
+  * ElementAtOrDefault
+  * DefaultIfEmpty
+== Generation operators ==
+  * Range
+  * Repeat
+  * Empty
+== Quantifiers ==
+  * Any
+  * All
+  * Contains
+== Aggregate operators ==
+  * Count
+  * LongCount
+  * Sum
+  * Min
+  * Max
+  * Average
+  * Aggregate
