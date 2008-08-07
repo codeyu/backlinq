@@ -36,7 +36,7 @@ Legend:
 == Conversion operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToSequence.aspx ToSequence]
   * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToArray.aspx ToArray]*
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToList.aspx ToList]
+  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToList.aspx ToList]*
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToDictionary.aspx ToDictionary]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToLookup.aspx ToLookup]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OfType.aspx OfType]
