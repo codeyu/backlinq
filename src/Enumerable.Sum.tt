@@ -89,7 +89,7 @@ namespace BackLinq
 
             <#= csBaseType #> sum = 0;
             foreach (var num in source)
-                sum = checked(sum + <#= isNullable ? "num ?? 0" : "num" #>);
+                sum = checked(sum + <#= isNullable ? "(num ?? 0)" : "num" #>);
 
             return sum;
         }

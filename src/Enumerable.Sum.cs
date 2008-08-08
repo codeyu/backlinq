@@ -82,7 +82,7 @@ namespace BackLinq
 
             int sum = 0;
             foreach (var num in source)
-                sum = checked(sum + num ?? 0);
+                sum = checked(sum + (num ?? 0));
 
             return sum;
         }
@@ -154,7 +154,7 @@ namespace BackLinq
 
             long sum = 0;
             foreach (var num in source)
-                sum = checked(sum + num ?? 0);
+                sum = checked(sum + (num ?? 0));
 
             return sum;
         }
@@ -226,7 +226,7 @@ namespace BackLinq
 
             float sum = 0;
             foreach (var num in source)
-                sum = checked(sum + num ?? 0);
+                sum = checked(sum + (num ?? 0));
 
             return sum;
         }
@@ -298,7 +298,7 @@ namespace BackLinq
 
             double sum = 0;
             foreach (var num in source)
-                sum = checked(sum + num ?? 0);
+                sum = checked(sum + (num ?? 0));
 
             return sum;
         }
@@ -370,7 +370,7 @@ namespace BackLinq
 
             decimal sum = 0;
             foreach (var num in source)
-                sum = checked(sum + num ?? 0);
+                sum = checked(sum + (num ?? 0));
 
             return sum;
         }
