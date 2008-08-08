@@ -115,6 +115,8 @@ namespace BackLinq
         public T Aggregate(Func<T, T, T> func) { return Enumerable.Aggregate(source, func); }
         public A Aggregate<A>(A seed, Func<A, T, A> func) { return Enumerable.Aggregate(source, seed, func); }
         public R Aggregate<A, R>(A seed, Func<A, T, A> func, Func<A, R> resultSelector) { return Enumerable.Aggregate(source, seed, func, resultSelector); }
+        public Query<T> Union(IEnumerable<T> second) { return new Query<T>(Enumerable.Union(source, second)); }
+        public Query<T> Union(IEnumerable<T> second, IEqualityComparer<T> comparer) { return new Query<T>(Enumerable.Union(source, second, comparer)); }
     
         public IEnumerator<T> GetEnumerator()
         {

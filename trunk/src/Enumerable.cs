@@ -736,6 +736,34 @@ namespace BackLinq
             return resultSelector(result);
         }
 
+        /// <summary>
+        /// Produces the set union of two sequences by using the default 
+        /// equality comparer.
+        /// </summary>
+
+        public static IEnumerable<TSource> Union<TSource>(
+            IEnumerable<TSource> first,
+            IEnumerable<TSource> second)
+        {
+            return Union(first, second, /* comparer */ null);
+        }
+
+        /// <summary>
+        /// Produces the set union of two sequences by using a specified 
+        /// <see cref="IEqualityComparer{T}" />.
+        /// </summary>
+
+        public static IEnumerable<TSource> Union<TSource>(
+            IEnumerable<TSource> first,
+            IEnumerable<TSource> second,
+            IEqualityComparer<TSource> comparer)
+        {
+            CheckNotNull(first, "first");
+            CheckNotNull(second, "second");
+
+            return Query.From(first).Concat(second).Distinct(comparer);
+        }
+
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
             if (value == null) 
