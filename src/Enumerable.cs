@@ -41,7 +41,7 @@ namespace BackLinq
     /// within C# 2.0 sources.
     /// </summary>
 
-    public static class Enumerable
+    public static partial class Enumerable
     {
         public static IEnumerable<TResult> Cast<TResult>(
             IEnumerable source
