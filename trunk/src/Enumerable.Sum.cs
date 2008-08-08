@@ -75,7 +75,7 @@ namespace BackLinq
         /// Computes the sum of a sequence of <see cref="System.Int32" /> values.
         /// </summary>
 
-        public static int Sum(
+        public static int? Sum(
             IEnumerable<int?> source)
         {
             CheckNotNull(source, "source");
@@ -147,7 +147,7 @@ namespace BackLinq
         /// Computes the sum of a sequence of <see cref="System.Int64" /> values.
         /// </summary>
 
-        public static long Sum(
+        public static long? Sum(
             IEnumerable<long?> source)
         {
             CheckNotNull(source, "source");
@@ -219,7 +219,7 @@ namespace BackLinq
         /// Computes the sum of a sequence of <see cref="System.Single" /> values.
         /// </summary>
 
-        public static float Sum(
+        public static float? Sum(
             IEnumerable<float?> source)
         {
             CheckNotNull(source, "source");
@@ -291,7 +291,7 @@ namespace BackLinq
         /// Computes the sum of a sequence of <see cref="System.Double" /> values.
         /// </summary>
 
-        public static double Sum(
+        public static double? Sum(
             IEnumerable<double?> source)
         {
             CheckNotNull(source, "source");
@@ -363,7 +363,7 @@ namespace BackLinq
         /// Computes the sum of a sequence of <see cref="System.Decimal" /> values.
         /// </summary>
 
-        public static decimal Sum(
+        public static decimal? Sum(
             IEnumerable<decimal?> source)
         {
             CheckNotNull(source, "source");
