@@ -185,12 +185,13 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            var e = source.GetEnumerator();
-            
-            if (!e.MoveNext())
-                throw new InvalidOperationException();
+            using (var e = source.GetEnumerator())
+            {
+                if (!e.MoveNext())
+                    throw new InvalidOperationException();
 
-            return e.Current;
+                return e.Current;
+            }
         }
 
         /// <summary>
@@ -221,8 +222,8 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            var e = source.GetEnumerator();               
-            return !e.MoveNext() ? default(TSource) : e.Current;
+            using (var e = source.GetEnumerator())
+                return !e.MoveNext() ? default(TSource) : e.Current;
         }
 
         /// <summary>
@@ -274,9 +275,11 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            var e = source.GetEnumerator();
-            for (var i = 0; i < count && e.MoveNext(); i++)
-                yield return e.Current;
+            using (var e = source.GetEnumerator())
+            {
+                for (var i = 0; i < count && e.MoveNext(); i++)
+                    yield return e.Current;
+            }
         }
 
         /// <summary>
@@ -290,9 +293,11 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            var e = source.GetEnumerator();
-            for (var i = 0; e.MoveNext(); i++)
-                if (i >= count) yield return e.Current;
+            using (var e = source.GetEnumerator())
+            {
+                for (var i = 0; e.MoveNext(); i++)
+                    if (i >= count) yield return e.Current;
+            }
         }
 
         /// <summary>
@@ -311,9 +316,12 @@ namespace BackLinq
             checked
             {
                 var count = 0;
-                var e = source.GetEnumerator();
-                while (e.MoveNext())
-                    count++;
+                
+                using (var e = source.GetEnumerator())
+                {
+                    while (e.MoveNext())
+                        count++;
+                }
 
                 return count;
             }
@@ -357,9 +365,12 @@ namespace BackLinq
                 return array.LongLength;
 
             var count = 0L;
-            var e = source.GetEnumerator();
-            while (e.MoveNext())
-                count++;
+            
+            using (var e = source.GetEnumerator())
+            {
+                while (e.MoveNext())
+                    count++;
+            }
 
             return count;
         }
@@ -670,7 +681,7 @@ namespace BackLinq
             return Query.From(ToLookup(source, keySelector, elementSelector, comparer))
                         .Select(g => resultSelector(g.Key, g));
         }
-        
+
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
             if (value == null) 
