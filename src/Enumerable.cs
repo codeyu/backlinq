@@ -185,22 +185,12 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            var list = source as IList<TSource>;    // optimized case for lists
-            if (list != null)
-            {
-                if (list.Count == 0)
-                    throw new InvalidOperationException();
+            var e = source.GetEnumerator();
+            
+            if (!e.MoveNext())
+                throw new InvalidOperationException();
 
-                return list[0];
-            }
-
-            using (var e = source.GetEnumerator())  // fallback for enumeration
-            {
-                if (!e.MoveNext())
-                    throw new InvalidOperationException();
-
-                return e.Current;
-            }
+            return e.Current;
         }
 
         /// <summary>
@@ -231,8 +221,8 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            using (var e = source.GetEnumerator())
-                return !e.MoveNext() ? default(TSource) : e.Current;
+            var e = source.GetEnumerator();               
+            return !e.MoveNext() ? default(TSource) : e.Current;
         }
 
         /// <summary>
@@ -263,6 +253,9 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
+            if (source == null)
+                throw new ArgumentNullException();
+
             var stack = new Stack<TSource>();
             foreach (var item in source)
                 stack.Push(item);
@@ -281,11 +274,9 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            using (var e = source.GetEnumerator())
-            {
-                for (var i = 0; i < count && e.MoveNext(); i++)
-                    yield return e.Current;
-            }
+            var e = source.GetEnumerator();
+            for (var i = 0; i < count && e.MoveNext(); i++)
+                yield return e.Current;
         }
 
         /// <summary>
@@ -299,11 +290,9 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            using (var e = source.GetEnumerator())
-            {
-                for (var i = 0; e.MoveNext(); i++)
-                    if (i >= count) yield return e.Current;
-            }
+            var e = source.GetEnumerator();
+            for (var i = 0; e.MoveNext(); i++)
+                if (i >= count) yield return e.Current;
         }
 
         /// <summary>
@@ -322,12 +311,9 @@ namespace BackLinq
             checked
             {
                 var count = 0;
-                
-                using (var e = source.GetEnumerator())
-                {
-                    while (e.MoveNext())
-                        count++;
-                }
+                var e = source.GetEnumerator();
+                while (e.MoveNext())
+                    count++;
 
                 return count;
             }
@@ -371,12 +357,9 @@ namespace BackLinq
                 return array.LongLength;
 
             var count = 0L;
-            
-            using (var e = source.GetEnumerator())
-            {
-                while (e.MoveNext())
-                    count++;
-            }
+            var e = source.GetEnumerator();
+            while (e.MoveNext())
+                count++;
 
             return count;
         }
@@ -687,83 +670,7 @@ namespace BackLinq
             return Query.From(ToLookup(source, keySelector, elementSelector, comparer))
                         .Select(g => resultSelector(g.Key, g));
         }
-
-        /// <summary>
-        /// Applies an accumulator function over a sequence.
-        /// </summary>
-
-        public static TSource Aggregate<TSource>(
-            IEnumerable<TSource> source,
-            Func<TSource, TSource, TSource> func)
-        {
-            return Aggregate(source, First(source), func);
-        }
-
-        /// <summary>
-        /// Applies an accumulator function over a sequence. The specified 
-        /// seed value is used as the initial accumulator value.
-        /// </summary>
-
-        public static TAccumulate Aggregate<TSource, TAccumulate>(
-            IEnumerable<TSource> source,
-            TAccumulate seed,
-            Func<TAccumulate, TSource, TAccumulate> func)
-        {
-            return Aggregate(source, seed, func, r => r);
-        }
-
-        /// <summary>
-        /// Applies an accumulator function over a sequence. The specified 
-        /// seed value is used as the initial accumulator value, and the 
-        /// specified function is used to select the result value.
-        /// </summary>
-
-        public static TResult Aggregate<TSource, TAccumulate, TResult>(
-            IEnumerable<TSource> source,
-            TAccumulate seed,
-            Func<TAccumulate, TSource, TAccumulate> func,
-            Func<TAccumulate, TResult> resultSelector)
-        {
-            CheckNotNull(source, "source");
-            CheckNotNull(func, "func");
-            CheckNotNull(resultSelector, "resultSelector");
-
-            var result = seed;
-
-            foreach (var item in source)
-                result = func(result, item);
-
-            return resultSelector(result);
-        }
-
-        /// <summary>
-        /// Produces the set union of two sequences by using the default 
-        /// equality comparer.
-        /// </summary>
-
-        public static IEnumerable<TSource> Union<TSource>(
-            IEnumerable<TSource> first,
-            IEnumerable<TSource> second)
-        {
-            return Union(first, second, /* comparer */ null);
-        }
-
-        /// <summary>
-        /// Produces the set union of two sequences by using a specified 
-        /// <see cref="IEqualityComparer{T}" />.
-        /// </summary>
-
-        public static IEnumerable<TSource> Union<TSource>(
-            IEnumerable<TSource> first,
-            IEnumerable<TSource> second,
-            IEqualityComparer<TSource> comparer)
-        {
-            CheckNotNull(first, "first");
-            CheckNotNull(second, "second");
-
-            return Query.From(first).Concat(second).Distinct(comparer);
-        }
-
+        
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
             if (value == null) 
