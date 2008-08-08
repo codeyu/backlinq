@@ -263,9 +263,6 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            if (source == null)
-                throw new ArgumentNullException();
-
             var stack = new Stack<TSource>();
             foreach (var item in source)
                 stack.Push(item);
