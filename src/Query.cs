@@ -98,26 +98,7 @@ namespace BackLinq
         public Query<T> Concat(IEnumerable<T> second) { return new Query<T>(Enumerable.Concat(source, second)); }
         public T[] ToArray() { return Enumerable.ToArray(source); }
         public List<T> ToList() { return Enumerable.ToList(source); }
-        public Query<T> Distinct() { return new Query<T>(Enumerable.Distinct(source)); }
-        public Query<T> Distinct(IEqualityComparer<T> comparer) { return new Query<T>(Enumerable.Distinct(source, comparer)); }
-        public Lookup<TKey, T> ToLookup<TKey>(Func<T, TKey> keySelector) { return Enumerable.ToLookup(source, keySelector); }
-        public Lookup<TKey, TElement> ToLookup<TKey, TElement>(Func<T, TKey> keySelector, Func<T, TElement> elementSelector) { return Enumerable.ToLookup(source, keySelector, elementSelector); }
-        public Lookup<TKey, T> ToLookup<TKey>(Func<T, TKey> keySelector, IEqualityComparer<TKey> comparer) { return Enumerable.ToLookup(source, keySelector, comparer); }
-        public Lookup<TKey, TElement> ToLookup<TKey, TElement>(Func<T, TKey> keySelector, Func<T, TElement> elementSelector, IEqualityComparer<TKey> comparer) { return Enumerable.ToLookup(source, keySelector, elementSelector, comparer); }
-        public Query<IGrouping<K, T>> GroupBy<K>(Func<T, K> keySelector) { return Query.From(Enumerable.GroupBy(source, keySelector)); }
-        public Query<IGrouping<K, V>> GroupBy<K, V>(Func<T, K> keySelector, Func<T, V> elementSelector) { return Query.From(Enumerable.GroupBy(source, keySelector, elementSelector)); }
-        public Query<IGrouping<K, T>> GroupBy<K>(Func<T, K> keySelector, IEqualityComparer<K> comparer) { return Query.From(Enumerable.GroupBy(source, keySelector, comparer)); }
-        public Query<IGrouping<K, V>> GroupBy<K, V>(Func<T, K> keySelector, Func<T, V> elementSelector, IEqualityComparer<K> comparer) { return Query.From(Enumerable.GroupBy(source, keySelector, elementSelector, comparer)); }
-        public Query<R> GroupBy<K, R>(Func<T, K> keySelector, Func<K, IEnumerable<T>, R> resultSelector) { return Query.From(Enumerable.GroupBy(source, keySelector, resultSelector)); }
-        public Query<R> GroupBy<K, V, R>(Func<T, K> keySelector, Func<T, V> elementSelector, Func<K, IEnumerable<V>, R> resultSelector) { return Query.From(Enumerable.GroupBy(source, keySelector, elementSelector, resultSelector)); }
-        public Query<R> GroupBy<K, R>(Func<T, K> keySelector, Func<K, IEnumerable<T>, R> resultSelector, IEqualityComparer<K> comparer) { return Query.From(Enumerable.GroupBy(source, keySelector, resultSelector, comparer)); }
-        public Query<R> GroupBy<K, V, R>(Func<T, K> keySelector, Func<T, V> elementSelector, Func<K, IEnumerable<V>, R> resultSelector, IEqualityComparer<K> comparer) { return Query.From(Enumerable.GroupBy(source, keySelector, elementSelector, resultSelector, comparer)); }
-        public T Aggregate(Func<T, T, T> func) { return Enumerable.Aggregate(source, func); }
-        public A Aggregate<A>(A seed, Func<A, T, A> func) { return Enumerable.Aggregate(source, seed, func); }
-        public R Aggregate<A, R>(A seed, Func<A, T, A> func, Func<A, R> resultSelector) { return Enumerable.Aggregate(source, seed, func, resultSelector); }
-        public Query<T> Union(IEnumerable<T> second) { return new Query<T>(Enumerable.Union(source, second)); }
-        public Query<T> Union(IEnumerable<T> second, IEqualityComparer<T> comparer) { return new Query<T>(Enumerable.Union(source, second, comparer)); }
-    
+
         public IEnumerator<T> GetEnumerator()
         {
             return source.GetEnumerator();

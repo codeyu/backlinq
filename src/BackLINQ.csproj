@@ -8,8 +8,8 @@
     <ProjectGuid>{66621034-90CC-4D1A-B49E-73A13E3B22EF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BackLinq</RootNamespace>
-    <AssemblyName>BackLinq</AssemblyName>
+    <RootNamespace>BackLINQ</RootNamespace>
+    <AssemblyName>BackLINQ</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -35,25 +35,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enumerable.cs" />
-    <Compile Include="Enumerable.Sum.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Enumerable.Sum.tt</DependentUpon>
-    </Compile>
     <Compile Include="Func.cs" />
-    <Compile Include="Grouping.cs" />
-    <Compile Include="Lookup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Enumerable.Sum.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Enumerable.Sum.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
