@@ -8,8 +8,8 @@
     <ProjectGuid>{66621034-90CC-4D1A-B49E-73A13E3B22EF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BackLINQ</RootNamespace>
-    <AssemblyName>BackLINQ</AssemblyName>
+    <RootNamespace>BackLinq</RootNamespace>
+    <AssemblyName>BackLinq</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="Enumerable.cs" />
     <Compile Include="Func.cs" />
+    <Compile Include="Grouping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Query.cs" />
   </ItemGroup>
