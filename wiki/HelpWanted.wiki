@@ -9,4 +9,6 @@ If you see that BackLINQ would add value to your project(s) then chances are tha
   * Add code samples
   * Add Wiki documentation, especially showing transformation of [http://msdn.microsoft.com/en-us/library/bb397919.aspx LINQ to Objects] queries and samples in BackLINQ
 
+I'm ready. [http://code.google.com/p/support/wiki/FAQ#How_do_I_join_a_project? Now how do I join a project?]
+
 http://backlinq.googlecode.com/svn/wiki/images/helpad.jpg
