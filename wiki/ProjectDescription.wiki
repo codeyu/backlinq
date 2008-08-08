@@ -1,6 +1,6 @@
 #summary Project description that appears on the project home page
 
-BackLINQ allows applications written in C# 3.0 but which need to target the .NET Framework 2.0 and/or 3.x to reap the benefits and expressivity of [LINQ to Objects] and lambda expressions.
+BackLINQ allows applications written in C# 3.0 but which need to target the .NET Framework 2.0 and/or 3.x to reap the benefits and expressivity of [http://msdn.microsoft.com/en-us/library/bb397919.aspx LINQ to Objects] and lambda expressions.
 
 == The Short of BackLINQ ==
 
