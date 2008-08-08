@@ -1,0 +1,12 @@
+#summary Ways in which you help this project
+
+= Help Wanted =
+
+If you see that BackLINQ would add value to your project(s) then chances are that you'd be interested in seeing it mature to completion. But why leave it to chance? This is how you can help the project right now:
+
+  * Complete standard query operators (see OperatorsImplementationStatus)
+  * Add unit testing
+  * Add code samples
+  * Add Wiki documentation, especially showing transformation of [http://msdn.microsoft.com/en-us/library/bb397919.aspx LINQ to Objects] queries and samples in BackLINQ
+
+http://backlinq.googlecode.com/svn/wiki/images/helpad.jpg
