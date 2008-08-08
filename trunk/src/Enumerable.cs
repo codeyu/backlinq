@@ -436,7 +436,7 @@ namespace BackLinq
         public static IEnumerable<TSource> Distinct<TSource>(
             IEnumerable<TSource> source)
         {
-            return Distinct(source, EqualityComparer<TSource>.Default);
+            return Distinct(source, /* comparer */ null);
         }
 
         /// <summary>
@@ -449,7 +449,6 @@ namespace BackLinq
             IEqualityComparer<TSource> comparer)
         {
             CheckNotNull(source, "source");
-            CheckNotNull(comparer, "comparer");
 
             var set = new Dictionary<TSource, object>(comparer);
 
