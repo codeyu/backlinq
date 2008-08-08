@@ -82,7 +82,7 @@ namespace BackLinq
         /// Computes the sum of a sequence of <#= doc #> values.
         /// </summary>
 
-        public static <#= csBaseType #> Sum(
+        public static <#= csType #> Sum(
             IEnumerable<<#= csType #>> source)
         {
             CheckNotNull(source, "source");
