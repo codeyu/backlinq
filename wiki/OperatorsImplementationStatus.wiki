@@ -6,6 +6,7 @@ Legend:
 
   * Operator = pending implementation
   * *Operator* = done and available for use
+  * *_Operator_* = partially available
   * ~~Operator~~ = not expected to be implemented
 
 == Restriction operators ==
@@ -27,9 +28,9 @@ Legend:
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OrderBy.aspx OrderBy] / [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ThenBy.aspx ThenBy]
   * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Reverse.aspx Reverse]*
 == Grouping operators ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupBy.aspx GroupBy]
+  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupBy.aspx GroupBy]*
 == Set operators ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Distinct.aspx Distinct]
+  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Distinct.aspx Distinct]*
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Union.aspx Union]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Intersect.aspx Intersect]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Except.aspx Except]
@@ -38,7 +39,7 @@ Legend:
   * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToArray.aspx ToArray]*
   * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToList.aspx ToList]*
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToDictionary.aspx ToDictionary]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToLookup.aspx ToLookup]
+  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToLookup.aspx ToLookup]*
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OfType.aspx OfType]
   * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Cast.aspx Cast]*
 == Equality operator ==
@@ -64,7 +65,7 @@ Legend:
 == Aggregate operators ==
   * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Count.aspx Count]*
   * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.LongCount.aspx LongCount]*
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Sum.aspx Sum]
+  * *_[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Sum.aspx Sum]_*
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Min.aspx Min]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Max.aspx Max]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Average.aspx Average]
