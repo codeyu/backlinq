@@ -2,6 +2,8 @@
 
 = Operators Implementation Status =
 
+http://chart.apis.google.com/chart?chs=225x125&cht=gom&chd=t:39&chl=operators%20done#foo.png
+
 Legend:
 
   * Operator = pending implementation
