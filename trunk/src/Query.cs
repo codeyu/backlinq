@@ -98,6 +98,8 @@ namespace BackLinq
         public Query<T> Concat(IEnumerable<T> second) { return new Query<T>(Enumerable.Concat(source, second)); }
         public T[] ToArray() { return Enumerable.ToArray(source); }
         public List<T> ToList() { return Enumerable.ToList(source); }
+        public Query<T> Distinct() { return new Query<T>(Enumerable.Distinct(source)); }
+        public Query<T> Distinct(IEqualityComparer<T> comparer) { return new Query<T>(Enumerable.Distinct(source, comparer)); }
 
         public IEnumerator<T> GetEnumerator()
         {

@@ -427,6 +427,41 @@ namespace BackLinq
         {
             return ToList(source).ToArray();
         }
+
+        /// <summary>
+        /// Returns distinct elements from a sequence by using the default 
+        /// equality comparer to compare values.
+        /// </summary>
+
+        public static IEnumerable<TSource> Distinct<TSource>(
+            IEnumerable<TSource> source)
+        {
+            return Distinct(source, EqualityComparer<TSource>.Default);
+        }
+
+        /// <summary>
+        /// Returns distinct elements from a sequence by using a specified 
+        /// <see cref="IEqualityComparer{T}"/> to compare values.
+        /// </summary>
+
+        public static IEnumerable<TSource> Distinct<TSource>(
+            IEnumerable<TSource> source,
+            IEqualityComparer<TSource> comparer)
+        {
+            CheckNotNull(source, "source");
+            CheckNotNull(comparer, "comparer");
+
+            var set = new Dictionary<TSource, object>(comparer);
+
+            foreach (var item in source)
+            {
+                if (set.ContainsKey(item)) 
+                    continue;
+                
+                set.Add(item, null);
+                yield return item;
+            }
+        }
         
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
