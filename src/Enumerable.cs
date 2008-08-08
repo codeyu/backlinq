@@ -461,11 +461,97 @@ namespace BackLinq
                 yield return item;
             }
         }
-        
+
+        /// <summary>
+        /// Creates a <see cref="Lookup{TKey,TElement}" /> from an 
+        /// <see cref="IEnumerable{T}" /> according to a specified key 
+        /// selector function.
+        /// </summary>
+
+        public static Lookup<TKey, TSource> ToLookup<TSource, TKey>(
+            IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector)
+        {
+            return ToLookup(source, keySelector, e => e, /* comparer */ null);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Lookup{TKey,TElement}" /> from an 
+        /// <see cref="IEnumerable{T}" /> according to a specified key 
+        /// selector function and a key comparer.
+        /// </summary>
+
+        public static Lookup<TKey, TSource> ToLookup<TSource, TKey>(
+            IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            IEqualityComparer<TKey> comparer)
+        {
+            return ToLookup(source, keySelector, e => e, comparer);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Lookup{TKey,TElement}" /> from an 
+        /// <see cref="IEnumerable{T}" /> according to specified key 
+        /// and element selector functions.
+        /// </summary>
+
+        public static Lookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(
+            IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector)
+        {
+            return ToLookup(source, keySelector, elementSelector, /* comparer */ null);
+        }
+
+        /// <summary>
+        /// Creates a <see cref="Lookup{TKey,TElement}" /> from an 
+        /// <see cref="IEnumerable{T}" /> according to a specified key 
+        /// selector function, a comparer and an element selector function.
+        /// </summary>
+
+        public static Lookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(
+            IEnumerable<TSource> source,
+            Func<TSource, TKey> keySelector,
+            Func<TSource, TElement> elementSelector,
+            IEqualityComparer<TKey> comparer)
+        {
+            CheckNotNull(source, "source");
+            CheckNotNull(keySelector, "keySelector");
+            CheckNotNull(elementSelector, "elementSelector");
+
+            var lookup = new Lookup<TKey, TElement>(comparer);
+            
+            foreach (var item in source)
+            {
+                var key = keySelector(item);
+
+                var grouping = (Grouping<TKey, TElement>) lookup.Find(key);
+                if (grouping == null)
+                {
+                    grouping = new Grouping<TKey, TElement>(key);
+                    lookup.Add(grouping);
+                }
+
+                grouping.Add(elementSelector(item));
+            }
+
+            return lookup;
+        }
+
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
             if (value == null) 
                 throw new ArgumentNullException(name);
+        }
+
+        private sealed class Grouping<K, V> : List<V>, IGrouping<K, V>
+        {
+            internal Grouping(K key)
+            {
+                Key = key;
+            }
+
+            public K Key { get; private set; }
         }
     }
 }
