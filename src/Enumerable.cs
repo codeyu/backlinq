@@ -211,14 +211,7 @@ namespace BackLinq
             IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(predicate, "predicate");
-
-            foreach (var item in source)
-                if (predicate(item))
-                    return item;
-
-            throw new InvalidOperationException();
+            return First(Where(source, predicate));
         }
 
         /// <summary>
@@ -244,14 +237,7 @@ namespace BackLinq
             IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(predicate, "predicate");
-
-            foreach (var item in source)
-                if (predicate(item))
-                    return item;
-
-            return default(TSource);
+            return FirstOrDefault(Where(source, predicate));
         }
 
         /// <summary>
@@ -342,18 +328,7 @@ namespace BackLinq
             IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(predicate, "predicate");
-
-            checked
-            {
-                var count = 0;
-                foreach (var item in source)
-                    if (predicate(item))
-                        count++;
-
-                return count;                
-            }
+            return Count(Where(source, predicate));
         }
 
         /// <summary>
@@ -390,15 +365,7 @@ namespace BackLinq
             IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(predicate, "predicate");
-
-            var count = 0L;
-            foreach (var item in source)
-                if (predicate(item))
-                    count++;
-
-            return count;
+            return LongCount(Where(source, predicate));
         }
 
         /// <summary>
