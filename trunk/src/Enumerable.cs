@@ -185,7 +185,16 @@ namespace BackLinq
         {
             CheckNotNull(source, "source");
 
-            using (var e = source.GetEnumerator())
+            var list = source as IList<TSource>;    // optimized case for lists
+            if (list != null)
+            {
+                if (list.Count == 0)
+                    throw new InvalidOperationException();
+
+                return list[0];
+            }
+
+            using (var e = source.GetEnumerator())  // fallback for enumeration
             {
                 if (!e.MoveNext())
                     throw new InvalidOperationException();
