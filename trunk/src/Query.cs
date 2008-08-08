@@ -100,7 +100,11 @@ namespace BackLinq
         public List<T> ToList() { return Enumerable.ToList(source); }
         public Query<T> Distinct() { return new Query<T>(Enumerable.Distinct(source)); }
         public Query<T> Distinct(IEqualityComparer<T> comparer) { return new Query<T>(Enumerable.Distinct(source, comparer)); }
-
+        public Lookup<TKey, T> ToLookup<TKey>(Func<T, TKey> keySelector) { return Enumerable.ToLookup(source, keySelector); }
+        public Lookup<TKey, TElement> ToLookup<TKey, TElement>(Func<T, TKey> keySelector, Func<T, TElement> elementSelector) { return Enumerable.ToLookup(source, keySelector, elementSelector); }
+        public Lookup<TKey, T> ToLookup<TKey>(Func<T, TKey> keySelector, IEqualityComparer<TKey> comparer) { return Enumerable.ToLookup(source, keySelector, comparer); }
+        public Lookup<TKey, TElement> ToLookup<TKey, TElement>(Func<T, TKey> keySelector, Func<T, TElement> elementSelector, IEqualityComparer<TKey> comparer) { return Enumerable.ToLookup(source, keySelector, elementSelector, comparer); }
+ 
         public IEnumerator<T> GetEnumerator()
         {
             return source.GetEnumerator();
