@@ -688,6 +688,54 @@ namespace BackLinq
                         .Select(g => resultSelector(g.Key, g));
         }
 
+        /// <summary>
+        /// Applies an accumulator function over a sequence.
+        /// </summary>
+
+        public static TSource Aggregate<TSource>(
+            IEnumerable<TSource> source,
+            Func<TSource, TSource, TSource> func)
+        {
+            return Aggregate(source, First(source), func);
+        }
+
+        /// <summary>
+        /// Applies an accumulator function over a sequence. The specified 
+        /// seed value is used as the initial accumulator value.
+        /// </summary>
+
+        public static TAccumulate Aggregate<TSource, TAccumulate>(
+            IEnumerable<TSource> source,
+            TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> func)
+        {
+            return Aggregate(source, seed, func, r => r);
+        }
+
+        /// <summary>
+        /// Applies an accumulator function over a sequence. The specified 
+        /// seed value is used as the initial accumulator value, and the 
+        /// specified function is used to select the result value.
+        /// </summary>
+
+        public static TResult Aggregate<TSource, TAccumulate, TResult>(
+            IEnumerable<TSource> source,
+            TAccumulate seed,
+            Func<TAccumulate, TSource, TAccumulate> func,
+            Func<TAccumulate, TResult> resultSelector)
+        {
+            CheckNotNull(source, "source");
+            CheckNotNull(func, "func");
+            CheckNotNull(resultSelector, "resultSelector");
+
+            var result = seed;
+
+            foreach (var item in source)
+                result = func(result, item);
+
+            return resultSelector(result);
+        }
+
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
             if (value == null) 
