@@ -112,6 +112,9 @@ namespace BackLinq
         public Query<R> GroupBy<K, V, R>(Func<T, K> keySelector, Func<T, V> elementSelector, Func<K, IEnumerable<V>, R> resultSelector) { return Query.From(Enumerable.GroupBy(source, keySelector, elementSelector, resultSelector)); }
         public Query<R> GroupBy<K, R>(Func<T, K> keySelector, Func<K, IEnumerable<T>, R> resultSelector, IEqualityComparer<K> comparer) { return Query.From(Enumerable.GroupBy(source, keySelector, resultSelector, comparer)); }
         public Query<R> GroupBy<K, V, R>(Func<T, K> keySelector, Func<T, V> elementSelector, Func<K, IEnumerable<V>, R> resultSelector, IEqualityComparer<K> comparer) { return Query.From(Enumerable.GroupBy(source, keySelector, elementSelector, resultSelector, comparer)); }
+        public T Aggregate(Func<T, T, T> func) { return Enumerable.Aggregate(source, func); }
+        public A Aggregate<A>(A seed, Func<A, T, A> func) { return Enumerable.Aggregate(source, seed, func); }
+        public R Aggregate<A, R>(A seed, Func<A, T, A> func, Func<A, R> resultSelector) { return Enumerable.Aggregate(source, seed, func, resultSelector); }
     
         public IEnumerator<T> GetEnumerator()
         {
