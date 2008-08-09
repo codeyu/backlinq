@@ -129,10 +129,5 @@ namespace BackLinq
         {
             return GetEnumerator();
         }
-
-        public Query<IGrouping<TKey, TElement>> Query()
-        {
-            return new Query<IGrouping<TKey, TElement>>(this);
-        }
     }
 }
