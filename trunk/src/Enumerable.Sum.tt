@@ -83,7 +83,7 @@ namespace BackLinq
         /// </summary>
 
         public static <#= csType #> Sum(
-            IEnumerable<<#= csType #>> source)
+            this IEnumerable<<#= csType #>> source)
         {
             CheckNotNull(source, "source");
 
@@ -101,7 +101,7 @@ namespace BackLinq
         /// </summary>
 
         public static <#= csType #> Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, <#= csType #>> selector)
         {
             CheckNotNull(source, "source");

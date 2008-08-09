@@ -77,7 +77,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Where<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             CheckNotNull(source, "source");
@@ -94,7 +94,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Where<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, int, bool> predicate)
         {
             CheckNotNull(source, "source");
@@ -111,7 +111,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TResult> Select<TSource, TResult>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TResult> selector)
         {
             CheckNotNull(source, "source");
@@ -127,7 +127,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TResult> Select<TSource, TResult>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, int, TResult> selector)
         {
             CheckNotNull(source, "source");
@@ -143,7 +143,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> TakeWhile<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             CheckNotNull(source, "source");
@@ -162,7 +162,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> TakeWhile<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, int, bool> predicate)
         {
             CheckNotNull(source, "source");
@@ -181,7 +181,7 @@ namespace BackLinq
         /// </summary>
 
         public static TSource First<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             CheckNotNull(source, "source");
 
@@ -208,7 +208,7 @@ namespace BackLinq
         /// </summary>
 
         public static TSource First<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             return First(Where(source, predicate));
@@ -220,7 +220,7 @@ namespace BackLinq
         /// </summary>
 
         public static TSource FirstOrDefault<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             CheckNotNull(source, "source");
 
@@ -234,7 +234,7 @@ namespace BackLinq
         /// </summary>
 
         public static TSource FirstOrDefault<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             return FirstOrDefault(Where(source, predicate));
@@ -245,7 +245,7 @@ namespace BackLinq
         /// </summary>
  
         public static IEnumerable<TSource> Reverse<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             CheckNotNull(source, "source");
 
@@ -262,7 +262,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Take<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             int count)
         {
             CheckNotNull(source, "source");
@@ -280,7 +280,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Skip<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             int count)
         {
             CheckNotNull(source, "source");
@@ -297,7 +297,7 @@ namespace BackLinq
         /// </summary>
 
         public static int Count<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             CheckNotNull(source, "source");
 
@@ -325,7 +325,7 @@ namespace BackLinq
         /// </summary>
 
         public static int Count<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             return Count(Where(source, predicate));
@@ -337,7 +337,7 @@ namespace BackLinq
         /// </summary>
 
         public static long LongCount<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             CheckNotNull(source, "source");
 
@@ -362,7 +362,7 @@ namespace BackLinq
         /// </summary>
 
         public static long LongCount<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             return LongCount(Where(source, predicate));
@@ -373,7 +373,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Concat<TSource>(
-            IEnumerable<TSource> first,
+            this IEnumerable<TSource> first,
             IEnumerable<TSource> second)
         {
             CheckNotNull(first, "first");
@@ -391,7 +391,7 @@ namespace BackLinq
         /// </summary>
 
         public static List<TSource> ToList<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             CheckNotNull(source, "source");
 
@@ -407,7 +407,7 @@ namespace BackLinq
         /// </summary>
 
         public static TSource[] ToArray<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             return ToList(source).ToArray();
         }
@@ -418,7 +418,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Distinct<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             return Distinct(source, /* comparer */ null);
         }
@@ -429,7 +429,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Distinct<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             IEqualityComparer<TSource> comparer)
         {
             CheckNotNull(source, "source");
@@ -453,7 +453,7 @@ namespace BackLinq
         /// </summary>
 
         public static Lookup<TKey, TSource> ToLookup<TSource, TKey>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector)
         {
             return ToLookup(source, keySelector, e => e, /* comparer */ null);
@@ -466,7 +466,7 @@ namespace BackLinq
         /// </summary>
 
         public static Lookup<TKey, TSource> ToLookup<TSource, TKey>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             IEqualityComparer<TKey> comparer)
         {
@@ -480,7 +480,7 @@ namespace BackLinq
         /// </summary>
 
         public static Lookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector)
         {
@@ -494,7 +494,7 @@ namespace BackLinq
         /// </summary>
 
         public static Lookup<TKey, TElement> ToLookup<TSource, TKey, TElement>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector,
             IEqualityComparer<TKey> comparer)
@@ -528,7 +528,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector)
         {
             return GroupBy(source, keySelector, /* comparer */ null);
@@ -541,7 +541,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             IEqualityComparer<TKey> comparer)
         {
@@ -555,7 +555,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector)
         {
@@ -569,7 +569,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector,
             IEqualityComparer<TKey> comparer)
@@ -588,7 +588,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TKey, IEnumerable<TSource>, TResult> resultSelector)
         {
@@ -603,7 +603,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TKey, IEnumerable<TSource>, TResult> resultSelector,
             IEqualityComparer<TKey> comparer)
@@ -612,8 +612,7 @@ namespace BackLinq
             CheckNotNull(keySelector, "keySelector");
             CheckNotNull(resultSelector, "resultSelector");
 
-            return Query.From(ToLookup(source, keySelector, comparer))
-                        .Select(g => resultSelector(g.Key, g));
+            return ToLookup(source, keySelector, comparer).Select(g => resultSelector(g.Key, g));
         }
 
         /// <summary>
@@ -623,7 +622,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector,
             Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
@@ -640,7 +639,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector,
             Func<TSource, TElement> elementSelector,
             Func<TKey, IEnumerable<TElement>, TResult> resultSelector,
@@ -651,8 +650,8 @@ namespace BackLinq
             CheckNotNull(elementSelector, "elementSelector");
             CheckNotNull(resultSelector, "resultSelector");
 
-            return Query.From(ToLookup(source, keySelector, elementSelector, comparer))
-                        .Select(g => resultSelector(g.Key, g));
+            return ToLookup(source, keySelector, elementSelector, comparer)
+                   .Select(g => resultSelector(g.Key, g));
         }
 
         /// <summary>
@@ -660,7 +659,7 @@ namespace BackLinq
         /// </summary>
 
         public static TSource Aggregate<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, TSource, TSource> func)
         {
             return Aggregate(source, First(source), func);
@@ -672,7 +671,7 @@ namespace BackLinq
         /// </summary>
 
         public static TAccumulate Aggregate<TSource, TAccumulate>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             TAccumulate seed,
             Func<TAccumulate, TSource, TAccumulate> func)
         {
@@ -686,7 +685,7 @@ namespace BackLinq
         /// </summary>
 
         public static TResult Aggregate<TSource, TAccumulate, TResult>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             TAccumulate seed,
             Func<TAccumulate, TSource, TAccumulate> func,
             Func<TAccumulate, TResult> resultSelector)
@@ -709,7 +708,7 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Union<TSource>(
-            IEnumerable<TSource> first,
+            this IEnumerable<TSource> first,
             IEnumerable<TSource> second)
         {
             return Union(first, second, /* comparer */ null);
@@ -721,14 +720,14 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TSource> Union<TSource>(
-            IEnumerable<TSource> first,
+            this IEnumerable<TSource> first,
             IEnumerable<TSource> second,
             IEqualityComparer<TSource> comparer)
         {
             CheckNotNull(first, "first");
             CheckNotNull(second, "second");
 
-            return Query.From(first).Concat(second).Distinct(comparer);
+            return first.Concat(second).Distinct(comparer);
         }
 
         private static void CheckNotNull<T>(T value, string name) where T : class

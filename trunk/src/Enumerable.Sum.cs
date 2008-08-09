@@ -40,7 +40,7 @@ namespace BackLinq
         /// </summary>
 
         public static int Sum(
-            IEnumerable<int> source)
+            this IEnumerable<int> source)
         {
             CheckNotNull(source, "source");
 
@@ -58,7 +58,7 @@ namespace BackLinq
         /// </summary>
 
         public static int Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, int> selector)
         {
             CheckNotNull(source, "source");
@@ -76,7 +76,7 @@ namespace BackLinq
         /// </summary>
 
         public static int? Sum(
-            IEnumerable<int?> source)
+            this IEnumerable<int?> source)
         {
             CheckNotNull(source, "source");
 
@@ -94,7 +94,7 @@ namespace BackLinq
         /// </summary>
 
         public static int? Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, int?> selector)
         {
             CheckNotNull(source, "source");
@@ -112,7 +112,7 @@ namespace BackLinq
         /// </summary>
 
         public static long Sum(
-            IEnumerable<long> source)
+            this IEnumerable<long> source)
         {
             CheckNotNull(source, "source");
 
@@ -130,7 +130,7 @@ namespace BackLinq
         /// </summary>
 
         public static long Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, long> selector)
         {
             CheckNotNull(source, "source");
@@ -148,7 +148,7 @@ namespace BackLinq
         /// </summary>
 
         public static long? Sum(
-            IEnumerable<long?> source)
+            this IEnumerable<long?> source)
         {
             CheckNotNull(source, "source");
 
@@ -166,7 +166,7 @@ namespace BackLinq
         /// </summary>
 
         public static long? Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, long?> selector)
         {
             CheckNotNull(source, "source");
@@ -184,7 +184,7 @@ namespace BackLinq
         /// </summary>
 
         public static float Sum(
-            IEnumerable<float> source)
+            this IEnumerable<float> source)
         {
             CheckNotNull(source, "source");
 
@@ -202,7 +202,7 @@ namespace BackLinq
         /// </summary>
 
         public static float Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, float> selector)
         {
             CheckNotNull(source, "source");
@@ -220,7 +220,7 @@ namespace BackLinq
         /// </summary>
 
         public static float? Sum(
-            IEnumerable<float?> source)
+            this IEnumerable<float?> source)
         {
             CheckNotNull(source, "source");
 
@@ -238,7 +238,7 @@ namespace BackLinq
         /// </summary>
 
         public static float? Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, float?> selector)
         {
             CheckNotNull(source, "source");
@@ -256,7 +256,7 @@ namespace BackLinq
         /// </summary>
 
         public static double Sum(
-            IEnumerable<double> source)
+            this IEnumerable<double> source)
         {
             CheckNotNull(source, "source");
 
@@ -274,7 +274,7 @@ namespace BackLinq
         /// </summary>
 
         public static double Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, double> selector)
         {
             CheckNotNull(source, "source");
@@ -292,7 +292,7 @@ namespace BackLinq
         /// </summary>
 
         public static double? Sum(
-            IEnumerable<double?> source)
+            this IEnumerable<double?> source)
         {
             CheckNotNull(source, "source");
 
@@ -310,7 +310,7 @@ namespace BackLinq
         /// </summary>
 
         public static double? Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, double?> selector)
         {
             CheckNotNull(source, "source");
@@ -328,7 +328,7 @@ namespace BackLinq
         /// </summary>
 
         public static decimal Sum(
-            IEnumerable<decimal> source)
+            this IEnumerable<decimal> source)
         {
             CheckNotNull(source, "source");
 
@@ -346,7 +346,7 @@ namespace BackLinq
         /// </summary>
 
         public static decimal Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, decimal> selector)
         {
             CheckNotNull(source, "source");
@@ -364,7 +364,7 @@ namespace BackLinq
         /// </summary>
 
         public static decimal? Sum(
-            IEnumerable<decimal?> source)
+            this IEnumerable<decimal?> source)
         {
             CheckNotNull(source, "source");
 
@@ -382,7 +382,7 @@ namespace BackLinq
         /// </summary>
 
         public static decimal? Sum<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, decimal?> selector)
         {
             CheckNotNull(source, "source");
