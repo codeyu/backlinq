@@ -328,7 +328,7 @@ namespace BackLinq
         /// </summary>
 
         private static TSource Single<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             return source.SingleImpl(Futures<TSource>.Undefined);
         }
@@ -340,7 +340,7 @@ namespace BackLinq
         /// </summary>
 
         public static TSource Single<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             return Single(source.Where(predicate));
