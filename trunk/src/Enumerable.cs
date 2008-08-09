@@ -371,7 +371,31 @@ namespace BackLinq
         {
             return SingleOrDefault(source.Where(predicate));
         }
-        
+
+        public static TSource ElementAt<TSource>(
+            this IEnumerable<TSource> source,
+            int index)
+        {
+            CheckNotNull(source, "source");
+
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index", index, null);
+
+            /*
+            var list = source as IList<TSource>;
+            if (list != null)
+                return list[index];
+            */
+            try
+            {
+                return source.SkipWhile((item, i) => i < index).First();
+            }
+            catch (InvalidOperationException) // if thrown by First
+            {
+                throw new ArgumentOutOfRangeException("index", index, null);
+            }
+        }
+
         /// <summary>
         /// Inverts the order of the elements in a sequence.
         /// </summary>
