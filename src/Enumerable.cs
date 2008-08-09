@@ -219,7 +219,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            return First(Where(source, predicate));
+            return First(source.Where(predicate));
         }
 
         /// <summary>
@@ -242,7 +242,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            return FirstOrDefault(Where(source, predicate));
+            return FirstOrDefault(source.Where(predicate));
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace BackLinq
             IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            return Last(Where(source, predicate));
+            return Last(source.Where(predicate));
         }
 
         /// <summary>
@@ -308,7 +308,7 @@ namespace BackLinq
             IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            return LastOrDefault(Where(source, predicate));
+            return LastOrDefault(source.Where(predicate));
         }
 
         /// <summary>
@@ -387,7 +387,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            return Count(Where(source, predicate));
+            return Count(source.Where(predicate));
         }
 
         /// <summary>
@@ -424,7 +424,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            return LongCount(Where(source, predicate));
+            return LongCount(source.Where(predicate));
         }
 
         /// <summary>
