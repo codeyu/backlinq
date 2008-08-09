@@ -795,9 +795,6 @@ namespace BackLinq
             IEnumerable<TSource> second,
             IEqualityComparer<TSource> comparer)
         {
-            CheckNotNull(first, "first");
-            CheckNotNull(second, "second");
-
             return first.Concat(second).Distinct(comparer);
         }
 
