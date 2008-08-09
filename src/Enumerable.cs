@@ -468,7 +468,7 @@ namespace BackLinq
         public static TSource[] ToArray<TSource>(
             this IEnumerable<TSource> source)
         {
-            return ToList(source).ToArray();
+            return source.ToList().ToArray();
         }
 
         /// <summary>
