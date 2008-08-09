@@ -336,13 +336,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             int count)
         {
-            CheckNotNull(source, "source");
-
-            using (var e = source.GetEnumerator())
-            {
-                for (var i = 0; i < count && e.MoveNext(); i++)
-                    yield return e.Current;
-            }
+            return source.Where((item, i) => i < count);
         }
 
         /// <summary>
@@ -354,13 +348,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             int count)
         {
-            CheckNotNull(source, "source");
-
-            using (var e = source.GetEnumerator())
-            {
-                for (var i = 0; e.MoveNext(); i++)
-                    if (i >= count) yield return e.Current;
-            }
+            return source.Where((item, i) => i >= count);
         }
 
         /// <summary>
