@@ -54,6 +54,11 @@ namespace BackLinq
             yield break;
         }
 
+        /// <summary>
+        /// Converts the elements of an <see cref="IEnumerable"/> to the 
+        /// specified type.
+        /// </summary>
+
         public static IEnumerable<TResult> Cast<TResult>(
             this IEnumerable source
         )
