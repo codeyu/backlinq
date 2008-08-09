@@ -246,6 +246,72 @@ namespace BackLinq
         }
 
         /// <summary>
+        /// Base implementation of Last operator.
+        /// </summary>
+
+        private static TSource LastImpl<TSource>(
+            IEnumerable<TSource> source, Func<TSource> emptyFuture)
+        {
+            CheckNotNull(source, "source");
+
+            using (var e = source.GetEnumerator())
+            {
+                if (!e.MoveNext())
+                    return emptyFuture();
+
+                var last = e.Current;
+                while (e.MoveNext())
+                    last = e.Current;
+
+                return last;
+            }
+        }
+
+        /// <summary>
+        /// Returns the last element of a sequence.
+        /// </summary>
+        public static TSource Last<TSource>(
+            IEnumerable<TSource> source)
+        {
+            return LastImpl(source, Futures<TSource>.Undefined);
+        }
+
+        /// <summary>
+        /// Returns the last element of a sequence that satisfies a 
+        /// specified condition.
+        /// </summary>
+
+        public static TSource Last<TSource>(
+            IEnumerable<TSource> source,
+            Func<TSource, bool> predicate)
+        {
+            return Last(Where(source, predicate));
+        }
+
+        /// <summary>
+        /// Returns the last element of a sequence, or a default value if 
+        /// the sequence contains no elements.
+        /// </summary>
+
+        public static TSource LastOrDefault<TSource>(
+            IEnumerable<TSource> source)
+        {
+            return LastImpl(source, Futures<TSource>.Default);
+        }
+
+        /// <summary>
+        /// Returns the last element of a sequence that satisfies a 
+        /// condition or a default value if no such element is found.
+        /// </summary>
+
+        public static TSource LastOrDefault<TSource>(
+            IEnumerable<TSource> source,
+            Func<TSource, bool> predicate)
+        {
+            return LastOrDefault(Where(source, predicate));
+        }
+
+        /// <summary>
         /// Inverts the order of the elements in a sequence.
         /// </summary>
  
