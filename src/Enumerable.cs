@@ -400,6 +400,27 @@ namespace BackLinq
         }
 
         /// <summary>
+        /// Returns the element at a specified index in a sequence or a 
+        /// default value if the index is out of range.
+        /// </summary>
+
+        public static TSource ElementAtOrDefault<TSource>(
+            this IEnumerable<TSource> source,
+            int index)
+        {
+            CheckNotNull(source, "source");
+
+            if (index < 0)
+                return default(TSource);
+
+            var list = source as IList<TSource>;
+            if (list != null)
+                return index < list.Count ? list[index] : default(TSource);
+
+            return source.SkipWhile((item, i) => i < index).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Inverts the order of the elements in a sequence.
         /// </summary>
  
