@@ -89,6 +89,18 @@ namespace BackLinq
         }
 
         /// <summary>
+        /// Generates a sequence that contains one repeated value.
+        /// </summary>
+
+        public static IEnumerable<TResult> Repeat<TResult>(TResult element, int count)
+        {
+            if (count < 0) throw new ArgumentOutOfRangeException("count", count, null);
+
+            for (var i = 0; i < count; i++)
+                yield return element;
+        }
+
+        /// <summary>
         /// Filters a sequence of values based on a predicate.
         /// </summary>
 
