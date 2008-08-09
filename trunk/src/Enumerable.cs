@@ -44,6 +44,16 @@ namespace BackLinq
 
     public static partial class Enumerable
     {
+        /// <summary>
+        /// Returns an empty <see cref="IEnumerable{T}"/> that has the 
+        /// specified type argument.
+        /// </summary>
+
+        public static IEnumerable<TResult> Empty<TResult>()
+        {
+            yield break;
+        }
+
         public static IEnumerable<TResult> Cast<TResult>(
             this IEnumerable source
         )
