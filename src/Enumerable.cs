@@ -81,12 +81,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(predicate, "predicate");
-            
-            foreach (var item in source)
-                if (predicate(item))
-                    yield return item;
+            return source.Where((item, i) => predicate(item));
         }
 
         /// <summary>
@@ -115,11 +110,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, TResult> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            foreach (var item in source)
-                yield return selector(item);
+            return source.Select((item, i) => selector(item));
         }
 
         /// <summary>
@@ -147,14 +138,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(predicate, "predicate");
-            
-            foreach (var item in source)
-                if (predicate(item))
-                    yield return item;
-                else
-                    break;
+            return source.TakeWhile((item, i) => predicate(item));
         }
 
         /// <summary>
