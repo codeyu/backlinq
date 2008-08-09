@@ -1104,6 +1104,88 @@ namespace BackLinq
             return false;
         }
 
+        /// <summary>
+        /// Base implementation for Min/Max operator.
+        /// </summary>
+
+        private static TSource MinMaxImpl<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TSource, bool> lesser)
+        {
+            CheckNotNull(source, "source");
+            Debug.Assert(lesser != null);
+
+            using (var e = source.GetEnumerator())
+            {
+                return e.MoveNext() 
+                     ? e.Renumerable().Aggregate((a, item) => lesser(a, item) ? a : item) 
+                     : default(TSource);
+            }
+        }
+
+        /// <summary>
+        /// Returns the minimum value in a generic sequence.
+        /// </summary>
+
+        public static TSource Min<TSource>(
+            this IEnumerable<TSource> source)
+        {
+            var comparer = Comparer<TSource>.Default;
+            return source.MinMaxImpl((x, y) => comparer.Compare(x, y) < 0);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a generic 
+        /// sequence and returns the minimum resulting value.
+        /// </summary>
+
+        public static TResult Min<TSource, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TResult> selector)
+        {
+            return source.Select(selector).Min();
+        }
+
+        /// <summary>
+        /// Returns the maximum value in a generic sequence.
+        /// </summary>
+
+        public static TSource Max<TSource>(
+            this IEnumerable<TSource> source)
+        {
+            var comparer = Comparer<TSource>.Default;
+            return source.MinMaxImpl((x, y) => comparer.Compare(x, y) > 0);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a generic 
+        /// sequence and returns the maximum resulting value.
+        /// </summary>
+
+        public static TResult Max<TSource, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, TResult> selector)
+        {
+            return source.Select(selector).Max();
+        }
+
+        /// <summary>
+        /// Makes an enumerator seen as enumerable once more.
+        /// </summary>
+        /// <remarks>
+        /// The supplied enumerator must have been started. The first element
+        /// returned is the element the enumerator was on when passed in.
+        /// </remarks>
+
+        private static IEnumerable<T> Renumerable<T>(this IEnumerator<T> e)
+        {
+            Debug.Assert(e != null);
+
+            yield return e.Current;
+            while (e.MoveNext())
+                yield return e.Current;
+        }
+
         [DebuggerStepThrough]
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
