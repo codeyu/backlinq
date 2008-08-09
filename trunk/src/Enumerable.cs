@@ -381,11 +381,10 @@ namespace BackLinq
             if (index < 0)
                 throw new ArgumentOutOfRangeException("index", index, null);
 
-            /*
             var list = source as IList<TSource>;
             if (list != null)
                 return list[index];
-            */
+
             try
             {
                 return source.SkipWhile((item, i) => i < index).First();
