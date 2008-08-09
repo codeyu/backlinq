@@ -372,6 +372,10 @@ namespace BackLinq
             return SingleOrDefault(source.Where(predicate));
         }
 
+        /// <summary>
+        /// Returns the element at a specified index in a sequence.
+        /// </summary>
+
         public static TSource ElementAt<TSource>(
             this IEnumerable<TSource> source,
             int index)
