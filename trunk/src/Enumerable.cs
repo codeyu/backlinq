@@ -32,6 +32,7 @@ namespace BackLinq
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Diagnostics;
 
     #endregion
 
@@ -176,6 +177,30 @@ namespace BackLinq
                     break;
         }
 
+        private static class Futures<T>
+        {
+            public static readonly Func<T> Default = () => default(T);
+            public static readonly Func<T> Undefined = () => { throw new InvalidOperationException(); };
+        }
+
+        /// <summary>
+        /// Base implementation of First operator.
+        /// </summary>
+
+        internal static TSource FirstImpl<TSource>(
+            this IEnumerable<TSource> source, Func<TSource> empty)
+        {
+            CheckNotNull(source, "source");
+            Debug.Assert(empty != null);
+
+            var list = source as IList<TSource>;    // optimized case for lists
+            if (list != null)
+                return list.Count > 0 ? list[0] : empty();
+
+            using (var e = source.GetEnumerator())  // fallback for enumeration
+                return e.MoveNext() ? e.Current : empty();
+        }
+
         /// <summary>
         /// Returns the first element of a sequence.
         /// </summary>
@@ -183,24 +208,7 @@ namespace BackLinq
         public static TSource First<TSource>(
             this IEnumerable<TSource> source)
         {
-            CheckNotNull(source, "source");
-
-            var list = source as IList<TSource>;    // optimized case for lists
-            if (list != null)
-            {
-                if (list.Count == 0)
-                    throw new InvalidOperationException();
-
-                return list[0];
-            }
-
-            using (var e = source.GetEnumerator())  // fallback for enumeration
-            {
-                if (!e.MoveNext())
-                    throw new InvalidOperationException();
-
-                return e.Current;
-            }
+            return source.FirstImpl(Futures<TSource>.Undefined);
         }
 
         /// <summary>
@@ -222,10 +230,7 @@ namespace BackLinq
         public static TSource FirstOrDefault<TSource>(
             this IEnumerable<TSource> source)
         {
-            CheckNotNull(source, "source");
-
-            using (var e = source.GetEnumerator())
-                return !e.MoveNext() ? default(TSource) : e.Current;
+            return source.FirstImpl(Futures<TSource>.Default);
         }
 
         /// <summary>
