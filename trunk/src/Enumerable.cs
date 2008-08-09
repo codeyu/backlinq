@@ -988,6 +988,78 @@ namespace BackLinq
             }
         }
 
+        /// <summary>
+        /// Determines whether all elements of a sequence satisfy a condition.
+        /// </summary>
+
+        public static bool All<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, bool> predicate)
+        {
+            CheckNotNull(source, "source");
+            CheckNotNull(predicate, "predicate");
+
+            foreach (var item in source)
+                if (!predicate(item))
+                    return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains any elements.
+        /// </summary>
+
+        public static bool Any<TSource>(
+            this IEnumerable<TSource> source)
+        {
+            using (var e = source.GetEnumerator())
+                return e.MoveNext();
+        }
+
+        /// <summary>
+        /// Determines whether any element of a sequence satisfies a 
+        /// condition.
+        /// </summary>
+
+        public static bool Any<TSource>(
+            this IEnumerable<TSource> source, 
+            Func<TSource, bool> predicate)
+        {
+            return source.Where(predicate).Any();
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains a specified element by 
+        /// using the default equality comparer.
+        /// </summary>
+
+        public static bool Contains<TSource>(
+            this IEnumerable<TSource> source,
+            TSource value)
+        {
+            return source.Contains(value, /* comparer */ null);
+        }
+
+        /// <summary>
+        /// Determines whether a sequence contains a specified element by 
+        /// using a specified <see cref="IEqualityComparer{T}" />.
+        /// </summary>
+
+        public static bool Contains<TSource>(
+            this IEnumerable<TSource> source,
+            TSource value,
+            IEqualityComparer<TSource> comparer)
+        {
+            CheckNotNull(source, "source");
+
+            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            var collection = source as ICollection<TSource>;
+            return collection != null 
+                 ? collection.Contains(value)
+                 : source.Any(item => comparer.Equals(item, value));
+        }
+
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
             if (value == null) 
