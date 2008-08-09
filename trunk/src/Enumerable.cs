@@ -45,7 +45,7 @@ namespace BackLinq
     public static partial class Enumerable
     {
         public static IEnumerable<TResult> Cast<TResult>(
-            IEnumerable source
+            this IEnumerable source
         )
         {
             CheckNotNull(source, "source");
