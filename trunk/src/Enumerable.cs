@@ -296,6 +296,44 @@ namespace BackLinq
         }
 
         /// <summary>
+        /// Returns the only element of a sequence, and throws an exception 
+        /// if there is not exactly one element in the sequence.
+        /// </summary>
+        
+        public static TSource Single<TSource>(
+            IEnumerable<TSource> source)
+        {
+            CheckNotNull(source, "source");
+
+            using (var e = source.GetEnumerator())
+            {
+                if (e.MoveNext())
+                {
+                    var single = e.Current;
+                    if (!e.MoveNext()) //only one
+                        return single;
+                    
+                    throw new InvalidOperationException();
+                }
+
+                throw new InvalidOperationException();
+            }
+        }
+
+        /// <summary>
+        /// Returns the only element of a sequence that satisfies a 
+        /// specified condition, and throws an exception if more than one 
+        /// such element exists.
+        /// </summary>
+
+        public static TSource Single<TSource>(
+            IEnumerable<TSource> source,
+            Func<TSource, bool> predicate)
+        {
+            return Single(source.Where(predicate));
+        }
+
+        /// <summary>
         /// Inverts the order of the elements in a sequence.
         /// </summary>
  
