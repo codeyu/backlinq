@@ -172,7 +172,8 @@ namespace BackLinq
         /// </summary>
 
         internal static TSource FirstImpl<TSource>(
-            this IEnumerable<TSource> source, Func<TSource> empty)
+            this IEnumerable<TSource> source, 
+            Func<TSource> empty)
         {
             CheckNotNull(source, "source");
             Debug.Assert(empty != null);
@@ -234,14 +235,15 @@ namespace BackLinq
         /// </summary>
 
         private static TSource LastImpl<TSource>(
-            IEnumerable<TSource> source, Func<TSource> emptyFuture)
+            this IEnumerable<TSource> source, 
+            Func<TSource> empty)
         {
             CheckNotNull(source, "source");
 
             using (var e = source.GetEnumerator())
             {
                 if (!e.MoveNext())
-                    return emptyFuture();
+                    return empty();
 
                 var last = e.Current;
                 while (e.MoveNext())
@@ -257,7 +259,7 @@ namespace BackLinq
         public static TSource Last<TSource>(
             IEnumerable<TSource> source)
         {
-            return LastImpl(source, Futures<TSource>.Undefined);
+            return source.LastImpl(Futures<TSource>.Undefined);
         }
 
         /// <summary>
@@ -280,7 +282,7 @@ namespace BackLinq
         public static TSource LastOrDefault<TSource>(
             IEnumerable<TSource> source)
         {
-            return LastImpl(source, Futures<TSource>.Default);
+            return source.LastImpl(Futures<TSource>.Default);
         }
 
         /// <summary>
@@ -296,12 +298,12 @@ namespace BackLinq
         }
 
         /// <summary>
-        /// Returns the only element of a sequence, and throws an exception 
-        /// if there is not exactly one element in the sequence.
+        /// Base implementation of Single operator.
         /// </summary>
         
-        public static TSource Single<TSource>(
-            IEnumerable<TSource> source)
+        private static TSource SingleImpl<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource> empty)
         {
             CheckNotNull(source, "source");
 
@@ -310,14 +312,25 @@ namespace BackLinq
                 if (e.MoveNext())
                 {
                     var single = e.Current;
-                    if (!e.MoveNext()) //only one
+                    if (!e.MoveNext())
                         return single;
-                    
+
                     throw new InvalidOperationException();
                 }
 
-                throw new InvalidOperationException();
+                return empty();
             }
+        }
+
+        /// <summary>
+        /// Returns the only element of a sequence, and throws an exception 
+        /// if there is not exactly one element in the sequence.
+        /// </summary>
+
+        private static TSource Single<TSource>(
+            IEnumerable<TSource> source)
+        {
+            return source.SingleImpl(Futures<TSource>.Undefined);
         }
 
         /// <summary>
@@ -333,6 +346,32 @@ namespace BackLinq
             return Single(source.Where(predicate));
         }
 
+        /// <summary>
+        /// Returns the only element of a sequence, or a default value if 
+        /// the sequence is empty; this method throws an exception if there 
+        /// is more than one element in the sequence.
+        /// </summary>
+
+        public static TSource SingleOrDefault<TSource>(
+            this IEnumerable<TSource> source)
+        {
+            return source.SingleImpl(Futures<TSource>.Undefined);
+        }
+
+        /// <summary>
+        /// Returns the only element of a sequence that satisfies a 
+        /// specified condition or a default value if no such element 
+        /// exists; this method throws an exception if more than one element 
+        /// satisfies the condition.
+        /// </summary>
+
+        public static TSource SingleOrDefault<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, bool> predicate)
+        {
+            return SingleOrDefault(source.Where(predicate));
+        }
+        
         /// <summary>
         /// Inverts the order of the elements in a sequence.
         /// </summary>
