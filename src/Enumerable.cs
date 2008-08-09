@@ -352,6 +352,40 @@ namespace BackLinq
         }
 
         /// <summary>
+        /// Bypasses elements in a sequence as long as a specified condition 
+        /// is true and then returns the remaining elements.
+        /// </summary>
+
+        public static IEnumerable<TSource> SkipWhile<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, bool> predicate)
+        {
+            return source.SkipWhile((item, i) => predicate(item));
+        }
+
+        /// <summary>
+        /// Bypasses elements in a sequence as long as a specified condition 
+        /// is true and then returns the remaining elements. The element's 
+        /// index is used in the logic of the predicate function.
+        /// </summary>
+
+        public static IEnumerable<TSource> SkipWhile<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, int, bool> predicate)
+        {
+            using (var e = source.GetEnumerator())
+            {
+                for (var i = 0; e.MoveNext() && predicate(e.Current, i); i++);
+
+                do
+                {
+                    yield return e.Current;
+                } 
+                while (e.MoveNext());
+            }
+        }
+
+        /// <summary>
         /// Returns the number of elements in a sequence.
         /// </summary>
 
