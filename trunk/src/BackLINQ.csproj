@@ -45,6 +45,7 @@
     <Compile Include="Grouping.cs" />
     <Compile Include="IOrderedEnumerable.cs" />
     <Compile Include="Lookup.cs" />
+    <Compile Include="OrderedEnumerable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
