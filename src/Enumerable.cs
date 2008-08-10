@@ -1245,6 +1245,10 @@ namespace BackLinq
             do { yield return e.Current; } while (e.MoveNext());
         }
 
+        /// <summary>
+        /// Sorts the elements of a sequence in ascending order according to a key.
+        /// </summary>
+
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
             this IEnumerable<TSource> source, 
             Func<TSource, TKey> keySelector)
@@ -1252,12 +1256,25 @@ namespace BackLinq
             return source.OrderBy(keySelector, /* comparer */ null);
         }
 
+        /// <summary>
+        /// Sorts the elements of a sequence in ascending order by using a 
+        /// specified comparer.
+        /// </summary>
+
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
             this IEnumerable<TSource> source, 
-            Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
+            Func<TSource, TKey> keySelector,
+            IComparer<TKey> comparer)
         {
-            throw new NotImplementedException();
+            CheckNotNull(source, "source");
+            CheckNotNull(keySelector, "keySelector");
+
+            return new OrderedEnumerable<TSource, TKey>(source, null, keySelector, comparer, /* descending */ false);
         }
+
+        /// <summary>
+        /// Sorts the elements of a sequence in descending order according to a key.
+        /// </summary>
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(
             this IEnumerable<TSource> source, 
@@ -1266,13 +1283,26 @@ namespace BackLinq
             return source.OrderByDescending(keySelector, /* comparer */ null);
         }
 
+        /// <summary>
+        ///  Sorts the elements of a sequence in descending order by using a 
+        /// specified comparer. 
+        /// </summary>
+
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(
             this IEnumerable<TSource> source, 
             Func<TSource, TKey> keySelector, 
             IComparer<TKey> comparer)
         {
-            throw new NotImplementedException();
+            CheckNotNull(source, "source");
+            CheckNotNull(source, "keySelector");
+
+            return new OrderedEnumerable<TSource, TKey>(source, null, keySelector, comparer, /* descending */ true);
         }
+
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in 
+        /// ascending order according to a key.
+        /// </summary>
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
             this IOrderedEnumerable<TSource> source, 
@@ -1281,12 +1311,23 @@ namespace BackLinq
             return source.ThenBy(keySelector, /* comparer */ null);
         }
 
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in 
+        /// ascending order by using a specified comparer.
+        /// </summary>
+
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
-            this IOrderedEnumerable<TSource> source, Func<TSource, TKey> 
-            keySelector, IComparer<TKey> comparer)
+            this IOrderedEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector, 
+            IComparer<TKey> comparer)
         {
-            throw new NotImplementedException();
+            return source.CreateOrderedEnumerable(keySelector, comparer, /* descending */ false);
         }
+
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in 
+        /// descending order, according to a key.
+        /// </summary>
 
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
             this IOrderedEnumerable<TSource> source, 
@@ -1295,12 +1336,19 @@ namespace BackLinq
             return source.ThenByDescending(keySelector, /* comparer */ null);
         }
 
+        /// <summary>
+        /// Performs a subsequent ordering of the elements in a sequence in 
+        /// descending order by using a specified comparer.
+        /// </summary>
+
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
             this IOrderedEnumerable<TSource> source, 
             Func<TSource, TKey> keySelector, 
             IComparer<TKey> comparer)
         {
-            throw new NotImplementedException();
+            CheckNotNull(source, "source");
+
+            return source.CreateOrderedEnumerable(keySelector, comparer, /* descending */ true);
         }
 
         /// <summary>
