@@ -1438,6 +1438,72 @@ namespace BackLinq
             return dict;
         }
 
+        /// <summary>
+        /// Correlates the elements of two sequences based on matching keys. 
+        /// The default equality comparer is used to compare keys.
+        /// </summary>
+
+        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(
+            this IEnumerable<TOuter> outer,
+            IEnumerable<TInner> inner,
+            Func<TOuter, TKey> outerKeySelector,
+            Func<TInner, TKey> innerKeySelector,
+            Func<TOuter, TInner, TResult> resultSelector)
+        {
+            return outer.Join(inner, outerKeySelector, innerKeySelector, resultSelector, /* comparer */ null);
+        }
+
+        /// <summary>
+        /// Correlates the elements of two sequences based on matching keys. 
+        /// The default equality comparer is used to compare keys. A 
+        /// specified <see cref="IEqualityComparer{T}" /> is used to compare keys.
+        /// </summary>
+
+        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(
+            this IEnumerable<TOuter> outer, 
+            IEnumerable<TInner> inner, 
+            Func<TOuter, TKey> outerKeySelector, 
+            Func<TInner, TKey> innerKeySelector, 
+            Func<TOuter, TInner, TResult> resultSelector,
+            IEqualityComparer<TKey> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Correlates the elements of two sequences based on equality of 
+        /// keys and groups the results. The default equality comparer is 
+        /// used to compare keys.
+        /// </summary>
+
+        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(
+            this IEnumerable<TOuter> outer,
+            IEnumerable<TInner> inner,
+            Func<TOuter, TKey> outerKeySelector,
+            Func<TInner, TKey> innerKeySelector,
+            Func<TOuter, IEnumerable<TInner>, TResult> resultSelector)
+        {
+            return outer.GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, /* comparer */ null);
+        }
+
+        /// <summary>
+        /// Correlates the elements of two sequences based on equality of 
+        /// keys and groups the results. The default equality comparer is 
+        /// used to compare keys. A specified <see cref="IEqualityComparer{T}" /> 
+        /// is used to compare keys.
+        /// </summary>
+
+        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(
+            this IEnumerable<TOuter> outer, 
+            IEnumerable<TInner> inner, 
+            Func<TOuter, TKey> outerKeySelector, 
+            Func<TInner, TKey> innerKeySelector, 
+            Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, 
+            IEqualityComparer<TKey> comparer)
+        {
+            throw new NotImplementedException();
+        }
+        
         [DebuggerStepThrough]
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
