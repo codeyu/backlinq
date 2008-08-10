@@ -89,7 +89,11 @@ namespace BackLinq
 
         public IEnumerable<TElement> this[TKey key]
         {
-            get { return _map[key]; }
+            get
+            {
+                IGrouping<TKey, TElement> result;
+                return _map.TryGetValue(key, out result) ? result : Enumerable.Empty<TElement>();
+            }
         }
 
         /// <summary>
