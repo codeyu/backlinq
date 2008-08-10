@@ -1329,6 +1329,44 @@ namespace BackLinq
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Base implementation for Intersect and Except operators.
+        /// </summary>
+
+        private static IEnumerable<TSource> IntersectExceptImpl<TSource>(
+            this IEnumerable<TSource> first, 
+            IEnumerable<TSource> second, 
+            IEqualityComparer<TSource> comparer,
+            bool flag)
+        {
+            CheckNotNull(first, "first");
+            CheckNotNull(second, "second");
+
+            var keys = new List<TSource>();
+            var flags = new Dictionary<TSource, bool>(comparer);
+
+            foreach (var item in first.Where(k => !flags.ContainsKey(k)))
+            {
+                flags.Add(item, !flag);
+                keys.Add(item);
+            }
+
+            foreach (var item in second.Where(flags.ContainsKey))
+                flags[item] = flag;
+
+            //
+            // As per docs, "the marked elements are yielded in the order in 
+            // which they were collected.
+            //
+
+            return keys.Where(item => flags[item]);
+        }
+
+        /// <summary>
+        /// Produces the set intersection of two sequences by using the 
+        /// default equality comparer to compare values.
+        /// </summary>
+
         public static IEnumerable<TSource> Intersect<TSource>(
             this IEnumerable<TSource> first, 
             IEnumerable<TSource> second)
@@ -1336,13 +1374,23 @@ namespace BackLinq
             return first.Intersect(second, /* comparer */ null);
         }
 
+        /// <summary>
+        /// Produces the set intersection of two sequences by using the 
+        /// specified <see cref="IEqualityComparer{T}" /> to compare values.
+        /// </summary>
+
         public static IEnumerable<TSource> Intersect<TSource>(
             this IEnumerable<TSource> first, 
             IEnumerable<TSource> second, 
             IEqualityComparer<TSource> comparer)
         {
-            throw new NotImplementedException();
+            return IntersectExceptImpl(first, second, comparer, /* flag */ true);
         }
+
+        /// <summary>
+        /// Produces the set difference of two sequences by using the 
+        /// default equality comparer to compare values.
+        /// </summary>
 
         public static IEnumerable<TSource> Except<TSource>(
             this IEnumerable<TSource> first,
@@ -1351,12 +1399,17 @@ namespace BackLinq
             return first.Except(second, /* comparer */ null);
         }
 
+        /// <summary>
+        /// Produces the set difference of two sequences by using the 
+        /// specified <see cref="IEqualityComparer{T}" /> to compare values.
+        /// </summary>
+
         public static IEnumerable<TSource> Except<TSource>(
             this IEnumerable<TSource> first,
             IEnumerable<TSource> second,
             IEqualityComparer<TSource> comparer)
         {
-            throw new NotImplementedException();
+            return IntersectExceptImpl(first, second, comparer, /* flag */ false);
         }
 
         /// <summary>
