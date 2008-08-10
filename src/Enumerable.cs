@@ -590,13 +590,8 @@ namespace BackLinq
         {
             using (var e = source.GetEnumerator())
             {
-                for (var i = 0; e.MoveNext() && predicate(e.Current, i); i++);
-
-                do
-                {
-                    yield return e.Current;
-                } 
-                while (e.MoveNext());
+                for (var i = 0; e.MoveNext() && predicate(e.Current, i); i++) { /* nop */ }
+                do { yield return e.Current; } while (e.MoveNext());
             }
         }
 
