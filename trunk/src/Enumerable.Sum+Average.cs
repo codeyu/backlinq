@@ -705,6 +705,5 @@ namespace BackLinq
         {
             return source.Select(selector).Average();
         }
-
     }
 }
