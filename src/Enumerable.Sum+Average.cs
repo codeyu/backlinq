@@ -62,14 +62,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, int> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            int sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -136,14 +129,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, int?> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            int? sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -210,14 +196,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, long> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            long sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -284,14 +263,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, long?> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            long? sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -358,14 +330,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, float> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            float sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -432,14 +397,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, float?> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            float? sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -506,14 +464,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, double> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            double sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -580,14 +531,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, double?> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            double? sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -654,14 +598,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, decimal> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            decimal sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
@@ -728,14 +665,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, decimal?> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            decimal? sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
         
         /// <summary>
