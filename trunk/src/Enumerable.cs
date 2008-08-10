@@ -1042,8 +1042,8 @@ namespace BackLinq
             {
                 if (!e.MoveNext())
                     yield return defaultValue;
-
-                do { yield return e.Current; } while (e.MoveNext());
+                else
+                    do { yield return e.Current; } while (e.MoveNext());
             }
         }
 
