@@ -54,8 +54,8 @@ namespace BackLinq
     #endregion
 
     public static partial class Enumerable
-    {
-<#   
+    {<#
+
     CodeDomProvider cscp = new CSharpCodeProvider();
     foreach (Type type in types) 
     { 
@@ -79,6 +79,7 @@ namespace BackLinq
         
         doc += "<see cref=\"" + baseType + "\" />";
 #>
+
         /// <summary>
         /// Computes the sum of a sequence of <#= doc #> values.
         /// </summary>
@@ -150,7 +151,6 @@ namespace BackLinq
         {
             return source.Select(selector).Average();
         }
-
 <#  } #>
     }
 }
