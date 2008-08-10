@@ -605,21 +605,9 @@ namespace BackLinq
             CheckNotNull(source, "source");
 
             var collection = source as ICollection;
-            if (collection != null)
-                return collection.Count;
-
-            checked
-            {
-                var count = 0;
-                
-                using (var e = source.GetEnumerator())
-                {
-                    while (e.MoveNext())
-                        count++;
-                }
-
-                return count;
-            }
+            return collection != null 
+                 ? collection.Count 
+                 : source.Aggregate(0, (count, item) => checked(count + 1));
         }
 
         /// <summary>
@@ -645,18 +633,9 @@ namespace BackLinq
             CheckNotNull(source, "source");
 
             var array = source as Array;
-            if (array != null)
-                return array.LongLength;
-
-            var count = 0L;
-            
-            using (var e = source.GetEnumerator())
-            {
-                while (e.MoveNext())
-                    count++;
-            }
-
-            return count;
+            return array != null 
+                 ? array.LongLength 
+                 : source.Aggregate(0L, (count, item) => count + 1);
         }
 
         /// <summary>
