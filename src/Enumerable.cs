@@ -1255,15 +1255,15 @@ namespace BackLinq
         /// <remarks>
         /// The supplied enumerator must have been started. The first element
         /// returned is the element the enumerator was on when passed in.
+        /// DO NOT use this method if the caller must be a generator. It is
+        /// mostly safe among aggregate operations.
         /// </remarks>
 
         private static IEnumerable<T> Renumerable<T>(this IEnumerator<T> e)
         {
             Debug.Assert(e != null);
 
-            yield return e.Current;
-            while (e.MoveNext())
-                yield return e.Current;
+            do { yield return e.Current; } while (e.MoveNext());
         }
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
