@@ -70,6 +70,20 @@ namespace BackLinq
         }
 
         /// <summary>
+        /// Filters the elements of an <see cref="IEnumerable"/> based on a specified type.
+        /// </summary>
+
+        public static IEnumerable<TResult> OfType<TResult>(
+            this IEnumerable source)
+        {
+            CheckNotNull(source, "source");
+
+            foreach (var item in source)
+                if (item is TResult)
+                yield return (TResult) item;
+        }
+
+        /// <summary>
         /// Generates a sequence of integral numbers within a specified range.
         /// </summary>
         /// <param name="start">The value of the first integer in the sequence.</param>
