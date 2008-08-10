@@ -105,14 +105,7 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, <#= csType #>> selector)
         {
-            CheckNotNull(source, "source");
-            CheckNotNull(selector, "selector");
-
-            <#= csType #> sum = 0;
-            foreach (var num in source)
-                sum = checked(sum + selector(num));
-
-            return sum;
+            return source.Select(selector).Sum();
         }
 <#
         string csSumType = type == typeof(int) || type == typeof(long) || type == typeof(int?) || type == typeof(long?) 
