@@ -1315,6 +1315,36 @@ namespace BackLinq
             throw new NotImplementedException();
         }
 
+        public static IEnumerable<TSource> Intersect<TSource>(
+            this IEnumerable<TSource> first, 
+            IEnumerable<TSource> second)
+        {
+            return first.Intersect(second, /* comparer */ null);
+        }
+
+        public static IEnumerable<TSource> Intersect<TSource>(
+            this IEnumerable<TSource> first, 
+            IEnumerable<TSource> second, 
+            IEqualityComparer<TSource> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static IEnumerable<TSource> Except<TSource>(
+            this IEnumerable<TSource> first,
+            IEnumerable<TSource> second)
+        {
+            return first.Except(second, /* comparer */ null);
+        }
+
+        public static IEnumerable<TSource> Except<TSource>(
+            this IEnumerable<TSource> first,
+            IEnumerable<TSource> second,
+            IEqualityComparer<TSource> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
         [DebuggerStepThrough]
         private static void CheckNotNull<T>(T value, string name) where T : class
         {
