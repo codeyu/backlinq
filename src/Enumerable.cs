@@ -891,7 +891,13 @@ namespace BackLinq
             this IEnumerable<TSource> source,
             Func<TSource, TSource, TSource> func)
         {
-            return Aggregate(source, First(source), func);
+            using (var e = source.GetEnumerator())
+            {
+                if (!e.MoveNext())
+                    throw new InvalidOperationException();
+
+                return e.Renumerable().Skip(1).Aggregate(e.Current, func);
+            }
         }
 
         /// <summary>
