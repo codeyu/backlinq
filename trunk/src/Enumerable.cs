@@ -158,6 +158,71 @@ namespace BackLinq
         }
 
         /// <summary>
+        /// Projects each element of a sequence to an <see cref="IEnumerable{T}" /> 
+        /// and flattens the resulting sequences into one sequence.
+        /// </summary>
+
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, IEnumerable<TResult>> selector)
+        {
+            return source.SelectMany((item, i) => selector(item));
+        }
+
+        /// <summary>
+        /// Projects each element of a sequence to an <see cref="IEnumerable{T}" />, 
+        /// and flattens the resulting sequences into one sequence. The 
+        /// index of each source element is used in the projected form of 
+        /// that element.
+        /// </summary>
+
+        public static IEnumerable<TResult> SelectMany<TSource, TResult>(
+            this IEnumerable<TSource> source, 
+            Func<TSource, int, IEnumerable<TResult>> selector)
+        {
+            CheckNotNull(selector, "selector");
+
+            return source.SelectMany(selector, (item, subitem) => subitem);
+        }
+
+        /// <summary>
+        /// Projects each element of a sequence to an <see cref="IEnumerable{T}" />, 
+        /// flattens the resulting sequences into one sequence, and invokes 
+        /// a result selector function on each element therein.
+        /// </summary>
+
+        public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector)
+        {
+            return source.SelectMany((item, i) => collectionSelector(item), resultSelector);
+        }
+
+        /// <summary>
+        /// Projects each element of a sequence to an <see cref="IEnumerable{T}" />, 
+        /// flattens the resulting sequences into one sequence, and invokes 
+        /// a result selector function on each element therein. The index of 
+        /// each source element is used in the intermediate projected form 
+        /// of that element.
+        /// </summary>
+
+        public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, int, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector)
+        {
+            CheckNotNull(source, "source");
+            CheckNotNull(collectionSelector, "collectionSelector");
+            CheckNotNull(resultSelector, "resultSelector");
+
+            var i = 0;
+            foreach (var item in source)
+                foreach (var subitem in collectionSelector(item, i++))
+                    yield return resultSelector(item, subitem);
+        }
+
+        /// <summary>
         /// Returns elements from a sequence as long as a specified condition is true.
         /// </summary>
 
