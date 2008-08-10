@@ -1257,6 +1257,64 @@ namespace BackLinq
                 yield return e.Current;
         }
 
+        public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
+            this IEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector)
+        {
+            return source.OrderBy(keySelector, /* comparer */ null);
+        }
+
+        public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(
+            this IEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(
+            this IEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector)
+        {
+            return source.OrderByDescending(keySelector, /* comparer */ null);
+        }
+
+        public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(
+            this IEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector, 
+            IComparer<TKey> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
+            this IOrderedEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector)
+        {
+            return source.ThenBy(keySelector, /* comparer */ null);
+        }
+
+        public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(
+            this IOrderedEnumerable<TSource> source, Func<TSource, TKey> 
+            keySelector, IComparer<TKey> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
+            this IOrderedEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector)
+        {
+            return source.ThenByDescending(keySelector, /* comparer */ null);
+        }
+
+        public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(
+            this IOrderedEnumerable<TSource> source, 
+            Func<TSource, TKey> keySelector, 
+            IComparer<TKey> comparer)
+        {
+            throw new NotImplementedException();
+        }
+
         [DebuggerStepThrough]
         private static void CheckNotNull<T>(T value, string name) where T : class
         {

@@ -43,6 +43,7 @@
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="Grouping.cs" />
+    <Compile Include="IOrderedEnumerable.cs" />
     <Compile Include="Lookup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
