@@ -1535,14 +1535,25 @@ namespace BackLinq
         /// </summary>
 
         public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(
-            this IEnumerable<TOuter> outer, 
+            this IEnumerable<TOuter> outer,
             IEnumerable<TInner> inner, 
             Func<TOuter, TKey> outerKeySelector, 
             Func<TInner, TKey> innerKeySelector, 
             Func<TOuter, TInner, TResult> resultSelector,
             IEqualityComparer<TKey> comparer)
         {
-            throw new NotImplementedException();
+            CheckNotNull(outer, "outer");
+            CheckNotNull(inner, "inner");
+            CheckNotNull(outerKeySelector, "outerKeySelector");
+            CheckNotNull(innerKeySelector, "innerKeySelector");
+            CheckNotNull(resultSelector, "resultSelector");
+
+            var lookup = inner.ToLookup(innerKeySelector, comparer);
+
+            return
+                from o in outer
+                from i in lookup[outerKeySelector(o)]
+                select resultSelector(o, i);
         }
 
         /// <summary>
@@ -1576,7 +1587,14 @@ namespace BackLinq
             Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, 
             IEqualityComparer<TKey> comparer)
         {
-            throw new NotImplementedException();
+            CheckNotNull(outer, "outer");
+            CheckNotNull(inner, "inner");
+            CheckNotNull(outerKeySelector, "outerKeySelector");
+            CheckNotNull(innerKeySelector, "innerKeySelector");
+            CheckNotNull(resultSelector, "resultSelector");
+
+            var lookup = inner.ToLookup(innerKeySelector);
+            return outer.Select(o => resultSelector(o, lookup[outerKeySelector(o)]));
         }
         
         [DebuggerStepThrough]
