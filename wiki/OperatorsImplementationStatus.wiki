@@ -2,53 +2,47 @@
 
 = Operators Implementation Status =
 
-http://chart.apis.google.com/chart?chs=225x125&cht=gom&chd=t:39&chl=operators%20done#foo.png
+http://chart.apis.google.com/chart?chs=225x125&cht=gom&chd=t:100#foo.png
 
-Legend:
-
-  * Operator = pending implementation
-  * *Operator* = done and available for use
-  * *_Operator_* = partially available
-  * ~~Operator~~ = not expected to be implemented
+All of the following standard query operators are implemented and supported by BackLINQ.
 
 == Restriction operators ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Where.aspx Where]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Where.aspx Where]
 == Projection operators ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Select.aspx Select]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Select.aspx Select]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.SelectMany.aspx SelectMany]
 == Partitioning operators ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Take.aspx Take]*
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Skip.aspx Skip]*
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.TakeWhile.aspx TakeWhile]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Take.aspx Take]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Skip.aspx Skip]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.TakeWhile.aspx TakeWhile]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.SkipWhile.aspx SkipWhile]
 == Join operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Join.aspx Join]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupJoin.aspx GroupJoin]
 == Concatenation operator ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Concat.aspx Concat]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Concat.aspx Concat]
 == Ordering operators ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OrderBy.aspx OrderBy] / [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ThenBy.aspx ThenBy]
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Reverse.aspx Reverse]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OrderBy.aspx OrderBy]/[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ThenBy.aspx ThenBy]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Reverse.aspx Reverse]
 == Grouping operators ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupBy.aspx GroupBy]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupBy.aspx GroupBy]
 == Set operators ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Distinct.aspx Distinct]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Distinct.aspx Distinct]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Union.aspx Union]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Intersect.aspx Intersect]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Except.aspx Except]
 == Conversion operators ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToSequence.aspx ToSequence]
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToArray.aspx ToArray]*
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToList.aspx ToList]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToArray.aspx ToArray]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToList.aspx ToList]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToDictionary.aspx ToDictionary]
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToLookup.aspx ToLookup]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToLookup.aspx ToLookup]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OfType.aspx OfType]
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Cast.aspx Cast]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Cast.aspx Cast]
 == Equality operator ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.EqualAll.aspx EqualAll]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.SequenceEqual.aspx SequenceEqual]
 == Element operators ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.First.aspx First]*
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.FirstOrDefault.aspx FirstOrDefault]*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.First.aspx First]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.FirstOrDefault.aspx FirstOrDefault]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Last.aspx Last]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.LastOrDefault.aspx LastOrDefault]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Single.aspx Single]
@@ -65,9 +59,9 @@ Legend:
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.All.aspx All]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Contains.aspx Contains]
 == Aggregate operators ==
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Count.aspx Count]*
-  * *[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.LongCount.aspx LongCount]*
-  * *_[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Sum.aspx Sum]_*
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Count.aspx Count]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.LongCount.aspx LongCount]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Sum.aspx Sum]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Min.aspx Min]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Max.aspx Max]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Average.aspx Average]

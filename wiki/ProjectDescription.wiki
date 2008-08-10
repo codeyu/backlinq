@@ -4,121 +4,12 @@ BackLINQ allows applications written in C# 3.0 but which need to target the .NET
 
 == The Short of BackLINQ ==
 
-Once you've gotten used to expressing queries on objects using LINQ, it's hard to go back writing them in an imperative and verbose style. Some folks may still need to target .NET Framework 2.0 and with the [http://msdn.microsoft.com/en-us/library/bb398197.aspx multi-targeting capability of Visual Studio 2008], it is possible to continue to use some feature of C# 3.0 with requiring users to install .NET Framework 3.0 (which is required to use LINQ to Objects). This is where BackLINQ comes is.
+Once you've gotten used to expressing queries on objects using LINQ, it's hard to go back writing them in an imperative and verbose style. Some folks may still need to target .NET Framework 2.0 and with the [http://msdn.microsoft.com/en-us/library/bb398197.aspx multi-targeting capability of Visual Studio 2008], it is possible to continue to use some feature of C# 3.0 with requiring users to install .NET Framework 3.0 (which is required to use LINQ to Objects). This is where BackLINQ comes in.
 
 === What Do I Get? ==
 
 BackLINQ gives you:
 
   * A set of C# files that you can add to your project as part of your binaries; no need to add a reference to yet another library.
-  * An [http://backlinq.googlecode.com/svn/trunk/src/Enumerable.cs implementation] of [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.aspx System.Linq.Enumerable] that you can take with you.
-  * A way to express queries as chained calls without relying on extension method from C# 3.0.
+  * An [http://backlinq.googlecode.com/svn/trunk/src/Enumerable.cs implementation] of [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.aspx System.Linq.Enumerable] and a few other supporting types that you can take with you.
   * An open source project where you can control your fate.
-
-== Tell Me About the Devil ==
-
-Let's start with the following code:
-
-{{{
-var nums = from num in Enumerable.Range(0, 10)
-           where num % 2 != 0
-           select num * 1.5;
-
-foreach (var num in nums)
-  Console.WriteLine(num);
-}}}
-
-The language-integrated syntax added to C# 3.0 for LINQ is mostly syntax sugar for calls to `System.Linq.Enumerable` class members. So the above could be re-written as chained calls to appropriate members of the `Enumerable`:
-
-{{{
-var nums = Enumerable.Range(0, 10)
-                     .Where(num => num % 2 != 0)
-                     .Select(num => num * 1.5);
-
-foreach (var num in nums)
-  Console.WriteLine(num);
-}}}
-
-Unfortunately, if you want to use C# 3.0, but target for .NET Framework 2.0 or 3.0 via [http://msdn.microsoft.com/en-us/library/bb398197.aspx multi-targeting], you can't use the LINQ syntax sugar. That's because `System.Linq.Enumerable` lives in `System.Core.dll` and that ships starting with .NET Framework 3.5.
-
-To remove dependency on `System.Core.dll` to target previous framework versions, the `System.Linq.Enumerable` class has to be re-implemented. This is not too hard because most of the LINQ operators are simple to implement in a seemingly sequential style via the [http://msdn.microsoft.com/en-us/library/9k7k7cf0.aspx yield] statement, automatically generating enumerators (known as generators in other circles), which is really all that is going behind the LINQ to Objects implementation. For example, the [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.where.aspx Where] operation is as simple to implement as:
-
-{{{
-public static IEnumerable<TSource> Where<TSource>(
-    IEnumerable<TSource> source,
-    Func<TSource, bool> predicate)
-{
-    foreach (var item in source)
-        if (predicate(item))
-            yield return item;
-}
-}}}
-
-This is the first thing that BackLINQ provides, which is an implementation of `System.Linq.Enumerable` members (and a few supporting types) that you can take with you without taking a hit on `System.Core.dll`. But there is a problem. It's not entirely true to say that the following calls to `Range`, `Where` and `Select` are chained:
-
-{{{
-var nums = Enumerable.Range(0, 10)
-                     .Where(num => num % 2 != 0)
-                     .Select(num => num * 1.5);
-
-foreach (var num in nums)
-  Console.WriteLine(num);
-}}}
-
-Through the magic of [http://msdn.microsoft.com/en-us/library/bb383977.aspx extension methods], the calls appear to be chained but that's just an illusion. In reality they are nested, but the _execution_ of the query, when the [http://msdn.microsoft.com/en-us/library/ttw7t8t6.aspx foreach] block executes, is indeed chained.
-
-Although extension methods are part of C# 3.0, they cannot be used when targeting .NET Framework 2.0 or 3.0. That is because the compiler decorated extension methods with the [http://msdn.microsoft.com/en-us/library/system.runtime.compilerservices.extensionattribute.aspx System.Runtime.CompilerServices.ExtensionAttribute] and which also happens to reside in `System.Core.dll`. This is why the above implementation of `Where` shown earlier cannot use the `this` keyword on the `source` parameter type to denote _extension_. The consequence of this is that it can make `Enumerable` very cumbersome to use and makes the code less readable, eventually defeating the whole purpose of wanting to be able express queries in a natural way. In other words, the example code shown so far would have to be written like this:
-
-{{{
-var nums = // ...
-  Enumerable.Select(
-    Enumerable.Where(
-      Enumerable.Range(0, 10), 
-    num => num % 2 != 0),
-  num => num * 1.5);
-
-foreach (var num in nums)
-  Console.WriteLine(num);
-}}}
-
-That's not very readable anymore and one needs to invent an awkward indentation system to make somewhat sense of the nesting of calls and the association of parameters and their corresponding operation (which now appear farther apart and on opposite ends). The only good news up to now is that [http://msdn.microsoft.com/en-us/library/bb397687.aspx lambda expressions] are _pure_ syntax sugar that don't incur any dependency on extenral libraries like `System.Core.dll` so these can be used liberally in code targeting .NET Framework 2.0 or 3.0. And that's a good thing because they go a long way to minimize [http://martinfowler.com/bliki/SyntacticNoise.html syntactic noise].
-
-The second place where BackLINQ helps is to let you to continue to write queries as chained, rather than nested, calls without the magic of extension methods. So the query setup is chained as well as its execution. It does this by providing a [http://backlinq.googlecode.com/svn/trunk/src/Query.cs Query] class. So the way your code would look like now using BackLINQ is:
-
-{{{
-var nums = Query.Range(0, 10)
-                .Where(num => num % 2 != 0)
-                .Select(num => num * 1.5);
-
-foreach (var num in nums)
-  Console.WriteLine(num);
-}}}
-
-Not bad? Not convinced? Let's take another example from C# 3.0 using LINQ sugar:
-
-{{{
-var sysdir = Environment.SystemDirectory;
-var paths = Environment.GetEnvironmentVariable("PATH").Split(';');
-var q = from path in paths
-        where path.StartsWith(sysdir, StringComparison.InvariantCultureIgnoreCase)
-        select path;
-}}}
-
-First, transform to method chains:
-
-{{{
-var sysdir = Environment.SystemDirectory;
-var paths = Environment.GetEnvironmentVariable("PATH").Split(';');
-var q = paths.Where(path => path.StartsWith(sysdir, StringComparison.InvariantCultureIgnoreCase));
-}}}
-
-Now, the same code in BackLINQ would be written like:
-
-{{{
-var sysdir = Environment.SystemDirectory;
-var paths = Environment.GetEnvironmentVariable("PATH").Split(';');
-var q = Query.From(paths)
-             .Where(path => path.StartsWith(sysdir, StringComparison.InvariantCultureIgnoreCase));
-}}}
-
-The only change is the addition of the call to `Query.From`. Now you can run this code on version of the .NET Framework from version 2.0 onwards.

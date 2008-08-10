@@ -5,10 +5,9 @@
 
 If you see that BackLINQ would add value to your project(s) then chances are that you'd be interested in seeing it mature to completion. But why leave it to chance? This is how you can help the project right now:
 
-  * Complete standard query operators (see OperatorsImplementationStatus)
   * Add unit testing
   * Add code samples
-  * Add Wiki documentation, especially showing transformation of [http://msdn.microsoft.com/en-us/library/bb397919.aspx LINQ to Objects] queries and samples in BackLINQ
+  * Add Wiki documentation
 
 I'm ready. [http://code.google.com/p/support/wiki/FAQ#How_do_I_join_a_project? Now how do I join a project?]
 
