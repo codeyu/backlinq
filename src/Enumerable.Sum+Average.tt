@@ -48,6 +48,7 @@ namespace BackLinq
 {
     #region Imports
 
+    using System;
     using System.Collections.Generic;
 
     #endregion
@@ -112,6 +113,49 @@ namespace BackLinq
                 sum = checked(sum + selector(num));
 
             return sum;
+        }
+<#
+        string csSumType = type == typeof(int) || type == typeof(long) || type == typeof(int?) || type == typeof(long?) 
+                         ? "long" : csBaseType;
+        string csAvgType = type == typeof(int) || type == typeof(long) || type == typeof(int?) || type == typeof(long?) 
+                         ? "double" : csBaseType;
+#>        
+        /// <summary>
+        /// Computes the average of a sequence of <#= doc #> values.
+        /// </summary>
+
+        public static <#= csAvgType #> Average(
+            this IEnumerable<<#= csType #>> source)
+        {
+            CheckNotNull(source, "source");
+
+            <#= csSumType #> sum = 0;
+            long count = 0;
+
+            foreach (var num in source<# if (isNullable) { #>.Where(n => n != null)<# } #>)
+            checked
+            {
+                sum += (<#= csBaseType #>) num;
+                count++;
+            }
+
+            if (count == 0)
+                throw new InvalidOperationException();
+
+            return (<#= csAvgType #>) sum / count;
+        }
+
+        /// <summary>
+        /// Computes the average of a sequence of <#= doc #> values 
+        /// that are obtained by invoking a transform function on each 
+        /// element of the input sequence.
+        /// </summary>
+
+        public static <#= csAvgType #> Average<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, <#= csType #>> selector)
+        {
+            return source.Select(selector).Average();
         }
 
 <#  } #>
