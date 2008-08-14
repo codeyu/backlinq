@@ -538,7 +538,8 @@ namespace BackLinq
             foreach (var item in source)
                 stack.Push(item);
 
-            return stack;
+            foreach (var item in stack)
+                yield return item;
         }
 
         /// <summary>
