@@ -25,7 +25,7 @@
 //
 #endregion
 
-namespace BackLinq
+namespace System.Linq
 {
     #region Imports
 
@@ -33,6 +33,7 @@ namespace BackLinq
     using System.Collections;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using BackLinq;
 
     #endregion
 

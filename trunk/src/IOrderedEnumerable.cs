@@ -25,7 +25,7 @@
 //
 #endregion
 
-namespace BackLinq
+namespace System.Linq
 {
     using System.Collections.Generic;
 

@@ -25,7 +25,7 @@
 //
 #endregion
 
-namespace BackLinq
+namespace System
 {
     public delegate TResult Func<TResult>();
     public delegate TResult Func<T, TResult>(T a);
