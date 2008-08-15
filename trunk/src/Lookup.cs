@@ -43,7 +43,15 @@ namespace System.Linq
     /// sequences of values.
     /// </summary>
 
-    public interface ILookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+
+    interface ILookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
     {
         bool Contains(TKey key);
         int Count { get; }
@@ -54,7 +62,15 @@ namespace System.Linq
     /// Represents a collection of keys each mapped to one or more values.
     /// </summary>
 
-    public sealed class Lookup<TKey, TElement> : ILookup<TKey, TElement>
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+
+    sealed class Lookup<TKey, TElement> : ILookup<TKey, TElement>
     {
         private readonly Dictionary<TKey, IGrouping<TKey, TElement>> _map;
 

@@ -27,9 +27,50 @@
 
 namespace System
 {
-    public delegate TResult Func<TResult>();
-    public delegate TResult Func<T, TResult>(T a);
-    public delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
-    public delegate TResult Func<T1, T2, T3, TResult>(T1 arg1, T2 arg2, T3 arg3);
-    public delegate TResult Func<T1, T2, T3, T4, TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+    
+    delegate TResult Func<TResult>();
+
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+    
+    delegate TResult Func<T, TResult>(T a);
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+    
+    delegate TResult Func<T1, T2, TResult>(T1 arg1, T2 arg2);
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+ 
+    delegate TResult Func<T1, T2, T3, TResult>(T1 arg1, T2 arg2, T3 arg3);
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+    
+    delegate TResult Func<T1, T2, T3, T4, TResult>(T1 arg1, T2 arg2, T3 arg3, T4 arg4);
 }
