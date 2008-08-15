@@ -25,7 +25,7 @@
 //
 #endregion
 
-namespace BackLinq
+namespace System.Linq
 {
     #region Imports
 
