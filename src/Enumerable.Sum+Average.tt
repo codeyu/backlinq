@@ -53,7 +53,7 @@ namespace System.Linq
 
     #endregion
 
-    public static partial class Enumerable
+    partial class Enumerable
     {<#
 
     CodeDomProvider cscp = new CSharpCodeProvider();

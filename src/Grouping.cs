@@ -37,7 +37,15 @@ namespace System.Linq
     /// Represents a collection of objects that have a common key.
     /// </summary>
 
-    public interface IGrouping<TKey, TElement> : IEnumerable<TElement>
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+    
+    interface IGrouping<TKey, TElement> : IEnumerable<TElement>
     {
         /// <summary>
         /// Gets the key of the <see cref="IGrouping{TKey,TElement}" />.

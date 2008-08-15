@@ -34,7 +34,7 @@ namespace System.Linq
 
     #endregion
 
-    public static partial class Enumerable
+    partial class Enumerable
     {
         /// <summary>
         /// Computes the sum of a sequence of nullable <see cref="System.Int32" /> values.

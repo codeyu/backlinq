@@ -33,7 +33,15 @@ namespace System.Linq
     /// Represents a sorted sequence.
     /// </summary>
 
-    public interface IOrderedEnumerable<TElement> : IEnumerable<TElement>
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+
+    interface IOrderedEnumerable<TElement> : IEnumerable<TElement>
     {
         /// <summary>
         /// Performs a subsequent ordering on the elements of an 

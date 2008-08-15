@@ -42,7 +42,15 @@ namespace System.Linq
     /// querying objects that implement <see cref="IEnumerable{T}" />.
     /// </summary>
 
-    public static partial class Enumerable
+    #region Access modifier
+    #if BACKLINQ_LIB
+        public 
+    #else
+        internal
+    #endif
+    #endregion
+
+    static partial class Enumerable
     {
         /// <summary>
         /// Returns an empty <see cref="IEnumerable{T}"/> that has the 
