@@ -371,7 +371,7 @@ namespace System.Linq
         /// Returns the last element of a sequence.
         /// </summary>
         public static TSource Last<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             return source.LastImpl(Futures<TSource>.Undefined);
         }
@@ -382,7 +382,7 @@ namespace System.Linq
         /// </summary>
 
         public static TSource Last<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             return Last(source.Where(predicate));
@@ -394,7 +394,7 @@ namespace System.Linq
         /// </summary>
 
         public static TSource LastOrDefault<TSource>(
-            IEnumerable<TSource> source)
+            this IEnumerable<TSource> source)
         {
             return source.LastImpl(Futures<TSource>.Default);
         }
@@ -405,7 +405,7 @@ namespace System.Linq
         /// </summary>
 
         public static TSource LastOrDefault<TSource>(
-            IEnumerable<TSource> source,
+            this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
             return LastOrDefault(source.Where(predicate));
