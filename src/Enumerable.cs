@@ -284,8 +284,8 @@ namespace System.Linq
         /// <summary>
         /// Base implementation of First operator.
         /// </summary>
-
-        internal static TSource FirstImpl<TSource>(
+        
+        private static TSource FirstImpl<TSource>(
             this IEnumerable<TSource> source, 
             Func<TSource> empty)
         {
