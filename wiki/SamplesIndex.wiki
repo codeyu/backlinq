@@ -1,4 +1,5 @@
 #summary Index of 101 LINQ Samples from Microsoft using BackLINQ
+#labels Featured
 
 == Index ==
 
@@ -263,4 +264,3 @@
 || SampleLinq69 || Any - Grouped || This sample uses Any to return a grouped a list of products only for categories that have at least one product that is out of stock. || 
 || SampleLinq70 || All - Simple || This sample uses All to determine whether an array contains only odd numbers. || 
 || SampleLinq72 || All - Grouped || This sample uses All to return a grouped a list of products only for categories that have all of their products in stock. || 
-
