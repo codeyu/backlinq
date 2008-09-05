@@ -68,8 +68,7 @@ namespace System.Linq
         /// </summary>
 
         public static IEnumerable<TResult> Cast<TResult>(
-            this IEnumerable source
-        )
+            this IEnumerable source)
         {
             CheckNotNull(source, "source");
 
