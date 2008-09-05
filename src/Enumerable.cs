@@ -59,7 +59,7 @@ namespace System.Linq
 
         public static IEnumerable<TResult> Empty<TResult>()
         {
-            yield break;
+            return Sequence<TResult>.Empty;
         }
 
         /// <summary>
@@ -1619,6 +1619,11 @@ namespace System.Linq
         {
             if (value == null) 
                 throw new ArgumentNullException(name);
+        }
+
+        private static class Sequence<T>
+        {
+            public static readonly IEnumerable<T> Empty = new T[0];
         }
 
         private sealed class Grouping<K, V> : List<V>, IGrouping<K, V>
