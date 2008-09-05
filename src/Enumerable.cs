@@ -161,6 +161,8 @@ namespace System.Linq
             this IEnumerable<TSource> source,
             Func<TSource, TResult> selector)
         {
+            CheckNotNull(selector, "selector");
+
             return source.Select((item, i) => selector(item));
         }
 
@@ -190,6 +192,8 @@ namespace System.Linq
             this IEnumerable<TSource> source,
             Func<TSource, IEnumerable<TResult>> selector)
         {
+            CheckNotNull(selector, "selector");
+
             return source.SelectMany((item, i) => selector(item));
         }
 
@@ -220,6 +224,8 @@ namespace System.Linq
             Func<TSource, IEnumerable<TCollection>> collectionSelector,
             Func<TSource, TCollection, TResult> resultSelector)
         {
+            CheckNotNull(collectionSelector, "collectionSelector");
+
             return source.SelectMany((item, i) => collectionSelector(item), resultSelector);
         }
 
@@ -254,6 +260,8 @@ namespace System.Linq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
+            CheckNotNull(predicate, "predicate");
+
             return source.TakeWhile((item, i) => predicate(item));
         }
 
@@ -586,6 +594,8 @@ namespace System.Linq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
+            CheckNotNull(predicate, "predicate");
+
             return source.SkipWhile((item, i) => predicate(item));
         }
 
