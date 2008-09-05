@@ -609,6 +609,9 @@ namespace System.Linq
             this IEnumerable<TSource> source,
             Func<TSource, int, bool> predicate)
         {
+            CheckNotNull(source, "source");
+            CheckNotNull(predicate, "predicate");
+
             using (var e = source.GetEnumerator())
             {
                 for (var i = 0; e.MoveNext() && predicate(e.Current, i); i++) { /* nop */ }
