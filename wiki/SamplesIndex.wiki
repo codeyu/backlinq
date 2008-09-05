@@ -1,3 +1,5 @@
+#summary Index of 101 LINQ Samples from Microsoft using BackLINQ
+#labels Featured
 
 == Index ==
 
