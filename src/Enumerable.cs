@@ -130,6 +130,8 @@ namespace System.Linq
             this IEnumerable<TSource> source,
             Func<TSource, bool> predicate)
         {
+            CheckNotNull(predicate, "predicate");
+
             return source.Where((item, i) => predicate(item));
         }
 
