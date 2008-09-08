@@ -72,6 +72,12 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
 
+            return CastYield<TResult>(source);
+        }
+
+        private static IEnumerable<TResult> CastYield<TResult>(
+            IEnumerable source)
+        {
             foreach (var item in source)
                 yield return (TResult) item;
         }
@@ -85,9 +91,15 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
 
+            return OfTypeYield<TResult>(source);
+        }
+
+        private static IEnumerable<TResult> OfTypeYield<TResult>(
+            IEnumerable source)
+        {
             foreach (var item in source)
                 if (item is TResult)
-                yield return (TResult) item;
+                    yield return (TResult) item;
         }
 
         /// <summary>
@@ -105,6 +117,11 @@ namespace System.Linq
             if (end - 1 >= int.MaxValue)
                 throw new ArgumentOutOfRangeException("count", count, null);
 
+            return RangeYield(start, end);
+        }
+
+        private static IEnumerable<int> RangeYield(int start, long end)
+        {
             for (var i = start; i < end; i++)
                 yield return i;
         }
@@ -117,6 +134,11 @@ namespace System.Linq
         {
             if (count < 0) throw new ArgumentOutOfRangeException("count", count, null);
 
+            return RepeatYield(element, count);
+        }
+
+        private static IEnumerable<TResult> RepeatYield<TResult>(TResult element, int count)
+        {
             for (var i = 0; i < count; i++)
                 yield return element;
         }
@@ -146,6 +168,13 @@ namespace System.Linq
             CheckNotNull(source, "source");
             CheckNotNull(predicate, "predicate");
 
+            return WhereYield(source, predicate);
+        }
+
+        private static IEnumerable<TSource> WhereYield<TSource>(
+            IEnumerable<TSource> source, 
+            Func<TSource, int, bool> predicate)
+        {
             var i = 0;
             foreach (var item in source)
                 if (predicate(item, i++))
@@ -176,7 +205,14 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
             CheckNotNull(selector, "selector");
-            
+
+            return SelectYield(source, selector);
+        }
+
+        private static IEnumerable<TResult> SelectYield<TSource, TResult>(
+            IEnumerable<TSource> source,
+            Func<TSource, int, TResult> selector)
+        {
             var i = 0;
             foreach (var item in source)
                 yield return selector(item, i++);
@@ -245,6 +281,14 @@ namespace System.Linq
             CheckNotNull(collectionSelector, "collectionSelector");
             CheckNotNull(resultSelector, "resultSelector");
 
+            return SelectManyYield(source, collectionSelector, resultSelector);
+        }
+
+        private static IEnumerable<TResult> SelectManyYield<TSource, TCollection, TResult>(
+            this IEnumerable<TSource> source,
+            Func<TSource, int, IEnumerable<TCollection>> collectionSelector,
+            Func<TSource, TCollection, TResult> resultSelector)
+        {
             var i = 0;
             foreach (var item in source)
                 foreach (var subitem in collectionSelector(item, i++))
@@ -276,6 +320,13 @@ namespace System.Linq
             CheckNotNull(source, "source");
             CheckNotNull(predicate, "predicate");
 
+            return TakeWhileYield(source, predicate);
+        }
+
+        private static IEnumerable<TSource> TakeWhileYield<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, int, bool> predicate)
+        {
             var i = 0;
             foreach (var item in source)
                 if (predicate(item, i++))
@@ -552,6 +603,11 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
 
+            return ReverseYield(source);
+        }
+
+        private static IEnumerable<TSource> ReverseYield<TSource>(IEnumerable<TSource> source)
+        {
             var stack = new Stack<TSource>();
             foreach (var item in source)
                 stack.Push(item);
@@ -611,6 +667,13 @@ namespace System.Linq
             CheckNotNull(source, "source");
             CheckNotNull(predicate, "predicate");
 
+            return SkipWhileYield(source, predicate);
+        }
+
+        private static IEnumerable<TSource> SkipWhileYield<TSource>(
+            IEnumerable<TSource> source, 
+            Func<TSource, int, bool> predicate)
+        {
             using (var e = source.GetEnumerator())
             {
                 for (var i = 0; e.MoveNext() && predicate(e.Current, i); i++) { /* nop */ }
@@ -684,6 +747,13 @@ namespace System.Linq
             CheckNotNull(first, "first");
             CheckNotNull(second, "second");
 
+            return ConcatYield(first, second);
+        }
+
+        private static IEnumerable<TSource> ConcatYield<TSource>(
+            IEnumerable<TSource> first, 
+            IEnumerable<TSource> second)
+        {
             foreach (var item in first)
                 yield return item;
 
@@ -735,13 +805,20 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
 
+            return DistinctYield(source, comparer);
+        }
+
+        private static IEnumerable<TSource> DistinctYield<TSource>(
+            IEnumerable<TSource> source,
+            IEqualityComparer<TSource> comparer)
+        {
             var set = new Dictionary<TSource, object>(comparer);
 
             foreach (var item in source)
             {
-                if (set.ContainsKey(item)) 
+                if (set.ContainsKey(item))
                     continue;
-                
+
                 set.Add(item, null);
                 yield return item;
             }
@@ -1057,6 +1134,13 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
 
+            return DefaultIfEmptyYield(source, defaultValue);
+        }
+
+        private static IEnumerable<TSource> DefaultIfEmptyYield<TSource>(
+            IEnumerable<TSource> source,
+            TSource defaultValue)
+        {
             using (var e = source.GetEnumerator())
             {
                 if (!e.MoveNext())
