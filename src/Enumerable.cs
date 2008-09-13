@@ -529,7 +529,7 @@ namespace System.Linq
         public static TSource SingleOrDefault<TSource>(
             this IEnumerable<TSource> source)
         {
-            return source.SingleImpl(Futures<TSource>.Undefined);
+            return source.SingleImpl(Futures<TSource>.Default);
         }
 
         /// <summary>
