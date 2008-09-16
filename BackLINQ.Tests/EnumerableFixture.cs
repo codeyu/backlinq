@@ -1,0 +1,1541 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using NUnit.Framework;
+using System.Linq;
+using System.Diagnostics;
+using Constraint = NUnit.Framework.Constraints.Constraint;
+using NUnit.Framework.SyntaxHelpers;
+
+namespace BackLinq.Tests {
+
+    public static class Tester {
+        public static void Compare<T>(this IEnumerable<T> result, params T[] list) {
+            IEnumerator<T> enumerator = result.GetEnumerator();
+            foreach (T item in list) {
+                enumerator.MoveNext(); Assert.That(enumerator.Current, Is.EqualTo(item));
+            }
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        public static void Compare<TKey, TElement>(this IGrouping<TKey, TElement> result, TKey key, params TElement[] list) {
+            Assert.That(result.Key, Is.EqualTo(key));
+            IEnumerator<TElement> enumerator = result.GetEnumerator();
+            foreach (TElement item in list) {
+                enumerator.MoveNext(); Assert.That(enumerator.Current, Is.EqualTo(item));
+            }
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+    }
+
+    [TestFixture]
+    public sealed class EnumerableFixture {
+
+        /// <summary>
+        /// Stores the Culture of the Thread do undo the change in the TearDown.
+        /// </summary>
+        private CultureInfo initialCulture;
+
+        [SetUp]
+        public void SetUp() {
+            initialCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+            System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
+        }
+
+        [TearDown]
+        public void TearDown() {
+            System.Threading.Thread.CurrentThread.CurrentCulture = initialCulture;
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Aggregate_EmptySource_ThrowsInvalidOperationException() {
+            var source = new int[0];
+            source.Aggregate((a, b) => a + b);
+        }
+
+        [Test]
+        public void Aggregate_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            var result = source.Aggregate((a, b) => a + b);
+            Assert.That(result, Is.EqualTo(55));
+        }
+
+        [Test]
+        public void AggregateAccumulator_ValidArguments_CorrectResult() {
+            var source = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var result = source.Aggregate(100, (a, b) => a + b);
+            Assert.That(result, Is.EqualTo(155));
+        }
+
+        [Test]
+        public void EmptyYieldsNoResults() {
+            var source = Enumerable.Empty<String>();
+            Assert.That(source, Is.Not.Null);
+
+            var e = source.GetEnumerator();
+            Assert.That(e, Is.Not.Null);
+
+            Assert.That(e.MoveNext(), Is.False);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CannotPassNullSourceToCast() {
+            Enumerable.Cast<Object>(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidCastException))]
+        public void CannotPassInvalidSourceToCast() {
+            List<object> list = new List<object>() {1000, "hello", new object()};
+            IEnumerable<byte> target = Enumerable.Cast<byte>(list);
+            // do something with the results so Cast will really be executed (deferred execution)
+            StringBuilder sb = new StringBuilder();
+            foreach (var b in target) {
+                sb.Append(b.ToString());
+            }
+        }
+
+        /// <summary>Tests a downcast from object to int.</summary>
+        [Test]
+        public void CanPassValidSourceToCast() {
+            List<object> source = new List<object>() {1, 10, 100};
+            var result = Enumerable.Cast<int>(source);
+            var reader = new Reader<int>(result);
+            reader.Compare(1, 10, 100);
+        }
+
+        /// <summary>Tests an upcast from int to object.</summary>
+        [Test]
+        public void Cast_UpcastFromIntToObject() {
+            var target = Enumerable.Cast<object>(new[] {1, 10, 100});
+            var e = target.GetEnumerator();
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo(1));
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo(10));
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo(100));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CannotPassNullToAll() {
+            Enumerable.All(null, (int i) => {
+                                     return i >= 0;
+                                 });
+        }
+
+        [Test]
+        public void AllFalse() {
+            var source = new List<int>() {-100, -1, 0, 1, 100};
+            Assert.That(Enumerable.All(source, i => i >= 0), Is.False);
+        }
+
+        [Test]
+        public void AllTrue() {
+            var source = new List<int>() { -100, -1, 0, 1, 100 };
+            Assert.That(Enumerable.All(source, i => i >= -100), Is.True);
+        }
+
+        /// <summary>Tests weather Any() returns false for an empty list.
+        /// Tests weather Any() returns true for a list with one element.</summary>
+        [Test]
+        public void AnyReturnsFalseOnEmptySource() {
+            var source = new object[0];
+            Assert.That(source.Any(), Is.False);
+        }
+
+        [Test]
+        public void Any_NonEmptySource_ReturnsTrue() {
+            var source = new[] {new object()};
+            Assert.That(source.Any(), Is.True);
+        }
+
+        /// <summary>
+        /// Tests weather Any() works if you call the overload which takes a Func(<T>, bool)
+        /// </summary>
+        [Test]
+        public void Any_EmptySourceWithCondition_ReturnsFalse() {
+            var func = new Func<int, bool>(i => i > 0);
+            List<int> source = new List<int>();
+            Assert.That(source.Any(func), Is.False);
+        }
+
+        [Test]
+        public void Any_Condition_NonEmptySource() {
+            var func = new Func<int, bool>(i => i > 0);
+            var source = new List<int>();
+            source.Add(0);
+            Assert.That(source.Any(func), Is.False);
+            source.Add(100);
+            Assert.That(source.Any(func), Is.True);
+        }
+
+        [Test]
+        public void Average_CalculateAverage() {
+            var source = new List<decimal>() {-10000, 2.0001m, 50};
+            Assert.That(source.Average(), Is.EqualTo(-3315.999966).Within(0.00001));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Concat_FirstArgumentNull_ThrowsException() {
+            Enumerable.Concat(null, new int[] {3, 5});
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Concat_SecondArgumentNull_ThrowsException() {
+            var result = Enumerable.Concat(new int[] { 3, 5 }, null);
+        }
+
+        [Test]
+        public void Concat_TwoLists_CorrectOrder() {
+            var result = new List<int>(Enumerable.Concat(new int[] { 1, 2, 3 }, new int[] { 4, 5, 6 })).ToArray();
+            Assert.That(result, Is.EqualTo(new int[] { 1, 2, 3, 4, 5, 6 }));
+        }
+        //[Test]
+        //// TODO: Understand the method and complete the test
+        //public void DefaultIfEmpty_NotEmpty_ReturnsItself() {
+        //    var enumerable = new int[] {1, 2, 3};
+        //    var result = enumerable.DefaultIfEmpty<int>(1);
+
+        //}
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Distinct_ArgumentNull_ThrowsArgumentNullException() {
+            Enumerable.Distinct<int>(null);
+        }
+
+        [Test]
+        public void Distinct_ArgumentWithNonDistinctValues_ReturnsOnlyDistinctValues() {
+            var source = new int[] {1, 2, 2, 3};
+            var reader = new Reader<int>(source.Distinct());
+            reader.Compare(1, 2, 3);
+        }
+
+        [Test]
+        public void Distinct_ArgumentWithNonDistinctValuesAndEqualityComparer_ReturnsOnlyDistinctValues() {
+            var source = new int[] {1, 2, 2, 3};
+            var reader = new Reader<int>(source.Distinct(EqualityComparer<int>.Default));
+            reader.Compare(1, 2, 3);
+        }
+        
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        // TODO: Is this test necessary?
+        public void ElementAt_Null_ThrowsArgumentNullException() {
+            int[] source = null;
+            source.ElementAt(1);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void ElementAt_ArgumentOutOfRange_ThrowsArgumentOutOfRange() {
+            var source = new int[] {3, 5, 7};
+            source.ElementAt(3);
+        }
+
+        [Test]
+        public void ElementAt() {
+            var source = new int[] {15, 2, 7};
+            Assert.That(source.ElementAt(0), Is.EqualTo(15));
+            Assert.That(source.ElementAt(1), Is.EqualTo(2));
+            Assert.That(source.ElementAt(2), Is.EqualTo(7));
+        }
+
+        [Test]
+        public void ElementAtOrDefault_IntArray_Returns0IfIndexOutOfRange() {
+            var source = new int[] {3, 6, 8};
+            Assert.That(source.ElementAtOrDefault(3), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void ElementAtOrDefault_IntArray_ReturnsCorrectIntIfIndexInRange() {
+            var source = new int[] {3, 6, 9};
+            Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(9));
+        }
+
+        [Test]
+        public void ElementAtOrDefault_ObjectArray_ReturnsNullIfIndexOutOfRange() {
+            var source = new object[] {new object(), new object()};
+            Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(null));
+        }
+
+        [Test]
+        public void ElementAtOrDefault_ObjectArray_ReturnsCorrectElementIfIndexInRange() {
+            object obj1 = new object();
+            object obj2 = new object();
+            var source = new object[] {obj1, obj2};
+            Assert.That(source.ElementAt(0), Is.EqualTo(obj1));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Except_ArgumentNull_ThrowsArgumentNullException() {
+            var source = new int[] {1, 4, 7};
+            source.Except(null);
+        }
+
+        [Test]
+        public void Except_ValidArgument_ReturnsValidEnumerable() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            var argument = new int[] {1, 3, 5, 7, 9};
+            source.Except(argument).Compare(2, 4, 6, 8, 10);
+        }
+
+        [Test]
+        public void Except_ComparerAsArgument_PassedComparerIsUsed() {
+            var source = new string[] {"albert", "john", "simon"};
+            var argument = new string[] {"ALBERT"};
+            var reader = new Reader<string>(source.Except(argument, StringComparer.CurrentCultureIgnoreCase));
+            reader.Compare("john", "simon");
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void First_EmptyArray_ThrowsInvalidOperationException() {
+            var source = new int[0];
+            source.First();
+        }
+
+        [Test]
+        public void First_IntArray_ReturnsFirst() {
+            var source = new int[] {1, 2, 3, 4};
+            Assert.That(source.First(), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void First_IntArrayAndFuncParameter_FuncParameterIsUsed() {
+            var source = new int[] {1, 2, 3, 4};
+            Assert.That(source.First(i => i%2 == 0), Is.EqualTo(2));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void First_NoElementMatchesFuncParameter_InvalidOperationExceptionIsThrown() {
+            var source = new int[] { 1, 2, 3, 4 };
+            Assert.That(source.First(i => i > 5), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void FirstOrDefault_EmptyBoolArray_FalseIsReturned() {
+            var source = new bool[0];
+            Assert.That(source.FirstOrDefault(), Is.False);
+        }
+
+        [Test]
+        public void FirstOrDefault_ObjectArray_FirstIsReturned() {
+            object obj1 = new object();
+            object obj2 = new object();
+            var source = new object[] {obj1, obj2};
+            Assert.That(source.FirstOrDefault(), Is.EqualTo(obj1));
+        }
+
+        [Test]
+        // [Ignore("Needs fix that ArgumentNullException is thrown if Func Parameter is null")]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void FirstOrDefault_NullAsFunc_ArgumentNullExceptionIsThrown() {
+            var source = new int[] {3, 5, 7};
+            source.FirstOrDefault(null);
+        }
+
+        [Test]
+        public void FirstOrDefault_ValidFunc_FirstMatchingItemIsReturned() {
+            var source = new int[] {1, 4, 8};
+            Assert.That(source.FirstOrDefault(i => i%2 == 0), Is.EqualTo(4));
+        }
+
+        [Test]
+        public void FirstOrDefault_NoMatchesInArray_DefaultValueOfTypeIsReturned() {
+            var source = new int[] {1, 4, 6};
+            Assert.That(source.FirstOrDefault(i => i > 10), Is.EqualTo(0));
+        }
+
+        private class Person {
+            public string FirstName { get; set; }
+            public string FamilyName { get; set; }
+            public int Age { get; set; }
+            public static Person[] CreatePersons() {
+                return new Person[]
+                           {
+                               new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                               new Person() {FamilyName = "Müller", FirstName = "Herbert", Age = 22},
+                               new Person() {FamilyName = "Meier", FirstName = "Hubert", Age = 23},
+                               new Person() {FamilyName = "Meier", FirstName = "Isidor", Age = 24}   
+                           };
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void GroupBy_NullKeySelector_ArgumentNullExceptionIsThrown() {
+            var source = Person.CreatePersons();
+            source.GroupBy<Person, String>(null);
+        }
+
+        [Test]
+        public void GroupBy_ValidArguments_CorrectGrouping() {
+            var persons = Person.CreatePersons();
+            var result = new Reader<IGrouping<string, Person>>(persons.GroupBy(person => person.FamilyName));
+
+            var mueller = result.Read();
+            Assert.That(mueller.Key, Is.EqualTo("Müller"));
+            Assert.That(Array.ConvertAll(ToArray(mueller), p => p.FirstName), 
+                        Is.EqualTo(new[] { "Peter", "Herbert" }));
+
+            var meier = result.Read();
+            Assert.That(meier.Key, Is.EqualTo("Meier"));
+            Assert.That(Array.ConvertAll(ToArray(meier), p => p.FirstName),
+                        Is.EqualTo(new[] { "Hubert", "Isidor" }));
+
+            result.AssertEnded();
+        }
+
+        private static T[] ToArray<T>(IEnumerable<T> source) {
+            return new List<T>(source).ToArray();
+        }
+
+        [Test]
+        // TODO: make better
+        public void GroupBy_ValidArguments_CorrectGroupingCaseSensitive() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter"},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert"},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert"},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor"}
+                                 };
+            var result = persons.GroupBy<Person, String>(person => person.FamilyName);
+            var enumerator = result.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("müller"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Herbert"));
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("meier"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Isidor"));
+
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        [Test]
+        public void GroupBy_KeysThatDifferInCasingNonSensitiveStringComparer_CorrectGrouping() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter"},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert"},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert"},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor"}
+                                 };
+            var result = persons.GroupBy<Person, String>(person => person.FamilyName, StringComparer.InvariantCultureIgnoreCase);
+            var enumerator = result.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
+            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Herbert"));
+
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
+            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Isidor"));
+
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        [Test]
+        public void GroupBy_KeysThatDifferInCasingNonSensitiveStringComparer_CorrectGrouping2() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter"},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert"},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert"},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor"}
+                                 };
+            var result = persons.GroupBy<Person, String>(person => person.FamilyName, StringComparer.InvariantCultureIgnoreCase);
+            var enumerator = result.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
+            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Herbert"));
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
+            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
+            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Isidor"));
+
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        [Test]
+        public void GroupByKeySelectorElementSelector_ValidArguments_CorrectGroupingAndCorrectProjection() {
+            var enumerable = Person.CreatePersons();
+            var result = enumerable.GroupBy(person => person.FamilyName, person => person.Age);
+            var enumerator = result.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
+            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(21));
+            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(22));
+            
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
+            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(23));
+            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(24));
+        }
+
+        [Test]
+        public void GroupByKeySelectorResultSelector_ValidArguments_CorrectGroupingAndGroupResults() {
+            var persons = Person.CreatePersons();
+
+            IEnumerable<int> result = persons.GroupBy<Person, string, int>(person => person.FamilyName,
+                                                (string key, IEnumerable<Person> group) => {
+                                                    int ageSum = 0;
+                                                    foreach(Person p in group) {
+                                                        ageSum += p.Age;
+                                                    }
+                                                    return ageSum;                                                                                            }
+                                                );
+            var reader = new Reader<int>(result);
+            reader.Compare(43, 47);
+        }
+
+        [Test]
+        public void GroupByKeySelectorElementSelectorComparer_ValidArguments_CorrectGroupingAndGroupResults() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                                 };
+
+            IEnumerable<IGrouping<string, int>> result = persons.GroupBy<Person, string, int>(person => person.FamilyName,
+                                                person => person.Age,
+                                                StringComparer.CurrentCultureIgnoreCase);
+            IEnumerator<IGrouping<string, int>> enumerator = result.GetEnumerator();
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(21));
+            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(22));
+            enumerator.MoveNext();
+            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(23));
+            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(24));
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        [Test]
+        public void GroupByKeySelectorElementSelectorResultSelector_ValidArguments_CorrectGroupingAndTransforming() {
+            var persons = Person.CreatePersons();
+            var result = persons.GroupBy<Person, string, int, int>(p => p.FamilyName, p => p.Age,
+                                                                      (string name, IEnumerable<int> enumerable2) => {
+                                                                          int totalAge = 0;
+                                                                          foreach (var i in enumerable2) {
+                                                                              totalAge += i;
+                                                                          }
+                                                                          return totalAge;
+                                                                      });
+            var reader = new Reader<int>(result);
+            reader.Compare(43, 47);
+        }
+
+        [Test]
+        public void GroupByKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndTransforming() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                                 };
+            var result = persons.GroupBy<Person, string, int>(p => p.FamilyName, 
+                                                                      (string name, IEnumerable<Person> enumerable2) => {
+                                                                          int totalAge = 0;
+                                                                          foreach (var i in enumerable2) {
+                                                                              totalAge += i.Age;
+                                                                          }
+                                                                          return totalAge;
+                                                                      },
+                                                                      StringComparer.CurrentCultureIgnoreCase);
+            var reader = new Reader<int>(result);
+            reader.Compare(43, 47);
+        }
+
+        [Test]
+        public void GroupByKeySelectorElementSelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndTransforming() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                                 };
+            var result = persons.GroupBy<Person, string, int, int>(p => p.FamilyName, p => p.Age,
+                                                                      (string name, IEnumerable<int> enumerable2) => {
+                                                                          int totalAge = 0;
+                                                                          foreach (var i in enumerable2) {
+                                                                              totalAge += i;
+                                                                          }
+                                                                          return totalAge;
+                                                                      }, StringComparer.CurrentCultureIgnoreCase);
+            var reader = new Reader<int>(result);
+            reader.Compare(43, 47);
+        }
+
+        class Pet {
+            public string Name { get; set; }
+            public string Owner { get; set; }
+        }
+
+        [Test]
+        // TODO: Make better
+        public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelector_ValidArguments_CorrectGroupingAndJoining() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                                 };
+
+            var pets = new Pet[]
+                           {
+                               new Pet() {Name = "Barley", Owner = "Peter"},
+                               new Pet() {Name = "Boots", Owner = "Herbert"},
+                               new Pet() {Name = "Whiskers", Owner = "Herbert"},
+                               new Pet() {Name = "Daisy", Owner = "Isidor"}
+                           };
+
+            var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
+                              (person, petCollection) =>
+                              new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) });
+
+            var enumerator = result.GetEnumerator();
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Peter"));
+            var petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Barley"));
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Herbert"));
+            petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Boots"));
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Whiskers"));
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Hubert"));
+            petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Isidor"));
+            petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Daisy"));
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            Assert.That(enumerator.MoveNext(), Is.False);
+
+            //foreach (var owner in result) {
+            //    Debug.WriteLine(owner.OwnerName);
+            //    Debug.Indent();
+            //    foreach (var petName in owner.Pets) {
+            //        Debug.WriteLine("    " + petName);
+            //    }
+            //    Debug.Unindent();
+            //}
+        }
+
+        [Test]
+        // [Ignore("Is an issue in code.google.com")]
+        public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndJoining() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                                 };
+
+            var pets = new Pet[]
+                           {
+                               new Pet() {Name = "Barley", Owner = "Peter"},
+                               new Pet() {Name = "Boots", Owner = "Herbert"},
+                               new Pet() {Name = "Whiskers", Owner = "herbert"}, // This pet is not associated to "Herbert"
+                               new Pet() {Name = "Daisy", Owner = "Isidor"}
+                           };
+
+            var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
+                              (person, petCollection) =>
+                              new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) },
+                              StringComparer.CurrentCultureIgnoreCase);
+
+            var enumerator = result.GetEnumerator();
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Peter"));
+            var petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Barley"));
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Herbert"));
+            petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Boots"));
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Whiskers"));
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Hubert"));
+            petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Isidor"));
+            petEnumerator = enumerator.Current.Pets.GetEnumerator();
+            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Daisy"));
+            Assert.That(petEnumerator.MoveNext(), Is.False);
+            Assert.That(enumerator.MoveNext(), Is.False);
+
+            foreach (var owner in result) {
+                Debug.WriteLine(owner.OwnerName);
+                Debug.Indent();
+                foreach (var petName in owner.Pets) {
+                    Debug.WriteLine("    " + petName);
+                }
+                Debug.Unindent();
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelector_PassNullAsInner_ArgumentNullExceptionIsThrown() {
+            var persons = new Person[]
+                                 {
+                                     new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                     new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                                     new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                                     new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                                 };
+
+            var pets = new Pet[]
+                           {
+                               new Pet() {Name = "Barley", Owner = "Peter"},
+                               new Pet() {Name = "Boots", Owner = "Herbert"},
+                               new Pet() {Name = "Whiskers", Owner = "Herbert"},
+                               new Pet() {Name = "Daisy", Owner = "Isidor"}
+                           };
+
+            persons.GroupJoin(pets, null, pet => pet.Owner,
+                              (person, petCollection) =>
+                              new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) });
+
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Intersect_PassNullAsArgument_ThrowsArgumentNullException() {
+            var source = new int[] {1, 2, 3};
+            source.Intersect(null);
+        }
+
+        [Test]
+        public void Intersect_ValidArguments_ReturnsIntersection() {
+            var source = new int[] {1, 2, 3};
+            var argument = new int[] {2, 3, 4};
+            var result = source.Intersect(argument);
+            var reader = new Reader<int>(result);
+            reader.Compare(2, 3);
+        }
+
+        [Test]
+        public void Intersect_WithEqualityComparer_EqualityComparerIsUsed() {
+            var enumerable = new string[] {"Heinrich", "Hubert", "Thomas"};
+            var argument = new string[] {"Heinrich", "hubert", "Joseph"};
+            var result = enumerable.Intersect(argument, StringComparer.CurrentCultureIgnoreCase);
+            foreach (var i in result) {
+                Debug.WriteLine(i);
+            }
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Join_PassNullAsArgument_ArgumentNullExceptionIsThrown() {
+            var persons = new Person[]
+                              {
+                                  new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                  new Person() {FamilyName = "Müller", FirstName = "Herbert", Age = 22},
+                                  new Person() {FamilyName = "Meier", FirstName = "Hubert", Age = 23},
+                                  new Person() {FamilyName = "Meier", FirstName = "Isidor", Age = 24}
+                              };
+            persons.Join<Person, string, string, string>(null, null, null, null);
+        }
+
+        [Test]
+        public void Join_ValidArguments_CorrectResult() {
+            var persons = new Person[]
+                              {
+                                  new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                                  new Person() {FamilyName = "Müller", FirstName = "Herbert", Age = 22},
+                                  new Person() {FamilyName = "Meier", FirstName = "Hubert", Age = 23},
+                                  new Person() {FamilyName = "Meier", FirstName = "Isidor", Age = 24}
+                              };
+            var pets = new Pet[]
+                           {
+                               new Pet() {Name = "Barley", Owner = "Peter"},
+                               new Pet() {Name = "Boots", Owner = "Herbert"},
+                               new Pet() {Name = "Whiskers", Owner = "Herbert"},
+                               new Pet() {Name = "Daisy", Owner = "Isidor"}
+                           };
+            var result = persons.Join(pets, aPerson => aPerson.FirstName, aPet => aPet.Owner,
+                         (aPerson, aPet) => new {Owner = aPerson.FirstName, Pet = aPet.Name});
+
+            var enumerator = result.GetEnumerator();
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Peter"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Barley"));
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Boots"));
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Whiskers"));
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Isidor"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Daisy"));
+
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        [Test]
+        public void Join_ValidArgumentsAndComparer_CorrectResult() {
+            var persons = Person.CreatePersons();
+            var pets = new Pet[]
+                           {
+                               new Pet() {Name = "Barley", Owner = "Peter"},
+                               new Pet() {Name = "Boots", Owner = "Herbert"},
+                               new Pet() {Name = "Whiskers", Owner = "herbert"},
+                               new Pet() {Name = "Daisy", Owner = "Isidor"}
+                           };
+            var result = persons.Join(pets, aPerson => aPerson.FirstName, aPet => aPet.Owner,
+                         (aPerson, aPet) => new { Owner = aPerson.FirstName, Pet = aPet.Name },
+                         StringComparer.CurrentCultureIgnoreCase);
+
+            var enumerator = result.GetEnumerator();
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Peter"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Barley"));
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Boots"));
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Whiskers"));
+
+            Assert.That(enumerator.MoveNext(), Is.True);
+            Assert.That(enumerator.Current.Owner, Is.EqualTo("Isidor"));
+            Assert.That(enumerator.Current.Pet, Is.EqualTo("Daisy"));
+
+            Assert.That(enumerator.MoveNext(), Is.False);
+
+            foreach (var i in result) {
+                Debug.WriteLine(String.Format("Owner = {0}; Pet = {1}", i.Owner, i.Pet));
+            }
+        }
+
+        [Test]
+        public void Last_ListOfInts_LastElementIsReturned() {
+            var enumerable = new int[] {1, 2, 3};
+            Assert.That(enumerable.Last(), Is.EqualTo(3));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void LastPredicate_NullAsPredicate_ThrowsArgumentNullException() {
+            var enumerable = new int[] {1, 2, 3};
+            enumerable.Last(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void LastPredicate_NoMatchingElement_ThrowsInvalidOperationException() {
+            var enumerable = new int[] {1, 2, 3, 4, 5};
+            enumerable.Last(i => i > 10);
+        }
+
+        [Test]
+        public void LastPredicate_ListOfInts_LastMatchingElementIsReturned() {
+            var enumerable = new int[] {1, 2, 3, 4, 5};
+            Assert.That(enumerable.Last(i => i%2 == 0), Is.EqualTo(4));
+        }
+
+        [Test]
+        public void LastOrDefault_EmptySource_0IsReturned() {
+            var enumerable = new int[0];
+            Assert.That(enumerable.LastOrDefault(), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void LastOrDefault_NonEmptyList_LastElementIsReturned() {
+            var enumerable = new int[] {1, 2, 3, 4, 5};
+            Assert.That(enumerable.LastOrDefault(), Is.EqualTo(5));
+        }
+
+        [Test]
+        public void LastOrDefaultPredicate_ValidArguments_LastMatchingElementIsReturned() {
+            var enumerable = new int[] {1, 2, 3, 4, 5};
+            Assert.That(enumerable.LastOrDefault(i => i%2 == 0), Is.EqualTo(4));
+        }
+
+        [Test]
+        public void LastOrDefaultPredicate_NoMatchingElement_0IsReturned() {
+            var enumerable = new int[] {1, 3, 5, 7};
+            Assert.That(enumerable.LastOrDefault(i => i%2 == 0), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void LongCount_ValidArgument_ReturnsCorrectNumberOfElementsAsLong() {
+            var enumerable = new int[] {1, 4, 7, 10};
+            Assert.That(enumerable.LongCount(), Is.EqualTo(4));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void LongCountPredicate_NullAsPredicate_ThrowsArgumentNullException() {
+            var enumerable = new int[] {1, 2, 3, 4};
+            enumerable.LongCount(null);
+        }
+
+        [Test] 
+        public void LongCountPredicate_ValidArguments_ReturnsCorrectNumerOfMatchingElements() {
+            var enumerable = new int[] {1, 2, 3, 4, 5};
+            Assert.That(enumerable.LongCount(i => i%2 == 0), Is.EqualTo(2));
+        }
+
+        [Test]
+        // [Ignore("Reported in code.google.com")]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Max_EmptyList_ThrowsInvalidOperationException() {
+            var enumerable = new int[0];
+            var result = enumerable.Max();
+            Debug.WriteLine(result);
+        }
+
+        [Test]
+        public void Max_ListOfInts_MaxValueIsReturned() {
+            var enumerable = new int[] {1000, 203, -9999};
+            Assert.That(enumerable.Max(), Is.EqualTo(1000));
+        }
+
+        [Test]
+        public void Max_ListWithNullableType_ReturnsMaximum() {
+            var enumerable = new int?[] {1, 4, null, 10};
+            Assert.That(enumerable.Max(), Is.EqualTo(10));
+        }
+
+        [Test]
+        public void Max_ListOfObjectsAndSelector_MaxSelectedValueIsReturned() {
+            var persons = Person.CreatePersons();
+            Assert.That(persons.Max(p => p.Age), Is.EqualTo(24));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Min_EmptyList_ThrowsInvalidOperationException() {
+            var source = new int[0];
+            source.Min();
+        }
+
+        [Test]
+        // [Ignore("Issue in www.code.google.com")]
+        public void Min_ListWithNullables_MinimumNonNullValueIsReturned() {
+            var source = new int?[] {199, 15, null, 30};
+            Assert.That(source.Min(), Is.EqualTo(15));
+        }
+
+        [Test]
+        // [Ignore("Same bug is reported for another overload of this method")]
+        public void MinSelector_ValidArguments_MinimumNonNullValueIsReturned() {
+            var persons = Person.CreatePersons();
+            Assert.That(persons.Min<Person, int?>((Person p) => {
+                                        if (p.Age == 21) return null; // to test behavior if null belongs to result of transformation
+                                        else return (p.Age);
+                                    }), Is.EqualTo(22));
+        }
+       
+        [Test]
+        public void OfType_ValidArguments_CorrectResult() {
+            var source = new[] {1, "Hello", 1.234m, new object()};
+            var result = source.OfType<decimal>();
+            var enumerator = result.GetEnumerator();
+            enumerator.MoveNext(); Assert.That(enumerator.Current, Is.EqualTo(1.234m));
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void OrderByKeySelector_NullAsKeySelector_ThrowsArgumentNullException() {
+            var source = new int[] {1, 4, 2};
+            source.OrderBy<int, int>(null);
+        }
+
+        [Test]
+        public void OrderByKeySelector_ValidArguments_CorrectOutput() {
+            var persons = Person.CreatePersons();
+            var result = persons.OrderBy(p => p.Age);
+            int age = 20;
+            foreach (var person in result) {
+                age++;
+                Assert.That(person.Age, Is.EqualTo(age));
+            }
+            Assert.That(age, Is.EqualTo(24));
+        }
+
+        /// <summary>
+        /// To sort ints in descending order.
+        /// </summary>
+        class ReverseComparer : IComparer<int> {
+            public int Compare(int x, int y) {
+                return y.CompareTo(x);
+            }
+        }
+
+        [Test]
+        public void OrderByKeySelectorComparer_ValidArguments_CorrectOutput() {
+            var persons = Person.CreatePersons();
+            var result = persons.OrderBy<Person, int>(p => p.Age, new ReverseComparer());
+            var age = 25;
+            foreach (var person in result) {
+                age--;
+                Assert.That(person.Age, Is.EqualTo(age));
+            }
+            Assert.That(age, Is.EqualTo(21));
+
+        }
+
+        [Test]
+        public void OrderDescendingByKeySelector_ValidArguments_CorrectOutput() {
+            var persons = Person.CreatePersons();
+            var result = persons.OrderByDescending(p => p.Age);
+            int age = 25;
+            foreach (var person in result) {
+                age--;
+                Assert.That(person.Age, Is.EqualTo(age));
+            }
+            Assert.That(age, Is.EqualTo(21));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Range_ProduceRangeThatLeadsToOverflow_ThrowsArgumentOutOfRangeException() {
+            var result = Enumerable.Range(int.MaxValue - 3, 5);
+        }
+
+        [Test]
+        public void Range_ValidArguments_CorrectOutput() {
+            var result = Enumerable.Range(10, 5);
+            int test = 10;
+            foreach (var i in result) {
+                Assert.That(i, Is.EqualTo(test));
+                test++;
+            }
+            Assert.That(test, Is.EqualTo(15));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Repeat_PassNegativeCount_ThrowsArgumentOutOfRangeException() {
+            var result = Enumerable.Repeat("Hello World", -2);
+        }
+
+        [Test]
+        public void Repeat_ValidArguments_CorrectResult() {
+            var result = Enumerable.Repeat("Hello World", 2);
+            int count = 0;
+            foreach (var s in result) {
+                count++;
+                Assert.That(s, Is.EqualTo("Hello World"));
+            }
+            Assert.That(count, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Reverse_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            source.Reverse().Compare(5, 4, 3, 2, 1);
+        }
+
+        [Test]
+        public void Select_ValidArguments_CorrectResult() {
+            var persons = Person.CreatePersons();
+            persons.Select(p => p.Age).Compare(21, 22, 23, 24);
+        }
+
+        [Test]
+        public void SelectSelectorWith3Args_ValidArguments_CorrectResult() {
+            var source = new int[] {0, 1, 2, 3};
+            source.Select((int i, int index) => { return i*index; }).Compare(0, 1, 4, 9);
+        }
+
+        [Test]
+        public void SelectManySelector_ValidArguments_CorrectOutput() {
+            var persons = Person.CreatePersons();
+            var result = persons.SelectMany(p => p.FirstName.ToCharArray());
+            var check = "PeterHerbertHubertIsidor".ToCharArray();
+            int count = 0;
+            foreach (var c in result) {
+                Assert.That(c, Is.EqualTo(check[count]));
+                count++;
+            }
+        }
+
+        class PetOwner {
+            public string Name { get; set; }
+            public List<string> Pets { get; set; }
+        }
+
+        [Test]
+        public void SelectManySelectorWith3Arguments_ValidArguments_CorrectOutput() {
+            PetOwner[] petOwners = 
+                { new PetOwner { Name="Higa, Sidney", 
+                      Pets = new List<string>{ "Scruffy", "Sam" } },
+                  new PetOwner { Name="Ashkenazi, Ronen", 
+                      Pets = new List<string>{ "Walker", "Sugar" } },
+                  new PetOwner { Name="Price, Vernette", 
+                      Pets = new List<string>{ "Scratches", "Diesel" } },
+                  new PetOwner { Name="Hines, Patrick", 
+                      Pets = new List<string>{ "Dusty" } } };
+            IEnumerable<string> result =
+                petOwners.SelectMany((petOwner, index) =>
+                             petOwner.Pets.Select(pet => index + pet));
+            result.Compare("0Scruffy", "0Sam", "1Walker", "1Sugar", "2Scratches", "2Diesel", "3Dusty");
+        }
+
+        [Test]
+        public void SelectManyThirdOverload_ValidArguments_CorrectOutput() {
+            PetOwner[] petOwners =
+                { new PetOwner { Name="Higa", 
+                      Pets = new List<string>{ "Scruffy", "Sam" } },
+                  new PetOwner { Name="Ashkenazi", 
+                      Pets = new List<string>{ "Walker", "Sugar" } },
+                  new PetOwner { Name="Price", 
+                      Pets = new List<string>{ "Scratches", "Diesel" } },
+                  new PetOwner { Name="Hines", 
+                      Pets = new List<string>{ "Dusty" } } };
+            var result = petOwners.SelectMany(petOwner => petOwner.Pets, (petOwner, petName) => new {petOwner.Name, petName});
+
+            // compare result with result from Microsoft implementation
+            StringBuilder sb = new StringBuilder();
+            foreach (var s in result) {
+                sb.Append(s.ToString());
+            }
+            Assert.That(sb.ToString(), Is.EqualTo("{ Name = Higa, petName = Scruffy }{ Name = Higa, petName = Sam }{ Name = Ashkenazi, petName = Walker }{ Name = Ashkenazi, petName = Sugar }{ Name = Price, petName = Scratches }{ Name = Price, petName = Diesel }{ Name = Hines, petName = Dusty }"));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SequenceEqual_NullAsArgument_ThrowsArgumentNullException() {
+            var source = new int[] {1, 2, 3};
+            source.SequenceEqual(null);
+        } 
+
+        [Test]
+        public void SequenceEqual_EqualArgument_ResultIsTrue() {
+            var source = new int[] {1, 2, 3};
+            var argument = new int[] {1, 2, 3};
+            Assert.That(source.SequenceEqual(argument), Is.True);
+        }
+
+        [Test]
+        public void SequenceEqual_DifferentArgument_ResultIsFalse() {
+            var source = new int[] {1, 2, 3};
+            var argument = new int[] {1, 2, 3, 4};
+            Assert.That(source.SequenceEqual(argument), Is.False);
+        }
+
+        class FloatComparer : IEqualityComparer<float> {
+            public bool Equals(float x, float y) {
+                return Math.Abs(x - y) < 0.1f;
+            }
+            public int GetHashCode(float x) {
+                return -1;
+            }
+        }
+
+        [Test]
+        public void SequenceEqualComparer_ValidArguments_CorrectResult() {
+            var source = new float[] {1f, 2f, 3f};
+            var argument = new float[] {1.03f, 1.99f, 3.02f};
+            Assert.That(source.SequenceEqual<float>(argument, new FloatComparer()), Is.True);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Single_EmptySource_ThrowsInvalidOperationException() {
+            var source = new int[0];
+            source.Single();
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Single_SourceWithMoreThanOneElement_ThrowsInvalidOperationException() {
+            var source = new int[] {3, 6};
+            source.Single();
+        }
+
+        [Test]
+        public void Single_SourceWithOneElement_SingleElementIsReturned() {
+            var source = new int[] {1};
+            Assert.That(source.Single(), Is.EqualTo(1));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SinglePredicate_PassNullAsPredicate_ThrowsArgumentNullException() {
+            var source = new int[] {1, 2, 3};
+            source.Single(null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SinglePredicate_NoElementSatisfiesCondition_ThrowsInvalidOperationException() {
+            var source = new int[] {1, 3, 5};
+            source.Single(i => i%2 == 0);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SinglePredicate_MoreThanOneElementSatisfiedCondition_ThrowsInvalidOperationException() {
+            var source = new int[] {1, 2, 3, 4};
+            source.Single(i => i%2 == 0);
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SinglePredicate_SourceIsEmpty_ThrowsInvalidOperationException() {
+            var source = new int[0];
+            source.Single(i => i%2 == 0);
+        }
+
+        [Test]
+        public void SinglePredicate_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3};
+            Assert.That(source.Single(i => i % 2 == 0), Is.EqualTo(2));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SingleOrDefault_MoreThanOneElementInSource_ThrowsInvalidOperationException() {
+            var source = new int[] {1, 2, 3};
+            source.SingleOrDefault();
+        }
+
+        [Test]
+        public void SingleOrDefault_EmptySource_0IsReturned() {
+            var source = new int[0];
+            Assert.That(source.SingleOrDefault(), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void SingleOrDefault_SourceWithOneElement_SingleElementIsReturned() {
+            var source = new int[] {5};
+            Assert.That(source.SingleOrDefault(), Is.EqualTo(5));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SingleOrDefaultPredicate_PassNullAsPredicate_ThrowsArgumentNullException() {
+            var source = new int[] {4};
+            source.SingleOrDefault(null);
+        }
+
+        [Test]
+        public void SingleOrDefaultPredicate_EmptySource_0IsReturned() {
+            var source = new int[0];
+            Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void SingleOrDefaultPredicate_MoreThanOneElementSatisfiesCondition_ThrowsInvalidOperationException() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            source.SingleOrDefault(i => i%2 == 0);
+        }
+
+        [Test]
+        public void SingleOrDefaultPredicate_NoElementSatisfiesCondition_0IsReturned() {
+            var source = new int[] {1, 3, 5};
+            Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void SingleOrDefaultPredicate_OneElementSatisfiesCondition_CorrectElementIsReturned() {
+            var source = new int[] {1, 2, 3};
+            Assert.That(source.SingleOrDefault(i => i%2 == 0), Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Skip_ValidArguments_CorrectOutput() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            source.Skip(5).Compare(6, 7, 8, 9, 10);
+        }
+
+        [Test]
+        public void Skip_PassNegativeValueAsCount_SameBehaviorAsMicrosoftImplementation() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            source.Skip(-5).Compare(1, 2, 3, 4, 5);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SkipWhile_PassNullAsPredicate_ThrowsArgumentNullException() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            Func<int, bool> predicate = null;
+            source.SkipWhile(predicate);
+        }
+
+        [Test]
+        public void SkipWhile_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            source.SkipWhile(i => i < 3).Compare(3, 4, 5);
+        }
+
+        [Test]
+        public void SkipWhile_ValidArguments_CorrectResult2() {
+            var source = new int[] { 1, 2, 3, 4, 5, 1, 2, 3};
+            source.SkipWhile(i => i < 3).Compare(3, 4, 5, 1, 2, 3);
+        }
+
+        [Test]
+        public void SkipWhilePredicateWith3Arguments_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9};
+            source.SkipWhile((i, index) => index < 5).Compare(6, 7, 8, 9);
+        }
+
+        [Test]
+        [ExpectedException(typeof(OverflowException))]
+        public void Sum_SumOfArgumentsCausesOverflow_ThrowsOverflowException() {
+            var source = new int[] {int.MaxValue - 1, 2};
+            source.Sum();
+        }
+
+        [Test]
+        public void Sum_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            Assert.That(source.Sum(), Is.EqualTo(55));
+        }
+
+        [Test]
+        public void SumNullableInts_ValidArguments_CorrectResult() {
+            var source = new int?[] {1, 2, null};
+            Assert.That(source.Sum(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void SumSelector_ValidArguments_CorrectResult() {
+            var source = new string[] {"dog", "cat", "eagle"};
+            Assert.That(source.Sum(s => s.Length), Is.EqualTo(11));
+        }
+
+        [Test]
+        public void Take_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5, 6};
+            source.Take(3).Compare(1, 2, 3);
+        }
+
+        [Test]
+        public void Take_CountBiggerThanList() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            source.Take(10).Compare(1, 2, 3, 4, 5);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TakeWhile_PassNullAsPredicate_ThrowsArgumentNullException() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            Func<int, bool> func = null;
+            source.TakeWhile(func);
+        }
+
+        [Test]
+        public void TakeWhile_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            source.TakeWhile(i => i*i < 50).Compare(1, 2, 3, 4, 5, 6, 7);
+        }
+
+        [Test]
+        public void ToArray_ValidArguments_CorrectResult() {
+            var source = new List<int>() {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            var result = source.ToArray();
+            Assert.That(result, Is.TypeOf(typeof (int[])));
+            result.Compare(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ToDictionary_KeySelectorProducesNullKey_ThrowsArgumentNullException() {
+            var source = new string[] {"eagle", "deer"};
+            source.ToDictionary<string, string>(s => null);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ToDictionary_DuplicateKeys_ThrowsArgumentException() {
+            var source = new string[] {"eagle", "deer", "cat", "dog"};
+            source.ToDictionary(s => s.Length);
+        }
+
+        [Test]
+        public void ToDictionary_ValidArguments_CorrectResult() {
+            var source = new string[] {"1", "2", "3"};
+            var result = source.ToDictionary(s => int.Parse(s));
+            int check = 1;
+            foreach (var pair in result) {
+                Assert.That(pair.Key, Is.EqualTo(check));
+                Assert.That(pair.Value, Is.EqualTo(check.ToString()));
+                check++;
+            }
+            Assert.That(check, Is.EqualTo(4));
+        }
+
+        [Test]
+        public void ToDictionaryElementSelector_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            var result = source.ToDictionary(i => i.ToString(), i => Math.Sqrt(double.Parse(i.ToString())));
+            int check = 1;
+            foreach (var pair in result) {
+                Assert.That(pair.Key, Is.EqualTo(check.ToString()));
+                Assert.That(pair.Value, Is.EqualTo(Math.Sqrt(double.Parse(check.ToString()))).Within(0.00001));
+                check++;
+            }
+        }
+
+        [Test]
+        public void ToList_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            var result = source.ToList();
+            Assert.That(result, Is.TypeOf(typeof(List<int>)));
+            result.Compare(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        }
+
+        [Test]
+        public void ToLookup_ValidArguments_CorrectResult() {
+            var source = new string[] {"eagle", "dog", "cat", "bird", "camel"};
+            var result = source.ToLookup(s => s.Length);
+
+            result[3].Compare("dog", "cat");
+            result[4].Compare("bird");
+            result[5].Compare("eagle", "camel");
+        }
+
+        [Test]
+        public void ToLookupElementSelector_ValidArguments_CorrectResult() {
+            var source = new string[] { "eagle", "dog", "cat", "bird", "camel" };
+            var result = source.ToLookup(s => s.Length, str => str.ToCharArray().Reverse());
+            var enumerator = result[3].GetEnumerator();
+            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("dog".ToCharArray().Reverse().ToString()));
+            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("cat".ToCharArray().Reverse().ToString()));
+            Assert.That(enumerator.MoveNext(), Is.False);
+
+            enumerator = result[4].GetEnumerator();
+            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("bird".ToCharArray().Reverse().ToString()));
+            Assert.That(enumerator.MoveNext(), Is.False);
+
+            enumerator = result[5].GetEnumerator();
+            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("eagle".ToCharArray().Reverse().ToString()));
+            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("camel".ToCharArray().Reverse().ToString()));
+            Assert.That(enumerator.MoveNext(), Is.False);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Union_PassNullAsArgument_ThrowsArgumentNullException() {
+            var source = new int[] {5, 3, 9, 7, 5, 9, 3, 7};
+            source.Union(null);
+        }
+
+        [Test]
+        public void Union_ValidArguments_CorrectResult() {
+            var source = new int[] { 5, 3, 9, 7, 5, 9, 3, 7 };
+            var argument = new int[] {8, 3, 6, 4, 4, 9, 1, 0};
+            source.Union(argument).Compare(5, 3, 9, 7, 8, 6, 4, 1, 0);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Where_PassNullAsPredicate_ThrowsArgumentNullException() {
+            var source = new int[] {1, 2, 3, 4};
+            Func<int, bool> func = null; 
+            source.Where(func);
+        }
+
+        [Test]
+        public void Where_ValidArguments_CorrectResult() {
+            var source = new int[] {1, 2, 3, 4, 5};
+            source.Where(i => i%2 == 0).Compare(2, 4);
+        }
+
+        [Test]
+        public void WherePredicateWith3Arguments_ValidArguments_CorrectResult() {
+            var source = new string[] {"Camel", "Marlboro", "Parisienne", "Lucky Strike"};
+            source.Where((s, i) => i%2 == 0).Compare("Camel", "Parisienne");
+        }
+
+        private sealed class Reader<T> {                    
+            private readonly IEnumerator<T> e;
+            
+            public Reader(IEnumerable<T> values) {
+                Debug.Assert(values != null);
+                e = values.GetEnumerator();
+            }
+
+            /// <summary>Returns true if there are no more elements in the collection. </summary>
+            public void AssertEnded() {
+                NUnit.Framework.Assert.That(e.MoveNext(), Is.False, "Too many elements in source.");
+            }
+
+            /// <returns>Next element in collection.</returns>
+            /// <exception cref="InvalidOperationException" if there are no more elements.<exception>
+            public T Read() {
+                if (!e.MoveNext())
+                    throw new InvalidOperationException("No more elements in the source sequence.");
+                return e.Current;
+            }
+
+            /// <param name="constraint">Checks constraint for the next element.</param>
+            /// <returns>Itself</returns>
+            public Reader<T> Next(Constraint constraint) {
+                Debug.Assert(constraint != null);
+                NUnit.Framework.Assert.That(Read(), constraint);
+                return this;
+            }
+
+            /// <summary>
+            /// Checks first constraint for first elements, second constraint for second element...
+            /// </summary>
+            /// <param name="constraints"></param>
+            /// <returns></returns>
+            public Reader<T> Ensure(params Constraint[] constraints) {
+                Debug.Assert(constraints != null);
+                foreach (var constraint in constraints) {
+                    Next(constraint);
+                }
+                return this;
+            }
+
+            public void Compare(params T[] lst) {
+                foreach (var t1 in lst) {
+                    Next(Is.EqualTo(t1));
+                }
+                AssertEnded();
+            }
+        }
+
+        [Test]
+        public void EnsureTest() {
+            var enumerable = new int[] {1, 2, 3};
+            Reader<int> rd = new Reader<int>(enumerable);
+            rd.Ensure(Is.EqualTo(1), Is.EqualTo(2), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void CompareTest() {
+            var enumerable = new int[] {1, 2, 3};
+            var reader = new Reader<int>(enumerable);
+            reader.Compare(1, 2, 3);
+        }
+    }
+}
