@@ -643,8 +643,9 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        // [Ignore("Is an issue in code.google.com")]
-        public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndJoining() {
+        [Ignore("Pending resolution of issue #6 (http://code.google.com/p/backlinq/issues/detail?id=6).")]
+        public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndJoining()
+        {
             var persons = new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
@@ -906,9 +907,10 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        // [Ignore("Reported in code.google.com")]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void Max_EmptyList_ThrowsInvalidOperationException() {
+        [Ignore("Pending resolution of issue #7 (http://code.google.com/p/backlinq/issues/detail?id=7).")]
+        public void Max_EmptyList_ThrowsInvalidOperationException()
+        {
             var enumerable = new int[0];
             var result = enumerable.Max();
             Debug.WriteLine(result);
@@ -934,21 +936,25 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void Min_EmptyList_ThrowsInvalidOperationException() {
+        [Ignore("Pending resolution of issue #7 (http://code.google.com/p/backlinq/issues/detail?id=7).")]
+        public void Min_EmptyList_ThrowsInvalidOperationException()
+        {
             var source = new int[0];
             source.Min();
         }
 
         [Test]
-        // [Ignore("Issue in www.code.google.com")]
-        public void Min_ListWithNullables_MinimumNonNullValueIsReturned() {
+        [Ignore("Pending resolution of issue #8 (http://code.google.com/p/backlinq/issues/detail?id=8).")]
+        public void Min_ListWithNullables_MinimumNonNullValueIsReturned()
+        {
             var source = new int?[] {199, 15, null, 30};
             Assert.That(source.Min(), Is.EqualTo(15));
         }
 
         [Test]
-        // [Ignore("Same bug is reported for another overload of this method")]
-        public void MinSelector_ValidArguments_MinimumNonNullValueIsReturned() {
+        [Ignore("Pending resolution of issue #8 (http://code.google.com/p/backlinq/issues/detail?id=8).")]
+        public void MinSelector_ValidArguments_MinimumNonNullValueIsReturned()
+        {
             var persons = Person.CreatePersons();
             Assert.That(persons.Min<Person, int?>((Person p) => {
                                         if (p.Age == 21) return null; // to test behavior if null belongs to result of transformation
