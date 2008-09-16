@@ -42,14 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\src\ExtensionAttribute.cs">
+    <Compile Include="..\..\src\ExtensionAttribute.cs">
       <Link>ExtensionAttribute.cs</Link>
     </Compile>
     <Compile Include="EnumerableFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\BackLINQ.csproj">
+    <ProjectReference Include="..\..\src\BackLINQ.csproj">
       <Project>{66621034-90CC-4D1A-B49E-73A13E3B22EF}</Project>
       <Name>BackLINQ</Name>
     </ProjectReference>
