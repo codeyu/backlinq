@@ -36,7 +36,7 @@ namespace BackLinq.Tests
 
     #endregion
 
-    public static class Tester {
+    internal static class Tester {
         public static void Compare<T>(this IEnumerable<T> result, params T[] list) {
             IEnumerator<T> enumerator = result.GetEnumerator();
             foreach (T item in list) {
