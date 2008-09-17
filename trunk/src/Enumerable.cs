@@ -676,7 +676,15 @@ namespace System.Linq
         {
             using (var e = source.GetEnumerator())
             {
-                for (var i = 0; e.MoveNext() && predicate(e.Current, i); i++) { /* nop */ }
+                for (var i = 0; ; i++) 
+                { 
+                    if (!e.MoveNext())
+                        yield break;
+                    
+                    if (!predicate(e.Current, i))
+                        break;
+                }
+
                 do { yield return e.Current; } while (e.MoveNext());
             }
         }

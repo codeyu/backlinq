@@ -1306,6 +1306,13 @@ namespace BackLinq.Tests {
         }
 
         [Test]
+        public void SkipWhile_PredicateAlwaysTrue_EmptyResult() {
+            var source = new int[] { 1, 2, 3 };
+            var result = source.SkipWhile(i => true);
+            Assert.That(result.GetEnumerator().MoveNext(), Is.False);
+        }
+
+        [Test]
         public void SkipWhilePredicateWith3Arguments_ValidArguments_CorrectResult() {
             var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9};
             source.SkipWhile((i, index) => index < 5).Compare(6, 7, 8, 9);
