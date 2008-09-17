@@ -1704,7 +1704,7 @@ namespace System.Linq
             CheckNotNull(innerKeySelector, "innerKeySelector");
             CheckNotNull(resultSelector, "resultSelector");
 
-            var lookup = inner.ToLookup(innerKeySelector);
+            var lookup = inner.ToLookup(innerKeySelector, comparer);
             return outer.Select(o => resultSelector(o, lookup[outerKeySelector(o)]));
         }
         
