@@ -39,7 +39,7 @@ namespace BackLinq.Tests
     /// This wrapper is used to test if the LINQ operators call GetEnumerator() more than once.
     /// </summary>
     
-    public class OnceEnumerable<T> : IEnumerable<T> {
+    internal sealed class OnceEnumerable<T> : IEnumerable<T> {
         private IEnumerable<T> inner;
 
         public OnceEnumerable(IEnumerable<T> inner) {
