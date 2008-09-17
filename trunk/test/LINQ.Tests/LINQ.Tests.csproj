@@ -44,6 +44,12 @@
     <Compile Include="..\BackLINQ.Tests\EnumerableFixture.cs">
       <Link>EnumerableFixture.cs</Link>
     </Compile>
+    <Compile Include="..\BackLINQ.Tests\OnceEnumerable.cs">
+      <Link>OnceEnumerable.cs</Link>
+    </Compile>
+    <Compile Include="..\BackLINQ.Tests\Tester.cs">
+      <Link>Tester.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
