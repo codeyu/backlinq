@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -10,49 +9,6 @@ using Constraint = NUnit.Framework.Constraints.Constraint;
 using NUnit.Framework.SyntaxHelpers;
 
 namespace BackLinq.Tests {
-
-    public static class Tester {
-        public static void Compare<T>(this IEnumerable<T> result, params T[] list) {
-            IEnumerator<T> enumerator = result.GetEnumerator();
-            foreach (T item in list) {
-                enumerator.MoveNext(); Assert.That(enumerator.Current, Is.EqualTo(item));
-            }
-            Assert.That(enumerator.MoveNext(), Is.False);
-        }
-
-        public static void Compare<TKey, TElement>(this IGrouping<TKey, TElement> result, TKey key, params TElement[] list) {
-            Assert.That(result.Key, Is.EqualTo(key));
-            IEnumerator<TElement> enumerator = result.GetEnumerator();
-            foreach (TElement item in list) {
-                enumerator.MoveNext(); Assert.That(enumerator.Current, Is.EqualTo(item));
-            }
-            Assert.That(enumerator.MoveNext(), Is.False);
-        }
-    }
-
-    /// <summary>
-    /// This wrapper is used to test if the LINQ operators call GetEnumerator() more than once.
-    /// </summary>
-    public class OnceEnumerable<T> : IEnumerable<T> {
-        private IEnumerable<T> inner;
-
-        public OnceEnumerable(IEnumerable<T> inner) {
-            this.inner = inner;
-        }
-
-        public IEnumerator<T> GetEnumerator() {
-            if (inner == null) throw new Exception("A LINQ Operator called GetEnumerator() twice.");
-            IEnumerator<T> enumerator = inner.GetEnumerator();
-            inner = null;
-            return enumerator;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
-    }
-
-
     [TestFixture]
     public sealed class EnumerableFixture {
 
