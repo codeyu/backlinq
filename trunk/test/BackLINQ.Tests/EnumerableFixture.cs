@@ -921,7 +921,6 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        [Ignore("Pending resolution of issue #7 (http://code.google.com/p/backlinq/issues/detail?id=7).")]
         public void Max_EmptyList_ThrowsInvalidOperationException()
         {
             var enumerable = new int[0];
@@ -949,7 +948,6 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        [Ignore("Pending resolution of issue #7 (http://code.google.com/p/backlinq/issues/detail?id=7).")]
         public void Min_EmptyList_ThrowsInvalidOperationException()
         {
             var source = new int[0];

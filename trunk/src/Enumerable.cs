@@ -1287,9 +1287,10 @@ namespace System.Linq
 
             using (var e = source.GetEnumerator())
             {
-                return e.MoveNext() 
-                     ? e.Renumerable().Aggregate((a, item) => lesser(a, item) ? a : item) 
-                     : default(TSource);
+                if (!e.MoveNext())
+                    throw new InvalidOperationException();
+
+                return e.Renumerable().Aggregate(e.Current, (a, item) => lesser(a, item) ? a : item);
             }
         }
 
