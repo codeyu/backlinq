@@ -625,7 +625,6 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        [Ignore("Pending resolution of issue #6 (http://code.google.com/p/backlinq/issues/detail?id=6).")]
         public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndJoining()
         {
             var persons = new Person[]
