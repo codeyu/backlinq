@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -29,6 +30,29 @@ namespace BackLinq.Tests {
         }
     }
 
+    /// <summary>
+    /// This wrapper is used to test if the LINQ operators call GetEnumerator() more than once.
+    /// </summary>
+    public class OnceEnumerable<T> : IEnumerable<T> {
+        private IEnumerable<T> inner;
+
+        public OnceEnumerable(IEnumerable<T> inner) {
+            this.inner = inner;
+        }
+
+        public IEnumerator<T> GetEnumerator() {
+            if (inner == null) throw new Exception("A LINQ Operator called GetEnumerator() twice.");
+            IEnumerator<T> enumerator = inner.GetEnumerator();
+            inner = null;
+            return enumerator;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
+    }
+
+
     [TestFixture]
     public sealed class EnumerableFixture {
 
@@ -51,20 +75,20 @@ namespace BackLinq.Tests {
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Aggregate_EmptySource_ThrowsInvalidOperationException() {
-            var source = new int[0];
+            var source = new OnceEnumerable<int>(new int[0]);
             source.Aggregate((a, b) => a + b);
         }
 
         [Test]
         public void Aggregate_ValidArguments_CorrectResult() {
-            var source = new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+            var source = new OnceEnumerable<int>(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             var result = source.Aggregate((a, b) => a + b);
             Assert.That(result, Is.EqualTo(55));
         }
 
         [Test]
         public void AggregateAccumulator_ValidArguments_CorrectResult() {
-            var source = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var source = new OnceEnumerable<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var result = source.Aggregate(100, (a, b) => a + b);
             Assert.That(result, Is.EqualTo(155));
         }
@@ -89,7 +113,7 @@ namespace BackLinq.Tests {
         [Test]
         [ExpectedException(typeof(InvalidCastException))]
         public void CannotPassInvalidSourceToCast() {
-            List<object> list = new List<object>() {1000, "hello", new object()};
+            var list = new OnceEnumerable<object>( new List<object>() {1000, "hello", new object()});
             IEnumerable<byte> target = Enumerable.Cast<byte>(list);
             // do something with the results so Cast will really be executed (deferred execution)
             StringBuilder sb = new StringBuilder();
@@ -101,20 +125,14 @@ namespace BackLinq.Tests {
         /// <summary>Tests a downcast from object to int.</summary>
         [Test]
         public void CanPassValidSourceToCast() {
-            List<object> source = new List<object>() {1, 10, 100};
-            var result = Enumerable.Cast<int>(source);
-            var reader = new Reader<int>(result);
-            reader.Compare(1, 10, 100);
+            var source = new OnceEnumerable<object>(new List<object>() {1, 10, 100});
+            Enumerable.Cast<int>(source).Compare(1, 10, 100);
         }
 
         /// <summary>Tests an upcast from int to object.</summary>
         [Test]
         public void Cast_UpcastFromIntToObject() {
-            var target = Enumerable.Cast<object>(new[] {1, 10, 100});
-            var e = target.GetEnumerator();
-            e.MoveNext(); Assert.That(e.Current, Is.EqualTo(1));
-            e.MoveNext(); Assert.That(e.Current, Is.EqualTo(10));
-            e.MoveNext(); Assert.That(e.Current, Is.EqualTo(100));
+            Enumerable.Cast<object>(new OnceEnumerable<int>(new int[] {1, 10, 100})).Compare(1, 10, 100);
         }
 
         [Test]
@@ -127,13 +145,13 @@ namespace BackLinq.Tests {
 
         [Test]
         public void AllFalse() {
-            var source = new List<int>() {-100, -1, 0, 1, 100};
+            var source = new OnceEnumerable<int>(new List<int>() {-100, -1, 0, 1, 100});
             Assert.That(Enumerable.All(source, i => i >= 0), Is.False);
         }
 
         [Test]
         public void AllTrue() {
-            var source = new List<int>() { -100, -1, 0, 1, 100 };
+            var source = new OnceEnumerable<int>(new List<int>() { -100, -1, 0, 1, 100 });
             Assert.That(Enumerable.All(source, i => i >= -100), Is.True);
         }
 
@@ -147,7 +165,7 @@ namespace BackLinq.Tests {
 
         [Test]
         public void Any_NonEmptySource_ReturnsTrue() {
-            var source = new[] {new object()};
+            var source = new OnceEnumerable<object>(new[] {new object()});
             Assert.That(source.Any(), Is.True);
         }
 
@@ -157,23 +175,24 @@ namespace BackLinq.Tests {
         [Test]
         public void Any_EmptySourceWithCondition_ReturnsFalse() {
             var func = new Func<int, bool>(i => i > 0);
-            List<int> source = new List<int>();
+            var source = new OnceEnumerable<int>(new List<int>());
             Assert.That(source.Any(func), Is.False);
         }
 
         [Test]
         public void Any_Condition_NonEmptySource() {
             var func = new Func<int, bool>(i => i > 0);
-            var source = new List<int>();
-            source.Add(0);
+            var list = new List<int>(0);
+            var source = new OnceEnumerable<int>(list);
             Assert.That(source.Any(func), Is.False);
-            source.Add(100);
+            list.Add(100);
+            source = new OnceEnumerable<int>(list);
             Assert.That(source.Any(func), Is.True);
         }
 
         [Test]
         public void Average_CalculateAverage() {
-            var source = new List<decimal>() {-10000, 2.0001m, 50};
+            var source = new OnceEnumerable<decimal>(new List<decimal>() {-10000, 2.0001m, 50});
             Assert.That(source.Average(), Is.EqualTo(-3315.999966).Within(0.00001));
         }
 
@@ -191,8 +210,9 @@ namespace BackLinq.Tests {
 
         [Test]
         public void Concat_TwoLists_CorrectOrder() {
-            var result = new List<int>(Enumerable.Concat(new int[] { 1, 2, 3 }, new int[] { 4, 5, 6 })).ToArray();
-            Assert.That(result, Is.EqualTo(new int[] { 1, 2, 3, 4, 5, 6 }));
+            var list1 = new OnceEnumerable<int>(new int[] {1, 2, 3});
+            var list2 = new OnceEnumerable<int>(new int[] {4, 5, 6});
+            Enumerable.Concat(list1, list2).Compare(1, 2, 3, 4, 5, 6);
         }
         //[Test]
         //// TODO: Understand the method and complete the test
