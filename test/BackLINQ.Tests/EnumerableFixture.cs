@@ -25,17 +25,22 @@
 //
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using NUnit.Framework;
-using System.Linq;
-using System.Diagnostics;
-using Constraint = NUnit.Framework.Constraints.Constraint;
-using NUnit.Framework.SyntaxHelpers;
-
 namespace BackLinq.Tests {
+
+    #region Imports
+
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Text;
+    using NUnit.Framework;
+    using System.Linq;
+    using System.Diagnostics;
+    using Constraint = NUnit.Framework.Constraints.Constraint;
+    using NUnit.Framework.SyntaxHelpers;
+
+    #endregion
+
     [TestFixture]
     public sealed class EnumerableFixture {
 
