@@ -539,11 +539,9 @@ namespace BackLinq.Tests {
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        // here I am
-
         [Test]
         public void GroupByKeySelectorElementSelectorResultSelector_ValidArguments_CorrectGroupingAndTransforming() {
-            var persons = Person.CreatePersons();
+            var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var result = persons.GroupBy<Person, string, int, int>(p => p.FamilyName, p => p.Age,
                                                                       (string name, IEnumerable<int> enumerable2) => {
                                                                           int totalAge = 0;
@@ -552,19 +550,18 @@ namespace BackLinq.Tests {
                                                                           }
                                                                           return totalAge;
                                                                       });
-            var reader = new Reader<int>(result);
-            reader.Compare(43, 47);
+            result.Compare(43, 47);
         }
 
         [Test]
         public void GroupByKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndTransforming() {
-            var persons = new Person[]
+            var persons = new OnceEnumerable<Person>( new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
                                      new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
                                      new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                                      new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 };
+                                 });
             var result = persons.GroupBy<Person, string, int>(p => p.FamilyName, 
                                                                       (string name, IEnumerable<Person> enumerable2) => {
                                                                           int totalAge = 0;
@@ -574,19 +571,18 @@ namespace BackLinq.Tests {
                                                                           return totalAge;
                                                                       },
                                                                       StringComparer.CurrentCultureIgnoreCase);
-            var reader = new Reader<int>(result);
-            reader.Compare(43, 47);
+            result.Compare(43, 47);
         }
 
         [Test]
         public void GroupByKeySelectorElementSelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndTransforming() {
-            var persons = new Person[]
+            var persons = new OnceEnumerable<Person>(new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
                                      new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
                                      new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                                      new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 };
+                                 });
             var result = persons.GroupBy<Person, string, int, int>(p => p.FamilyName, p => p.Age,
                                                                       (string name, IEnumerable<int> enumerable2) => {
                                                                           int totalAge = 0;
@@ -595,8 +591,7 @@ namespace BackLinq.Tests {
                                                                           }
                                                                           return totalAge;
                                                                       }, StringComparer.CurrentCultureIgnoreCase);
-            var reader = new Reader<int>(result);
-            reader.Compare(43, 47);
+            result.Compare(43, 47);
         }
 
         class Pet {
@@ -605,23 +600,22 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        // TODO: Make better
         public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelector_ValidArguments_CorrectGroupingAndJoining() {
-            var persons = new Person[]
+            var persons = new OnceEnumerable<Person>( new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
                                      new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
                                      new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                                      new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 };
+                                 });
 
-            var pets = new Pet[]
+            var pets = new OnceEnumerable<Pet>( new Pet[]
                            {
                                new Pet() {Name = "Barley", Owner = "Peter"},
                                new Pet() {Name = "Boots", Owner = "Herbert"},
                                new Pet() {Name = "Whiskers", Owner = "Herbert"},
                                new Pet() {Name = "Daisy", Owner = "Isidor"}
-                           };
+                           });
 
             var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
                               (person, petCollection) =>
@@ -659,21 +653,21 @@ namespace BackLinq.Tests {
         [Test]
         public void GroupJoinInnerOuterKeySelectorInnerKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndJoining()
         {
-            var persons = new Person[]
+            var persons = new OnceEnumerable<Person>( new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
                                      new Person() {FamilyName = "müller", FirstName = "Herbert", Age = 22},
                                      new Person() {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                                      new Person() {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 };
+                                 });
 
-            var pets = new Pet[]
+            var pets = new OnceEnumerable<Pet>( new Pet[]
                            {
                                new Pet() {Name = "Barley", Owner = "Peter"},
                                new Pet() {Name = "Boots", Owner = "Herbert"},
                                new Pet() {Name = "Whiskers", Owner = "herbert"}, // This pet is not associated to "Herbert"
                                new Pet() {Name = "Daisy", Owner = "Isidor"}
-                           };
+                           });
 
             var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
                               (person, petCollection) =>
