@@ -62,27 +62,27 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void Aggregate_EmptySource_ThrowsInvalidOperationException() {
+        public void Aggregate_FuncArg_EmptySource_ThrowsInvalidOperationException() {
             var source = new OnceEnumerable<int>(new int[0]);
             source.Aggregate((a, b) => a + b);
         }
 
         [Test]
-        public void Aggregate_ValidArguments_CorrectResult() {
+        public void Aggregate_FuncArg_ValidArguments_CorrectResult() {
             var source = new OnceEnumerable<int>(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             var result = source.Aggregate((a, b) => a + b);
             Assert.That(result, Is.EqualTo(55));
         }
 
         [Test]
-        public void AggregateAccumulator_ValidArguments_CorrectResult() {
+        public void Aggregate_AccumulatorArgFuncArg_ValidArguments_CorrectResult() {
             var source = new OnceEnumerable<int>(new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var result = source.Aggregate(100, (a, b) => a + b);
             Assert.That(result, Is.EqualTo(155));
         }
 
         [Test]
-        public void EmptyYieldsNoResults() {
+        public void Empty__YieldsNoResults() {
             var source = Enumerable.Empty<String>();
             Assert.That(source, Is.Not.Null);
 
@@ -94,13 +94,13 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void CannotPassNullSourceToCast() {
+        public void Cast_NullAsArgument_ThrowsArgumentNullException() {
             Enumerable.Cast<Object>(null);
         }
 
         [Test]
         [ExpectedException(typeof(InvalidCastException))]
-        public void CannotPassInvalidSourceToCast() {
+        public void Cast_InvalidSource_ThrowsInvalidCastException() {
             var list = new OnceEnumerable<object>( new List<object>() {1000, "hello", new object()});
             IEnumerable<byte> target = Enumerable.Cast<byte>(list);
             // do something with the results so Cast will really be executed (deferred execution)
@@ -112,33 +112,33 @@ namespace BackLinq.Tests {
 
         /// <summary>Tests a downcast from object to int.</summary>
         [Test]
-        public void CanPassValidSourceToCast() {
+        public void Cast_ValidArguments_CorrectResult() {
             var source = new OnceEnumerable<object>(new List<object>() {1, 10, 100});
             Enumerable.Cast<int>(source).Compare(1, 10, 100);
         }
 
         /// <summary>Tests an upcast from int to object.</summary>
         [Test]
-        public void Cast_UpcastFromIntToObject() {
+        public void Cast_ArrayOfInts_CorrectCastToObjects() {
             Enumerable.Cast<object>(new OnceEnumerable<int>(new int[] {1, 10, 100})).Compare(1, 10, 100);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void CannotPassNullToAll() {
+        public void All_Null_ThrowsArgumentNullException() {
             Enumerable.All(null, (int i) => {
                                      return i >= 0;
                                  });
         }
 
         [Test]
-        public void AllFalse() {
+        public void All_ArgumentsNotSatifyingCondition_ReturnsFalse() {
             var source = new OnceEnumerable<int>(new List<int>() {-100, -1, 0, 1, 100});
             Assert.That(Enumerable.All(source, i => i >= 0), Is.False);
         }
 
         [Test]
-        public void AllTrue() {
+        public void All_ArgumentsSatisfyingCondition_ReturnsTrue() {
             var source = new OnceEnumerable<int>(new List<int>() { -100, -1, 0, 1, 100 });
             Assert.That(Enumerable.All(source, i => i >= -100), Is.True);
         }
@@ -146,7 +146,7 @@ namespace BackLinq.Tests {
         /// <summary>Tests weather Any() returns false for an empty list.
         /// Tests weather Any() returns true for a list with one element.</summary>
         [Test]
-        public void AnyReturnsFalseOnEmptySource() {
+        public void Any_EmptySource_ReturnsFalse() {
             var source = new object[0];
             Assert.That(source.Any(), Is.False);
         }
@@ -161,14 +161,14 @@ namespace BackLinq.Tests {
         /// Tests weather Any() works if you call the overload which takes a Func(<T>, bool)
         /// </summary>
         [Test]
-        public void Any_EmptySourceWithCondition_ReturnsFalse() {
+        public void Any_PredicateArg_EmptySource_ReturnsFalse() {
             var func = new Func<int, bool>(i => i > 0);
             var source = new OnceEnumerable<int>(new List<int>());
             Assert.That(source.Any(func), Is.False);
         }
 
         [Test]
-        public void Any_Condition_NonEmptySource() {
+        public void Any_PredicateArg_NonEmptySource_ReturnsTrue() {
             var func = new Func<int, bool>(i => i > 0);
             var list = new List<int>(0);
             var source = new OnceEnumerable<int>(list);
@@ -179,20 +179,20 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Average_CalculateAverage() {
+        public void Average_Decimals_CorrectResult() {
             var source = new OnceEnumerable<decimal>(new List<decimal>() {-10000, 2.0001m, 50});
             Assert.That(source.Average(), Is.EqualTo(-3315.999966).Within(0.00001));
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Concat_FirstArgumentNull_ThrowsException() {
+        public void Concat_FirstArgumentNull_ThrowsArgumentNullException() {
             Enumerable.Concat(null, new int[] {3, 5});
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Concat_SecondArgumentNull_ThrowsException() {
+        public void Concat_SecondArgumentNull_ThrowsArgumentNullException() {
             var result = Enumerable.Concat(new int[] { 3, 5 }, null);
         }
 
@@ -206,23 +206,23 @@ namespace BackLinq.Tests {
         [Test]
         public void DefaultIfEmpty_NotEmpty_ReturnsItself() {
             var source = new OnceEnumerable<int>(new int[] { 1, 2, 3 });
-            var result = source.DefaultIfEmpty(1);
+            source.DefaultIfEmpty(1).Compare(1, 2, 3);
         }
 
         [Test]
-        public void DefaultIfEmpty_Empty_Returns0() {
+        public void DefaultIfEmpty_Empty_ReturnsZero() {
             var source = new OnceEnumerable<int>(new int[0]);
             source.DefaultIfEmpty().Compare(0);
         }
 
         [Test]
-        public void DefaultIfEmpty_DefaultValue_Empty_ReturnsDefault() {
+        public void DefaultIfEmpty_DefaultValueArg_Empty_ReturnsDefault() {
             var source = new OnceEnumerable<int>(new int[0]);
             source.DefaultIfEmpty(5).Compare(5);
         }
 
         [Test]
-        public void DefaultIfempty_DefaultValue_NotEmpty_ReturnsItself() {
+        public void DefaultIfEmpty_DefaultValue_NotEmpty_ReturnsItself() {
             var source = new OnceEnumerable<int>(new int[] {1, 2, 3});
             source.DefaultIfEmpty(5).Compare(1, 2, 3);
         }
@@ -240,7 +240,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Distinct_ArgumentWithNonDistinctValuesAndEqualityComparer_ReturnsOnlyDistinctValues() {
+        public void Distinct_ComparerArg_NonDistinctValues_ReturnsOnlyDistinctValues() {
             var source = new OnceEnumerable<int>(new int[] {1, 2, 2, 3});
             source.Distinct(EqualityComparer<int>.Default).Compare(1, 2, 3);
         }
@@ -253,7 +253,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ElementAt() {
+        public void ElementAt_ValidArguments_ReturnsCorrectValues() {
             var source = new int[] {15, 2, 7};
             Assert.That(source.ElementAt(0), Is.EqualTo(15));
             Assert.That(source.ElementAt(1), Is.EqualTo(2));
@@ -261,13 +261,13 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ElementAtOrDefault_IntArray_Returns0IfIndexOutOfRange() {
+        public void ElementAtOrDefault_IntArray_ReturnsZeroIfIndexOutOfRange() {
             var source = new OnceEnumerable<int>(new int[] {3, 6, 8});
             Assert.That(source.ElementAtOrDefault(3), Is.EqualTo(0));
         }
 
         [Test]
-        public void ElementAtOrDefault_IntArray_ReturnsCorrectIntIfIndexInRange() {
+        public void ElementAtOrDefault_IntArray_ReturnsCorrectValue() {
             var source = new OnceEnumerable<int>(new int[] {3, 6, 9});
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(9));
         }
@@ -279,7 +279,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ElementAtOrDefault_ObjectArray_ReturnsCorrectElementIfIndexInRange() {
+        public void ElementAtOrDefault_ObjectArray_ReturnsCorrectValue() {
             object obj1 = new object();
             object obj2 = new object();
             var source = new OnceEnumerable<object>(new object[] {obj1, obj2});
@@ -288,20 +288,20 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Except_ArgumentNull_ThrowsArgumentNullException() {
+        public void Except_secondArg_ArgumentNull_ThrowsArgumentNullException() {
             var source = new OnceEnumerable<int>(new int[] {1, 4, 7});
             source.Except(null);
         }
 
         [Test]
-        public void Except_ValidArgument_ReturnsValidEnumerable() {
+        public void Except_secondArg_ValidArgument_ReturnsCorrectEnumerable() {
             var source = new OnceEnumerable<int>(new int[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             var argument = new OnceEnumerable<int>(new int[] {1, 3, 5, 7, 9});
             source.Except(argument).Compare(2, 4, 6, 8, 10);
         }
 
         [Test]
-        public void Except_ComparerAsArgument_PassedComparerIsUsed() {
+        public void Except_secondArgComparerArg_ComparerIsUsed() {
             var source = new OnceEnumerable<string>( new string[] {"albert", "john", "simon"});
             var argument = new OnceEnumerable<string>(new string[] {"ALBERT"});
             source.Except(argument, StringComparer.CurrentCultureIgnoreCase).Compare("john", "simon");
@@ -321,14 +321,14 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void First_IntArrayAndFuncParameter_FuncParameterIsUsed() {
+        public void First_PredicateArg_IntArray_PredicateIsUsed() {
             var source = new OnceEnumerable<int>(new int[] {1, 2, 3, 4});
             Assert.That(source.First(i => i%2 == 0), Is.EqualTo(2));
         }
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void First_NoElementMatchesFuncParameter_InvalidOperationExceptionIsThrown() {
+        public void First_PredicateArg_NoElementMatches_InvalidOperationExceptionIsThrown() {
             var source = new OnceEnumerable<int>(new int[] { 1, 2, 3, 4 });
             Assert.That(source.First(i => i > 5), Is.EqualTo(0));
         }
@@ -349,19 +349,19 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void FirstOrDefault_NullAsFunc_ArgumentNullExceptionIsThrown() {
+        public void FirstOrDefault_PredicateArg_NullAsPredicate_ArgumentNullExceptionIsThrown() {
             var source = new int[] {3, 5, 7};
             source.FirstOrDefault(null);
         }
 
         [Test]
-        public void FirstOrDefault_ValidFunc_FirstMatchingItemIsReturned() {
+        public void FirstOrDefault_PredicateArg_ValidPredicate_FirstMatchingItemIsReturned() {
             var source = new OnceEnumerable<int>(new int[] {1, 4, 8});
             Assert.That(source.FirstOrDefault(i => i%2 == 0), Is.EqualTo(4));
         }
 
         [Test]
-        public void FirstOrDefault_NoMatchesInArray_DefaultValueOfTypeIsReturned() {
+        public void FirstOrDefault_PredicateArg_NoMatchesInArray_DefaultValueOfTypeIsReturned() {
             var source = new OnceEnumerable<int>(new int[] {1, 4, 6});
             Assert.That(source.FirstOrDefault(i => i > 10), Is.EqualTo(0));
         }
@@ -383,13 +383,13 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void GroupBy_NullKeySelector_ArgumentNullExceptionIsThrown() {
+        public void GroupBy_KeySelectorArg_NullAsKeySelector_ThrowsArgumentNullException() {
             var source = new OnceEnumerable<Person>(Person.CreatePersons());
             source.GroupBy<Person, String>(null);
         }
 
         [Test]
-        public void GroupBy_ValidArguments_CorrectGrouping() {
+        public void GroupBy_KeySelectorArg_ValidArguments_CorrectGrouping() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var result = new Reader<IGrouping<string, Person>>(persons.GroupBy(person => person.FamilyName));
 
@@ -412,7 +412,7 @@ namespace BackLinq.Tests {
 
         [Test]
         // TODO: make better
-        public void GroupBy_ValidArguments_CorrectGroupingCaseSensitive() {
+        public void GroupBy_KeySelectorArg_ValidArguments_CorrectCaseSensitiveGrouping() {
             var persons = new OnceEnumerable<Person>( new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter"},
@@ -439,7 +439,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void GroupBy_KeysThatDifferInCasingNonSensitiveStringComparer_CorrectGrouping() {
+        public void GroupBy_KeySelectorArgComparerArg_KeysThatDifferInCasingNonCaseSensitiveStringComparer_CorrectGrouping() {
             var persons = new OnceEnumerable<Person>( new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter"},
@@ -463,30 +463,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void GroupBy_KeysThatDifferInCasingNonSensitiveStringComparer_CorrectGrouping2() {
-            var persons = new OnceEnumerable<Person>( new Person[]
-                                 {
-                                     new Person() {FamilyName = "Müller", FirstName = "Peter"},
-                                     new Person() {FamilyName = "müller", FirstName = "Herbert"},
-                                     new Person() {FamilyName = "Meier", FirstName = "Hubert"},
-                                     new Person() {FamilyName = "meier", FirstName = "Isidor"}
-                                 });
-            var result = persons.GroupBy<Person, String>(person => person.FamilyName, StringComparer.InvariantCultureIgnoreCase);
-            var enumerator = result.GetEnumerator();
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
-            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Herbert"));
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
-            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Isidor"));
-
-            Assert.That(enumerator.MoveNext(), Is.False);
-        }
-
-        [Test]
-        public void GroupByKeySelectorElementSelector_ValidArguments_CorrectGroupingAndCorrectProjection() {
+        public void GroupBy_KeySelectorArgElementSelectorArg_ValidArguments_CorrectGroupingAndProjection() {
             var enumerable = new OnceEnumerable<Person>(Person.CreatePersons());
             var result = enumerable.GroupBy(person => person.FamilyName, person => person.Age);
             var enumerator = result.GetEnumerator();
@@ -502,7 +479,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void GroupByKeySelectorResultSelector_ValidArguments_CorrectGroupingAndGroupResults() {
+        public void GroupBy_KeySelectorArgResultSelectorArg_ValidArguments_CorrectGroupingProcessing() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
 
             IEnumerable<int> result = persons.GroupBy<Person, string, int>(person => person.FamilyName,
@@ -517,7 +494,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void GroupByKeySelectorElementSelectorComparer_ValidArguments_CorrectGroupingAndGroupResults() {
+        public void GroupByKey_KeySelectorArgElementSelectorArgComparerArg_ValidArguments_CorrectGroupingAndProcessing() {
             var persons = new OnceEnumerable<Person>( new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
@@ -540,7 +517,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void GroupByKeySelectorElementSelectorResultSelector_ValidArguments_CorrectGroupingAndTransforming() {
+        public void GroupBy_KeySelectorArgElementSelectorArgResultSelectorArg_ValidArguments_CorrectGroupingAndTransforming() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var result = persons.GroupBy<Person, string, int, int>(p => p.FamilyName, p => p.Age,
                                                                       (string name, IEnumerable<int> enumerable2) => {
@@ -554,7 +531,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void GroupByKeySelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndTransforming() {
+        public void GroupBy_KeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming() {
             var persons = new OnceEnumerable<Person>( new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
@@ -575,7 +552,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void GroupByKeySelectorElementSelectorResultSelectorComparer_ValidArguments_CorrectGroupingAndTransforming() {
+        public void GroupBy_KeySelectorArgElementSelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming() {
             var persons = new OnceEnumerable<Person>(new Person[]
                                  {
                                      new Person() {FamilyName = "Müller", FirstName = "Peter", Age = 21},
