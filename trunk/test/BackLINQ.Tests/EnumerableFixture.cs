@@ -101,10 +101,10 @@ namespace BackLinq.Tests {
         [Test]
         [ExpectedException(typeof(InvalidCastException))]
         public void Cast_InvalidSource_ThrowsInvalidCastException() {
-            var list = new OnceEnumerable<object>( new List<object> {1000, "hello", new object()});
-            IEnumerable<byte> target = Enumerable.Cast<byte>(list);
+            var source = new OnceEnumerable<object>(new[] {1000, "hello", new object()});
+            var target = source.Cast<byte>();
             // do something with the results so Cast will really be executed (deferred execution)
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (var b in target) {
                 sb.Append(b.ToString());
             }
@@ -114,33 +114,31 @@ namespace BackLinq.Tests {
         [Test]
         public void Cast_ValidArguments_CorrectResult() {
             var source = new OnceEnumerable<object>(new List<object> {1, 10, 100});
-            Enumerable.Cast<int>(source).Compare(1, 10, 100);
+            source.Cast<int>().Compare(1, 10, 100);
         }
 
         /// <summary>Tests an upcast from int to object.</summary>
         [Test]
         public void Cast_ArrayOfInts_CorrectCastToObjects() {
-            Enumerable.Cast<object>(new OnceEnumerable<int>(new[] {1, 10, 100})).Compare(1, 10, 100);
+            new OnceEnumerable<int>(new[] {1, 10, 100}).Cast<object>().Compare(1, 10, 100);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void All_Null_ThrowsArgumentNullException() {
-            Enumerable.All(null, (int i) => {
-                                     return i >= 0;
-                                 });
+            Enumerable.All(null, (int i) => i >= 0);
         }
 
         [Test]
         public void All_ArgumentsNotSatifyingCondition_ReturnsFalse() {
             var source = new OnceEnumerable<int>(new List<int> {-100, -1, 0, 1, 100});
-            Assert.That(Enumerable.All(source, i => i >= 0), Is.False);
+            Assert.That(source.All(i => i >= 0), Is.False);
         }
 
         [Test]
         public void All_ArgumentsSatisfyingCondition_ReturnsTrue() {
             var source = new OnceEnumerable<int>(new List<int> { -100, -1, 0, 1, 100 });
-            Assert.That(Enumerable.All(source, i => i >= -100), Is.True);
+            Assert.That(source.All(i => i >= -100), Is.True);
         }
 
         /// <summary>Tests weather Any() returns false for an empty list.
@@ -193,14 +191,14 @@ namespace BackLinq.Tests {
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Concat_SecondArgumentNull_ThrowsArgumentNullException() {
-            Enumerable.Concat(new[] { 3, 5 }, null);
+            new[] { 3, 5 }.Concat(null);
         }
 
         [Test]
         public void Concat_TwoLists_CorrectOrder() {
             var list1 = new OnceEnumerable<int>(new[] {1, 2, 3});
             var list2 = new OnceEnumerable<int>(new[] {4, 5, 6});
-            Enumerable.Concat(list1, list2).Compare(1, 2, 3, 4, 5, 6);
+            list1.Concat(list2).Compare(1, 2, 3, 4, 5, 6);
         }
 
         [Test]
@@ -280,10 +278,9 @@ namespace BackLinq.Tests {
 
         [Test]
         public void ElementAtOrDefault_ObjectArray_ReturnsCorrectValue() {
-            object obj1 = new object();
-            object obj2 = new object();
-            var source = new OnceEnumerable<object>(new[] {obj1, obj2});
-            Assert.That(source.ElementAt(0), Is.EqualTo(obj1));
+            var first = new object();
+            var source = new OnceEnumerable<object>(new[] {first, new object()});
+            Assert.That(source.ElementAt(0), Is.EqualTo(first));
         }
 
         [Test]
@@ -341,10 +338,9 @@ namespace BackLinq.Tests {
 
         [Test]
         public void FirstOrDefault_ObjectArray_FirstIsReturned() {
-            object obj1 = new object();
-            object obj2 = new object();
-            var source = new OnceEnumerable<object>(new[] {obj1, obj2});
-            Assert.That(source.FirstOrDefault(), Is.EqualTo(obj1));
+            var first = new object();
+            var source = new OnceEnumerable<object>(new[] {first, new object()});
+            Assert.That(source.FirstOrDefault(), Is.EqualTo(first));
         }
 
         [Test]
@@ -1031,8 +1027,8 @@ namespace BackLinq.Tests {
 
         [Test]
         public void Select_SelectorArg_ValidArguments_CorrectResult() {
-            var source = new OnceEnumerable<int>(new int[] {0, 1, 2, 3});
-            source.Select((i, index) => { return i*index; }).Compare(0, 1, 4, 9);
+            var source = new OnceEnumerable<int>(new[] {0, 1, 2, 3});
+            source.Select((i, index) => i * index).Compare(0, 1, 4, 9);
         }
 
         [Test]
@@ -1083,7 +1079,7 @@ namespace BackLinq.Tests {
             var result = petOwners.SelectMany(petOwner => petOwner.Pets, (petOwner, petName) => new {petOwner.Name, petName});
 
             // compare result with result from Microsoft implementation
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (var s in result) {
                 sb.Append(s.ToString());
             }
@@ -1248,8 +1244,7 @@ namespace BackLinq.Tests {
         [ExpectedException(typeof(ArgumentNullException))]
         public void SkipWhile_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException() {
             var source = new[] {1, 2, 3, 4, 5};
-            Func<int, bool> predicate = null;
-            source.SkipWhile(predicate);
+            source.SkipWhile((Func<int, bool>) null);
         }
 
         [Test]
@@ -1318,8 +1313,7 @@ namespace BackLinq.Tests {
         [ExpectedException(typeof(ArgumentNullException))]
         public void TakeWhile_PassNullAsPredicate_ThrowsArgumentNullException() {
             var source = new[] {1, 2, 3, 4, 5};
-            Func<int, bool> func = null;
-            source.TakeWhile(func);
+            source.TakeWhile((Func<int, bool>) null);
         }
 
         [Test]
@@ -1437,8 +1431,7 @@ namespace BackLinq.Tests {
         [ExpectedException(typeof(ArgumentNullException))]
         public void Where_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException() {
             var source = new[] {1, 2, 3, 4};
-            Func<int, bool> func = null; 
-            source.Where(func);
+            source.Where((Func<int, bool>) null);
         }
 
         [Test]
@@ -1505,8 +1498,7 @@ namespace BackLinq.Tests {
 
         [Test]
         public void EnsureTest() {
-            var enumerable = new[] {1, 2, 3};
-            Reader<int> rd = new Reader<int>(enumerable);
+            var rd = new Reader<int>(new[] {1, 2, 3});
             rd.Ensure(Is.EqualTo(1), Is.EqualTo(2), Is.EqualTo(3));
         }
 
