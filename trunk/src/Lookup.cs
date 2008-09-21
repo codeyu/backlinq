@@ -127,7 +127,7 @@ namespace System.Linq
         /// </summary>
 
         public IEnumerable<TResult> ApplyResultSelector<TResult>(
-	        Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
+            Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
             if (resultSelector == null) 
                 throw new ArgumentNullException("resultSelector");
