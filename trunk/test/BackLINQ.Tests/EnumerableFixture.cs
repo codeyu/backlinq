@@ -220,7 +220,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void DefaultIfEmpty_DefaultValue_NotEmpty_ReturnsItself() {
+        public void DefaultIfEmpty_DefaultValueArg_NotEmpty_ReturnsItself() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3});
             source.DefaultIfEmpty(5).Compare(1, 2, 3);
         }
@@ -722,7 +722,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_ValidArguments_CorrectResult() {
+        public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassingPetsAndOwners_PetsAreCorrectlyAssignedToOwners() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var pets = new OnceEnumerable<Pet>( new[]
                            {
@@ -755,7 +755,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectResult() {
+        public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArgComparerArg_PetOwnersNamesCasingIsInconsistent_CaseInsensitiveJoinIsPerformed() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var pets = new OnceEnumerable<Pet>(new[]
                            {
@@ -819,7 +819,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void LastOrDefault_EmptySource_0IsReturned() {
+        public void LastOrDefault_EmptySource_ZeroIsReturned() {
             var source = new OnceEnumerable<int>(new int[0]);
             Assert.That(source.LastOrDefault(), Is.EqualTo(0));
         }
@@ -837,7 +837,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void LastOrDefault_PredicateArg_NoMatchingElement_0IsReturned() {
+        public void LastOrDefault_PredicateArg_NoMatchingElement_ZeroIsReturned() {
             var source = new OnceEnumerable<int>(new[] {1, 3, 5, 7});
             Assert.That(source.LastOrDefault(i => i%2 == 0), Is.EqualTo(0));
         }
@@ -920,7 +920,7 @@ namespace BackLinq.Tests {
         }
        
         [Test]
-        public void OfType_ValidArguments_CorrectResult() {
+        public void OfType_EnumerableWithElementsOfDifferentTypes_OnlyDecimalsAreReturned() {
             var source = new OnceEnumerable<object>(new[] {1, "Hello", 1.234m, new object()});
             var result = source.OfType<decimal>();
             result.Compare(1.234m);
@@ -934,7 +934,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void OrderBy_KeySelector_ValidArguments_CorrectOutput() {
+        public void OrderBy_KeySelector_ArrayOfPersons_PersonsAreOrderedByAge() {
             var persons = Person.CreatePersons();
             var stack = new Stack<Person>();
             foreach (var person in persons) {
@@ -965,7 +965,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void OrderBy_KeySelectorArgComparerArg_ValidArguments_CorrectOutput() {
+        public void OrderBy_KeySelectorArgComparerArg_ArrayOfPersonsAndReversecomparer_PersonsAreOrderedByAgeUsingReversecomparer() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var result = persons.OrderBy(p => p.Age, new ReverseComparer());
             var age = 25;
@@ -978,7 +978,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void OrderByDescending_KeySelectorArg_ValidArguments_CorrectOutput() {
+        public void OrderByDescending_KeySelectorArg_ArrayOfPersons_PersonsAreOrderedByAgeDescending() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var result = persons.OrderByDescending(p => p.Age);
             int age = 25;
@@ -996,7 +996,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Range_ValidArguments_CorrectOutput() {
+        public void Range_Start10Count5_IntsFrom10To14() {
             var result = Enumerable.Range(10, 5);
             result.Compare(10, 11, 12, 13, 14);
         }
@@ -1008,31 +1008,31 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Repeat_ValidArguments_CorrectResult() {
+        public void Repeat_StringArgumentCount2_ReturnValueContainsStringArgumentTwice() {
             var result = Enumerable.Repeat("Hello World", 2);
             result.Compare("Hello World", "Hello World");
         }
 
         [Test]
-        public void Reverse_ValidArguments_CorrectResult() {
+        public void Reverse_SeriesOfInts_IntsAreCorrectlyReversed() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5});
             source.Reverse().Compare(5, 4, 3, 2, 1);
         }
 
         [Test]
-        public void Select_ValidArguments_CorrectResult() {
+        public void Select_ArrayOfPersons_AgeOfPersonsIsSelectedAccordingToPassedLambdaExpression() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             persons.Select(p => p.Age).Compare(21, 22, 23, 24);
         }
 
         [Test]
-        public void Select_SelectorArg_ValidArguments_CorrectResult() {
+        public void Select_SelectorArg_LambdaThatTakesIndexAsArgument_ReturnValueContainsElementsMultipliedByIndex() {
             var source = new OnceEnumerable<int>(new[] {0, 1, 2, 3});
             source.Select((i, index) => i * index).Compare(0, 1, 4, 9);
         }
 
         [Test]
-        public void SelectMany_SelectorArg_ValidArguments_CorrectOutput() {
+        public void SelectMany_SelectorArg_ArrayOfPersons_ReturnsASequenceWithAllLettersOfFirstnames() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
             var result = persons.SelectMany(p => p.FirstName.ToCharArray());
             var check = "PeterHerbertHubertIsidor".ToCharArray();
@@ -1049,7 +1049,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void SelectMany_Selector3Arg_ValidArguments_CorrectOutput() {
+        public void SelectMany_Selector3Arg_ArrayOfPetOwners_SelectorUsesElementIndexArgument() {
             var petOwners = new OnceEnumerable<PetOwner>( new[] 
                 { new PetOwner { Name="Higa, Sidney", 
                       Pets = new List<string>{ "Scruffy", "Sam" } },
@@ -1066,7 +1066,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void SelectMany_CollectionSelectorArgResultSelectorArg_ValidArguments_CorrectOutput() {
+        public void SelectMany_CollectionSelectorArgResultSelectorArg_ArrayOfPetOwner_ResultContainsElementForEachPetAPetOwnerHas() {
             var petOwners = new OnceEnumerable<PetOwner>( new[]
                 { new PetOwner { Name="Higa", 
                       Pets = new List<string>{ "Scruffy", "Sam" } },
@@ -1172,7 +1172,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Single_PredicateArg_ValidArguments_CorrectResult() {
+        public void Single_PredicateArg_ArrayOfIntWithOnlyOneElementSatisfyingCondition_OnlyThisElementIsReturned() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3});
             Assert.That(source.Single(i => i % 2 == 0), Is.EqualTo(2));
         }
@@ -1185,7 +1185,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void SingleOrDefault_EmptySource_0IsReturned() {
+        public void SingleOrDefault_EmptySource_ZeroIsReturned() {
             var source = new int[0];
             Assert.That(source.SingleOrDefault(), Is.EqualTo(0));
         }
@@ -1229,7 +1229,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Skip_ValidArguments_CorrectOutput() {
+        public void Skip_IntsFromOneToTenAndFifeAsSecondArg_IntsFromSixToTen() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             source.Skip(5).Compare(6, 7, 8, 9, 10);
         }
@@ -1248,13 +1248,13 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void SkipWhile_PredicateArg_ValidArguments_CorrectResult() {
+        public void SkipWhile_PredicateArg_IntsFromOneToFive_ElementsAreSkippedAsLongAsConditionIsSatisfied() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5});
             source.SkipWhile(i => i < 3).Compare(3, 4, 5);
         }
 
         [Test]
-        public void SkipWhile_PredicateArg_OtherValidArguments_CorrectResult() {
+        public void SkipWhile_PredicateArg_ArrayOfIntsWithElementsNotSatisfyingConditionAtTheEnd_IntsAtTheEndArePartOfResult() {
             var source = new OnceEnumerable<int>(new[] { 1, 2, 3, 4, 5, 1, 2, 3});
             source.SkipWhile(i => i < 3).Compare(3, 4, 5, 1, 2, 3);
         }
@@ -1267,7 +1267,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void SkipWhile_Predicate3Arg_ValidArguments_CorrectResult() {
+        public void SkipWhile_Predicate3Arg_IntsFromOneToNine_ElementsAreSkippedWhileIndexLessThanFive() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9});
             source.SkipWhile((i, index) => index < 5).Compare(6, 7, 8, 9);
         }
@@ -1280,25 +1280,25 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Sum_ValidArguments_CorrectResult() {
+        public void Sum_IntsFromOneToTen_ResultIsFiftyFive() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             Assert.That(source.Sum(), Is.EqualTo(55));
         }
 
         [Test]
-        public void Sum_NullableIntsAsArguments_CorrectResult() {
+        public void Sum_NullableIntsAsArguments_CorrectSumIsReturned() {
             var source = new OnceEnumerable<int?>(new int?[] {1, 2, null});
             Assert.That(source.Sum(), Is.EqualTo(3));
         }
 
         [Test]
-        public void Sum_SelectorArg_ValidArguments_CorrectResult() {
+        public void Sum_SelectorArg_StringArray_ResultIsSumOfStringLengthes() {
             var source = new OnceEnumerable<string>(new[] {"dog", "cat", "eagle"});
             Assert.That(source.Sum(s => s.Length), Is.EqualTo(11));
         }
 
         [Test]
-        public void Take_ValidArguments_CorrectResult() {
+        public void Take_IntsFromOneToSixAndThreeAsCount_IntsFromOneToThreeAreReturned() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6});
             source.Take(3).Compare(1, 2, 3);
         }
@@ -1317,13 +1317,13 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void TakeWhile_ValidArguments_CorrectResult() {
+        public void TakeWhile_IntsFromOneToTenAndConditionThatSquareIsSmallerThan50_IntsFromOneToSeven() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             source.TakeWhile(i => i*i < 50).Compare(1, 2, 3, 4, 5, 6, 7);
         }
 
         [Test]
-        public void ToArray_ValidArguments_CorrectResult() {
+        public void ToArray_IntsFromOneToTen_ResultIsIntArrayContainingAllElements() {
             var source = new OnceEnumerable<int>(new List<int> {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             var result = source.ToArray();
             Assert.That(result, Is.TypeOf(typeof (int[])));
@@ -1345,7 +1345,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ToDictionary_KeySelectorArg_ValidArguments_CorrectResult() {
+        public void ToDictionary_KeySelectorArg_ValidArguments_KeySelectorIsUsedForKeysInDictionary() {
             var source = new OnceEnumerable<string>(new[] {"1", "2", "3"});
             var result = source.ToDictionary(s => int.Parse(s));
             int check = 1;
@@ -1358,7 +1358,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ToDictionary_KeySelectorArgElementSelectorArg_ValidArguments_CorrectResult() {
+        public void ToDictionary_KeySelectorArgElementSelectorArg_IntsFromOneToTen_KeySelectorAndElementSelectorAreUsedForDictionaryElements() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             var result = source.ToDictionary(i => i.ToString(), i => Math.Sqrt(double.Parse(i.ToString())));
             int check = 1;
@@ -1370,7 +1370,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ToList_ValidArguments_CorrectResult() {
+        public void ToList_IntsFromOneToTen_ListOfIntsContainingAllElementsIsReturned() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             var result = source.ToList();
             Assert.That(result, Is.TypeOf(typeof(List<int>)));
@@ -1378,7 +1378,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ToLookup_KeySelectorArg_ValidArguments_CorrectResult() {
+        public void ToLookup_KeySelectorArg_Strings_LookupArrayWithStringLengthAsKeyIsReturned() {
             var source = new OnceEnumerable<string>(new[] {"eagle", "dog", "cat", "bird", "camel"});
             var result = source.ToLookup(s => s.Length);
 
@@ -1388,7 +1388,7 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void ToLookup_KeySelectorArgElementSelectorArg_ValidArguments_CorrectResult() {
+        public void ToLookup_KeySelectorArgElementSelectorArg_Strings_ElementSelectorIsUsed() {
             var source = new OnceEnumerable<string>(new[] { "eagle", "dog", "cat", "bird", "camel" });
             var result = source.ToLookup(s => s.Length, str => str.ToCharArray().Reverse());
             var enumerator = result[3].GetEnumerator();
