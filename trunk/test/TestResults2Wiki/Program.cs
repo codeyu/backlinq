@@ -10,9 +10,9 @@
 
     #endregion
 
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             if (args.Length != 1)
             {
@@ -47,11 +47,10 @@
     }
 
     /// <summary>Helps to extract method name, parameters, test condition and expectation.</summary>
-    class TestMethod
+    internal sealed class TestMethod
     {
-        private string name;
-
-        private static string[] exceptions = new[] {
+        private static readonly string[] exceptions = new[] 
+        {
             "ArgumentOutOfRangeException", 
             "InvalidOperationException", 
             "ArgumentNullException",
@@ -59,6 +58,8 @@
             "OverflowException",
             "InvalidCastException"
         };
+
+        private readonly string name;
 
         /// <param name="name">String like BackLinq.Tests.EnumerableFixture.Distinct_ComparerArg_NonDistinctValues_ReturnsOnlyDistinctValues</param>
         public TestMethod(string name)
@@ -123,7 +124,7 @@
             }
         }
 
-        private string getSplitElement(string input, int index)
+        private static string getSplitElement(string input, int index)
         {
             var splits = input.Split('_');
             return splits[splits.Length - ++index];
