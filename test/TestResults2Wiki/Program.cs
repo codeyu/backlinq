@@ -42,7 +42,6 @@
             {
                 Console.WriteLine(s);
             }
-            Console.ReadLine();
         }
     }
 
