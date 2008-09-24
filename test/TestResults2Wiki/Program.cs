@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
-namespace TestResults2Wiki {
-    class Program {
-        static void Main(string[] args) {
-            if (args.Length != 1) {
+namespace TestResults2Wiki
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            if (args.Length != 1)
+            {
                 Console.WriteLine("usage: Pass the name of the NUnit XML output as argument.");
                 System.Environment.Exit(-1);
             }
@@ -26,11 +30,12 @@ namespace TestResults2Wiki {
                                   testMethod.MethodName + ".aspx " + testMethod.MethodName + "]" +
                                   testMethod.ArgumentsInBrackets + " || " + testMethod.TestCondition + " || " +
                                   testMethod.Expectation + " ||";
-     
-            
-            
 
-            foreach (var s in testMethods) {
+
+
+
+            foreach (var s in testMethods)
+            {
                 Console.WriteLine(s);
             }
             Console.ReadLine();
@@ -38,7 +43,8 @@ namespace TestResults2Wiki {
     }
 
     /// <summary>Helps to extract method name, parameters, test condition and expectation.</summary>
-    class TestMethod {
+    class TestMethod
+    {
         private string name;
 
         private static string[] exceptions = new[] {
@@ -50,34 +56,42 @@ namespace TestResults2Wiki {
             "InvalidCastException"
         };
 
-         /// <param name="name">String like BackLinq.Tests.EnumerableFixture.Distinct_ComparerArg_NonDistinctValues_ReturnsOnlyDistinctValues</param>
-        public TestMethod(string name) {
+        /// <param name="name">String like BackLinq.Tests.EnumerableFixture.Distinct_ComparerArg_NonDistinctValues_ReturnsOnlyDistinctValues</param>
+        public TestMethod(string name)
+        {
             this.name = name;
         }
 
         /// <summary>Name of the method to test.</summary>
-        public string MethodName {
-            get {
+        public string MethodName
+        {
+            get
+            {
                 return (name.Split('_')[0].Split('.')[3]);
             }
         }
 
         /// <summary>Arguments of the methode to test.</summary>
-        public string[] Arguments {
-            get {
+        public string[] Arguments
+        {
+            get
+            {
                 if (name.Split('_').Length != 4) return new string[0];
-                return name.Split('_')[1].Substring(0, name.Split('_')[1].Length - 3).Split(new[] {"Arg"},
+                return name.Split('_')[1].Substring(0, name.Split('_')[1].Length - 3).Split(new[] { "Arg" },
                                                                                             StringSplitOptions.
                                                                                                 RemoveEmptyEntries);
             }
         }
 
-        public string ArgumentsInBrackets {
-            get {
+        public string ArgumentsInBrackets
+        {
+            get
+            {
                 var arguments = Arguments;
                 if (arguments.Length == 0) return "()";
                 StringBuilder retVal = new StringBuilder().Append("(");
-                for (int i = 0; i < arguments.Length -1; i++) {
+                for (int i = 0; i < arguments.Length - 1; i++)
+                {
                     retVal.Append(arguments[i]);
                     retVal.Append(" ");
                 }
@@ -87,42 +101,52 @@ namespace TestResults2Wiki {
             }
         }
 
-        public string TestCondition {
-            get {
+        public string TestCondition
+        {
+            get
+            {
                 var strCondition = getSplitElement(name, 1);
                 return CamelCaseToSentence(strCondition);
             }
         }
 
-        public string Expectation {
-            get {
+        public string Expectation
+        {
+            get
+            {
                 var strExpectation = getSplitElement(name, 0);
                 return CamelCaseToSentence(strExpectation);
             }
         }
 
-        private string getSplitElement(string input, int index) {
+        private string getSplitElement(string input, int index)
+        {
             var splits = input.Split('_');
             return splits[splits.Length - ++index];
         }
 
-        private static string CamelCaseToSentence(string camelCase) {
-            return string.Join(" ", 
+        private static string CamelCaseToSentence(string camelCase)
+        {
+            return string.Join(" ",
                              SplitCamelCaseWords(camelCase)
                              .Select((word, i) => i > 0 ? Capitalize(word) : word)
                              .ToArray());
         }
 
-        private static string Capitalize(string word) {
+        private static string Capitalize(string word)
+        {
             if (!exceptions.Contains(word))
                 return Char.ToLower(word[0]) + word.Substring(1);
             return word;
         }
 
-        private static IEnumerable<string> SplitCamelCaseWordsOld(string camelCase) {
+        private static IEnumerable<string> SplitCamelCaseWordsOld(string camelCase)
+        {
             var sb = new StringBuilder();
-            foreach (var ch in camelCase) {
-                if (char.IsUpper(ch) && sb.Length > 0) {
+            foreach (var ch in camelCase)
+            {
+                if (char.IsUpper(ch) && sb.Length > 0)
+                {
                     yield return sb.ToString();
                     sb.Length = 0;
                 }
@@ -132,12 +156,15 @@ namespace TestResults2Wiki {
                 yield return sb.ToString();
         }
 
-        private static IEnumerable<string> SplitCamelCaseWords(string camelCase) {
+        private static IEnumerable<string> SplitCamelCaseWords(string camelCase)
+        {
             var sb = new StringBuilder();
-            for (int i = 0; i < camelCase.Length; i++ ) {
+            for (int i = 0; i < camelCase.Length; i++)
+            {
 
                 var l = checkException(camelCase.Substring(i));
-                if (l > -1) {
+                if (l > -1)
+                {
                     yield return sb.ToString();
                     sb.Length = 0;
                     yield return camelCase.Substring(i, l);
@@ -146,7 +173,8 @@ namespace TestResults2Wiki {
                 }
 
                 var ch = camelCase[i];
-                if (char.IsUpper(ch) && sb.Length > 0) {
+                if (char.IsUpper(ch) && sb.Length > 0)
+                {
                     yield return sb.ToString();
                     sb.Length = 0;
                 }
@@ -157,9 +185,12 @@ namespace TestResults2Wiki {
                 yield return sb.ToString();
         }
 
-        private static int checkException(string remaining) {
-            foreach (var s in exceptions) {
-                if (remaining.StartsWith(s)) {
+        private static int checkException(string remaining)
+        {
+            foreach (var s in exceptions)
+            {
+                if (remaining.StartsWith(s))
+                {
                     return s.Length;
                 }
             }
