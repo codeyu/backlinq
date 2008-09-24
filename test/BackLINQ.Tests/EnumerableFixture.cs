@@ -1039,26 +1039,16 @@ namespace BackLinq.Tests
         public void OrderBy_KeySelector_ArrayOfPersons_PersonsAreOrderedByAge()
         {
             var persons = Person.CreatePersons();
-            var stack = new Stack<Person>();
-            foreach (var person in persons)
-            {
-                stack.Push(person);
-            }
-            var reversePersons = new List<Person>();
-            foreach (var person in stack)
-            {
-                reversePersons.Add(person);
-            }
+            var reversePersons = (Person[]) persons.Clone();
+            Array.Reverse(reversePersons);
             var source = new OnceEnumerable<Person>(reversePersons);
             var result = source.OrderBy(p => p.Age);
 
-            int age = 20;
+            var age = 21;
             foreach (var person in result)
-            {
-                age++;
-                Assert.That(person.Age, Is.EqualTo(age));
-            }
-            Assert.That(age, Is.EqualTo(24));
+                Assert.That(person.Age, Is.EqualTo(age++));
+
+            Assert.That(age, Is.EqualTo(25));
         }
 
         /// <summary>
