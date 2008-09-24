@@ -99,7 +99,8 @@ namespace BackLinq.Tests {
         [Test]
         [ExpectedException(typeof(InvalidCastException))]
         public void Cast_InvalidSource_ThrowsInvalidCastException() {
-            var source = new OnceEnumerable<object>(new[] {1000, "hello", new object()});
+            // .........................................V----V Needed for Mono (CS0029)
+            var source = new OnceEnumerable<object>(new object[] {1000, "hello", new object()});
             var target = source.Cast<byte>();
             // do something with the results so Cast will really be executed (deferred execution)
             var sb = new StringBuilder();
@@ -880,7 +881,8 @@ namespace BackLinq.Tests {
         [Test]
         public void Max_SelectorArg_ListOfObjects_MaxSelectedValueIsReturned() {
             var persons = new OnceEnumerable<Person>(Person.CreatePersons());
-            Assert.That(persons.Max(p => p.Age), Is.EqualTo(24));
+            // .....................V-----------------V Needed for Mono (CS0121)
+            Assert.That(persons.Max((Func<Person, int>)(p => p.Age)), Is.EqualTo(24));
         }
 
         [Test]
@@ -911,7 +913,8 @@ namespace BackLinq.Tests {
        
         [Test]
         public void OfType_EnumerableWithElementsOfDifferentTypes_OnlyDecimalsAreReturned() {
-            var source = new OnceEnumerable<object>(new[] {1, "Hello", 1.234m, new object()});
+            // .........................................V----V Needed for Mono (CS0029)
+            var source = new OnceEnumerable<object>(new object[] {1, "Hello", 1.234m, new object()});
             var result = source.OfType<decimal>();
             result.Compare(1.234m);
         }
@@ -1284,7 +1287,8 @@ namespace BackLinq.Tests {
         [Test]
         public void Sum_SelectorArg_StringArray_ResultIsSumOfStringLengthes() {
             var source = new OnceEnumerable<string>(new[] {"dog", "cat", "eagle"});
-            Assert.That(source.Sum(s => s.Length), Is.EqualTo(11));
+            // ....................V-----------------V Needed for Mono (CS0121)
+            Assert.That(source.Sum((Func<string, int>)(s => s.Length)), Is.EqualTo(11));
         }
 
         [Test]
