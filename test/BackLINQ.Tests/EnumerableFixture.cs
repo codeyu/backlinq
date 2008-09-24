@@ -62,40 +62,38 @@ namespace BackLinq.Tests {
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void Aggregate_FuncArg_EmptySource_ThrowsInvalidOperationException() {
+        public void Aggregate_EmptySource_ThrowsInvalidOperationException() {
             var source = new OnceEnumerable<int>(new int[0]);
-            source.Aggregate((a, b) => a + b);
+            source.Aggregate((a, b) => { throw new NotImplementedException(); });
         }
 
         [Test]
-        public void Aggregate_FuncArg_ValidArguments_CorrectResult() {
+        public void Aggregate_AddFuncOnIntegers_ReturnsTotal() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
             var result = source.Aggregate((a, b) => a + b);
             Assert.That(result, Is.EqualTo(55));
         }
 
         [Test]
-        public void Aggregate_AccumulatorArgFuncArg_ValidArguments_CorrectResult() {
+        public void Aggregate_AddFuncOnIntegersWithSeed_ReturnsTotal() {
             var source = new OnceEnumerable<int>(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var result = source.Aggregate(100, (a, b) => a + b);
             Assert.That(result, Is.EqualTo(155));
         }
 
         [Test]
-        public void Empty__YieldsNoResults() {
+        public void Empty_YieldsEmptySource() {
             var source = Enumerable.Empty<String>();
             Assert.That(source, Is.Not.Null);
-
             var e = source.GetEnumerator();
             Assert.That(e, Is.Not.Null);
-
             Assert.That(e.MoveNext(), Is.False);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Cast_NullAsArgument_ThrowsArgumentNullException() {
-            Enumerable.Cast<Object>(null);
+        public void Cast_NullSource_ThrowsArgumentNullException() {
+            Enumerable.Cast<object>(null);
         }
 
         [Test]
@@ -110,39 +108,35 @@ namespace BackLinq.Tests {
             }
         }
 
-        /// <summary>Tests a downcast from object to int.</summary>
         [Test]
-        public void Cast_ValidArguments_CorrectResult() {
+        public void Cast_ObjectSourceContainingIntegers_YieldsDowncastedIntegers() {
             var source = new OnceEnumerable<object>(new List<object> {1, 10, 100});
             source.Cast<int>().Compare(1, 10, 100);
         }
 
-        /// <summary>Tests an upcast from int to object.</summary>
         [Test]
-        public void Cast_ArrayOfInts_CorrectCastToObjects() {
+        public void Cast_Integers_YieldsUpcastedObjects() {
             new OnceEnumerable<int>(new[] {1, 10, 100}).Cast<object>().Compare(1, 10, 100);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void All_Null_ThrowsArgumentNullException() {
-            Enumerable.All(null, (int i) => i >= 0);
+        public void All_NullSource_ThrowsArgumentNullException() {
+            Enumerable.All(null, (int i) => { throw new NotImplementedException(); });
         }
 
         [Test]
-        public void All_ArgumentsNotSatifyingCondition_ReturnsFalse() {
-            var source = new OnceEnumerable<int>(new List<int> {-100, -1, 0, 1, 100});
+        public void All_SomeSourceElementsNotSatifyingPredicate_ReturnsFalse() {
+            var source = new OnceEnumerable<int>(new[] {-100, -1, 0, 1, 100});
             Assert.That(source.All(i => i >= 0), Is.False);
         }
 
         [Test]
-        public void All_ArgumentsSatisfyingCondition_ReturnsTrue() {
-            var source = new OnceEnumerable<int>(new List<int> { -100, -1, 0, 1, 100 });
+        public void All_SourceElementsSatisfyingPredicate_ReturnsTrue() {
+            var source = new OnceEnumerable<int>(new[] { -100, -1, 0, 1, 100 });
             Assert.That(source.All(i => i >= -100), Is.True);
         }
 
-        /// <summary>Tests weather Any() returns false for an empty list.
-        /// Tests weather Any() returns true for a list with one element.</summary>
         [Test]
         public void Any_EmptySource_ReturnsFalse() {
             var source = new object[0];
@@ -155,14 +149,10 @@ namespace BackLinq.Tests {
             Assert.That(source.Any(), Is.True);
         }
 
-        /// <summary>
-        /// Tests weather Any() works if you call the overload which takes a Func(<T>, bool)
-        /// </summary>
         [Test]
         public void Any_PredicateArg_EmptySource_ReturnsFalse() {
-            var func = new Func<int, bool>(i => i > 0);
-            var source = new OnceEnumerable<int>(new List<int>());
-            Assert.That(source.Any(func), Is.False);
+            var source = new OnceEnumerable<int>(new int[0]);
+            Assert.That(source.Any(i => { throw new NotImplementedException(); }), Is.False);
         }
 
         [Test]
@@ -177,89 +167,89 @@ namespace BackLinq.Tests {
         }
 
         [Test]
-        public void Average_Decimals_CorrectResult() {
+        public void Average_Decimals_ReturnsToleratableAverage() {
             var source = new OnceEnumerable<decimal>(new List<decimal> {-10000, 2.0001m, 50});
             Assert.That(source.Average(), Is.EqualTo(-3315.999966).Within(0.00001));
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Concat_FirstArgumentNull_ThrowsArgumentNullException() {
-            Enumerable.Concat(null, new[] {3, 5});
+        public void Concat_FirstSourceNull_ThrowsArgumentNullException() {
+            Enumerable.Concat(null, new object[0]);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Concat_SecondArgumentNull_ThrowsArgumentNullException() {
-            new[] { 3, 5 }.Concat(null);
+        public void Concat_SecondSourceNull_ThrowsArgumentNullException() {
+            new object[0].Concat(null);
         }
 
         [Test]
         public void Concat_TwoLists_CorrectOrder() {
-            var list1 = new OnceEnumerable<int>(new[] {1, 2, 3});
-            var list2 = new OnceEnumerable<int>(new[] {4, 5, 6});
-            list1.Concat(list2).Compare(1, 2, 3, 4, 5, 6);
+            var first = new OnceEnumerable<int>(new[] {1, 2, 3});
+            var second = new OnceEnumerable<int>(new[] {4, 5, 6});
+            first.Concat(second).Compare(1, 2, 3, 4, 5, 6);
         }
 
         [Test]
-        public void DefaultIfEmpty_NotEmpty_ReturnsItself() {
+        public void DefaultIfEmpty_Inegers_YieldsIntegersInOrder() {
             var source = new OnceEnumerable<int>(new[] { 1, 2, 3 });
             source.DefaultIfEmpty(1).Compare(1, 2, 3);
         }
 
         [Test]
-        public void DefaultIfEmpty_Empty_ReturnsZero() {
+        public void DefaultIfEmpty_EmptyIntegerArray_ReturnsZero() {
             var source = new OnceEnumerable<int>(new int[0]);
             source.DefaultIfEmpty().Compare(0);
         }
 
         [Test]
-        public void DefaultIfEmpty_DefaultValueArg_Empty_ReturnsDefault() {
+        public void DefaultIfEmpty_DefaultValueArg_EmptyIntegerArray_ReturnsDefault() {
             var source = new OnceEnumerable<int>(new int[0]);
             source.DefaultIfEmpty(5).Compare(5);
         }
 
         [Test]
-        public void DefaultIfEmpty_DefaultValueArg_NotEmpty_ReturnsItself() {
+        public void DefaultIfEmpty_DefaultValueArg_Integers_YieldsIntegersInOrder() {
             var source = new OnceEnumerable<int>(new[] {1, 2, 3});
             source.DefaultIfEmpty(5).Compare(1, 2, 3);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Distinct_ArgumentNull_ThrowsArgumentNullException() {
-            Enumerable.Distinct<int>(null);
+        public void Distinct_NullSource_ThrowsArgumentNullException() {
+            Enumerable.Distinct<object>(null);
         }
 
         [Test]
-        public void Distinct_ArgumentWithNonDistinctValues_ReturnsOnlyDistinctValues() {
-            var source = new OnceEnumerable<int>(new[] {1, 2, 2, 3});
-            source.Distinct().Compare(1, 2, 3);
+        public void Distinct_IntegersWithSomeDuplicates_YieldsIntegersInSourceOrderWithoutDuplicates() {
+            var source = new OnceEnumerable<int>(new[] {1, 2, 2, 3, 4, 4, 4, 4, 5});
+            source.Distinct().Compare(1, 2, 3, 4, 5);
         }
 
         [Test]
-        public void Distinct_ComparerArg_NonDistinctValues_ReturnsOnlyDistinctValues() {
-            var source = new OnceEnumerable<int>(new[] {1, 2, 2, 3});
-            source.Distinct(EqualityComparer<int>.Default).Compare(1, 2, 3);
+        public void Distinct_MixedSourceStringsWithCaseIgnoringComparer_YieldsFirstCaseOfEachDistinctStringInSourceOrder() {
+            var source = new OnceEnumerable<string>("Foo Bar BAZ BaR baz FOo".Split());
+            source.Distinct(StringComparer.InvariantCultureIgnoreCase).Compare("Foo", "Bar", "BAZ");
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void ElementAt_ArgumentOutOfRange_ThrowsArgumentOutOfRangeException() {
+        public void ElementAt_IndexOutOfRange_ThrowsArgumentOutOfRangeException() {
             var source = new OnceEnumerable<int>(new[] {3, 5, 7});
             source.ElementAt(3);
         }
 
         [Test]
-        public void ElementAt_ValidArguments_ReturnsCorrectValues() {
+        public void ElementAt_Integers_ReturnsCorrectValues() {
             var source = new[] {15, 2, 7};
-            Assert.That(source.ElementAt(0), Is.EqualTo(15));
-            Assert.That(source.ElementAt(1), Is.EqualTo(2));
-            Assert.That(source.ElementAt(2), Is.EqualTo(7));
+            Assert.That(new OnceEnumerable<int>(source).ElementAt(0), Is.EqualTo(15));
+            Assert.That(new OnceEnumerable<int>(source).ElementAt(1), Is.EqualTo(2));
+            Assert.That(new OnceEnumerable<int>(source).ElementAt(2), Is.EqualTo(7));
         }
 
         [Test]
-        public void ElementAtOrDefault_IntArray_ReturnsZeroIfIndexOutOfRange() {
+        public void ElementAtOrDefault_Integers_ReturnsZeroIfIndexOutOfRange() {
             var source = new OnceEnumerable<int>(new[] {3, 6, 8});
             Assert.That(source.ElementAtOrDefault(3), Is.EqualTo(0));
         }
