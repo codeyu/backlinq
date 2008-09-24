@@ -1,11 +1,15 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-
-namespace TestResults2Wiki
+﻿namespace TestResults2Wiki
 {
+    #region Imports
+
+    using System;
+    using System.Text;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Xml;
+
+    #endregion
+
     class Program
     {
         static void Main(string[] args)
