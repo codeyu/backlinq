@@ -50,18 +50,18 @@ namespace TestResults2Wiki
 
             var testCases = testResults.SelectNodes("//test-suite[@name='EnumerableFixture']/results/test-case");
 
+            const string msdnUrlFormat = @"http://msdn.microsoft.com/en-us/library/system.linq.enumerable.{0}.aspx";
 
             var testMethods = from XmlElement e in testCases
                               where e.GetAttribute("name").Split('_').Length > 1
                               let testMethod = new TestMethod(e.Attributes["name"].Value)
                               select
-                                  "|| [http://msdn.microsoft.com/en-us/library/system.ling.enumerable." +
-                                  testMethod.MethodName + ".aspx " + testMethod.MethodName + "]" +
-                                  testMethod.ArgumentsInBrackets + " || " + testMethod.TestCondition + " || " +
-                                  testMethod.Expectation + " ||";
-
-
-
+                                  string.Format("|| [{0} {1}]{2} || {3} || {4} ||", 
+                                      /* 0 */ string.Format(msdnUrlFormat, testMethod.MethodName.ToLowerInvariant()),
+                                      /* 1 */ testMethod.MethodName,
+                                      /* 2 */ testMethod.ArgumentsInBrackets,
+                                      /* 3 */ testMethod.TestCondition,
+                                      /* 4 */ testMethod.Expectation);
 
             foreach (var s in testMethods)
             {
