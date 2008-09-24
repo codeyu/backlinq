@@ -414,6 +414,10 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
 
+            var list = source as IList<TSource>;    // optimized case for lists
+            if (list != null)
+                return list.Count > 0 ? list[list.Count - 1] : empty();
+
             using (var e = source.GetEnumerator())
             {
                 if (!e.MoveNext())

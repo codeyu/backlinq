@@ -30,6 +30,7 @@ namespace BackLinq.Tests
     #region Imports
 
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text;
@@ -859,10 +860,24 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Last_ListOfInts_LastElementIsReturned()
+        public void Last_Integers_ReturnsLastElement()
         {
             var source = new OnceEnumerable<int>(new[] { 1, 2, 3 });
             Assert.That(source.Last(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void Last_IntegerListOptimization_ReturnsLastElementWithoutEnumerating()
+        {
+            var source = new NonEnumerableList<int>(new[] { 1, 2, 3 });
+            Assert.That(source.Last(), Is.EqualTo(3));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Last_EmptyIntegerListOptimization_ThrowsInvalidOperationException()
+        {
+            new NonEnumerableList<int>().Last();
         }
 
         [Test]
@@ -1683,6 +1698,27 @@ namespace BackLinq.Tests
             var enumerable = new[] { 1, 2, 3 };
             var reader = new Reader<int>(enumerable);
             reader.Compare(1, 2, 3);
+        }
+    }
+
+    [ Serializable ]
+    internal sealed class NonEnumerableList<T> : List<T>, IEnumerable<T>
+    {
+        public NonEnumerableList() {}
+
+        public NonEnumerableList(IEnumerable<T> collection) : 
+            base(collection) {}
+
+        // Re-implement GetEnumerator to be undefined.
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable<T>) this).GetEnumerator();
         }
     }
 }
