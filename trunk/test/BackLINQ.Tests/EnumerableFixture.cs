@@ -27,7 +27,6 @@
 
 namespace BackLinq.Tests
 {
-
     #region Imports
 
     using System;
@@ -45,10 +44,7 @@ namespace BackLinq.Tests
     [TestFixture]
     public sealed class EnumerableFixture
     {
-        /// <summary>
-        /// Stores the Culture of the Thread do undo the change in the TearDown.
-        /// </summary>
-        private CultureInfo initialCulture;
+        private CultureInfo initialCulture; // Thread culture saved during Setup to be undone in TearDown.
 
         [SetUp]
         public void SetUp()
