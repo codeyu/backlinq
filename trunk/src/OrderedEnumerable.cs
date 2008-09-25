@@ -39,13 +39,13 @@ namespace BackLinq
     internal sealed class OrderedEnumerable<T, K> : IOrderedEnumerable<T>
     {
         private readonly IEnumerable<T> _source;
-        private readonly Comparison<T> _comparison;
+        private readonly List<Comparison<T>> _comparisons;
 
         public OrderedEnumerable(IEnumerable<T> source, 
             Func<T, K> keySelector, IComparer<K> comparer, bool descending) :
             this(source, null, keySelector, comparer, descending) {}
 
-        private OrderedEnumerable(IEnumerable<T> source, Comparison<T> parent,
+        private OrderedEnumerable(IEnumerable<T> source, List<Comparison<T>> comparisons,
             Func<T, K> keySelector, IComparer<K> comparer, bool descending)
         {
             if (source == null) throw new ArgumentNullException("source");
@@ -54,38 +54,56 @@ namespace BackLinq
             _source = source;
             
             comparer = comparer ?? Comparer<K>.Default;
-            
-            Comparison<T> comparison = (x, y) 
-                => (descending ? -1 : 1) * comparer.Compare(keySelector(x), keySelector(y));
-            
-            _comparison = parent == null ? comparison : (x, y) =>
-            {
-                var result = parent(x, y);
-                return result != 0 ? result : comparison(x, y);
-            };
+
+            if (comparisons == null)
+                comparisons = new List<Comparison<T>>(/* capacity */ 4);
+
+            comparisons.Add((x, y) 
+                => (descending ? -1 : 1) * comparer.Compare(keySelector(x), keySelector(y)));
+
+            _comparisons = comparisons;
         }
 
         public IOrderedEnumerable<T> CreateOrderedEnumerable<KK>(
             Func<T, KK> keySelector, IComparer<KK> comparer, bool descending)
         {
-            return new OrderedEnumerable<T, KK>(_source, _comparison, keySelector, comparer, descending);
+            return new OrderedEnumerable<T, KK>(_source, _comparisons, keySelector, comparer, descending);
         }
 
         public IEnumerator<T> GetEnumerator()
         {
             //
-            // Convert the source sequence into a sequence of tuples 
-            // where the second element tags the position of the element 
-            // from the source sequence (First). The position is then used 
-            // to perform a stable sort. Where two keys compare equal,
-            // the position can be used to break the tie.
+            // We sort using List<T>.Sort, but docs say that it performs an 
+            // unstable sort. LINQ, on the other hand, says OrderBy performs 
+            // a stable sort. So convert the source sequence into a sequence 
+            // of tuples where the second element tags the position of the 
+            // element from the source sequence (First). The position is 
+            // then used as a tie breaker when all keys compare equal,
+            // thus making the sort stable.
             //
 
             var list = _source.Select((e, i) => new Tuple<T, int>(e, i)).ToList();
             
-            list.Sort((x, y) => {
-                var result = _comparison(x.First, y.First);
-                return result != 0 ? result : /* stabilizer */ x.Second.CompareTo(y.Second);
+            list.Sort((x, y) => 
+            {
+                //
+                // Compare keys from left to right.
+                //
+
+                var comparisons = _comparisons;
+                for (var i = 0; i < comparisons.Count; i++)
+                {
+                    var result = comparisons[i](x.First, y.First);
+                    if (result != 0)
+                        return result;
+                }
+
+                //
+                // All keys compared equal so now break the tie by their
+                // position in the original sequence, making the sort stable.
+                //
+
+                return x.Second.CompareTo(y.Second);
             });
 
             return list.Select(pv => pv.First).GetEnumerator();
