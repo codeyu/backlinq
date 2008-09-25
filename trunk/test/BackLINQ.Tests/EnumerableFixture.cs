@@ -1085,6 +1085,32 @@ namespace BackLinq.Tests
             }
         }
 
+        [Test]
+        public void ThenBy_KeySelector_DataWithDuplicateKeys_YieldsStablySortedData()
+        {
+            var data = new[]
+            {
+                new { Position = 1, LastName = "Smith", FirstName = "John" },
+                new { Position = 2, LastName = "Smith", FirstName = "Jack" },
+                new { Position = 3, LastName = "Smith", FirstName = "John" },
+                new { Position = 4, LastName = "Smith", FirstName = "Jack" },
+                new { Position = 5, LastName = "Smith", FirstName = "John" },
+                new { Position = 6, LastName = "Smith", FirstName = "Jack" },
+            };
+
+            var result = data.Once().OrderBy(e => e.LastName).ThenBy(e => e.FirstName);
+            using (var e = result.GetEnumerator())
+            {
+                e.MoveNext(); Assert.That(e.Current.Position, Is.EqualTo(2));
+                e.MoveNext(); Assert.That(e.Current.Position, Is.EqualTo(4));
+                e.MoveNext(); Assert.That(e.Current.Position, Is.EqualTo(6));
+                e.MoveNext(); Assert.That(e.Current.Position, Is.EqualTo(1));
+                e.MoveNext(); Assert.That(e.Current.Position, Is.EqualTo(3));
+                e.MoveNext(); Assert.That(e.Current.Position, Is.EqualTo(5));
+                Assert.That(e.MoveNext(), Is.False);
+            }
+        }
+
         /// <summary>
         /// To sort ints in descending order.
         /// </summary>

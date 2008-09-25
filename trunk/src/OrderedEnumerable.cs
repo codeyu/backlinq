@@ -39,13 +39,13 @@ namespace BackLinq
     internal sealed class OrderedEnumerable<T, K> : IOrderedEnumerable<T>
     {
         private readonly IEnumerable<T> _source;
-        private readonly Comparison<Tuple<T, int>> _comparison;
+        private readonly Comparison<T> _comparison;
 
         public OrderedEnumerable(IEnumerable<T> source, 
             Func<T, K> keySelector, IComparer<K> comparer, bool descending) :
             this(source, null, keySelector, comparer, descending) {}
 
-        private OrderedEnumerable(IEnumerable<T> source, Comparison<Tuple<T, int>> parent,
+        private OrderedEnumerable(IEnumerable<T> source, Comparison<T> parent,
             Func<T, K> keySelector, IComparer<K> comparer, bool descending)
         {
             if (source == null) throw new ArgumentNullException("source");
@@ -54,11 +54,10 @@ namespace BackLinq
             _source = source;
             
             comparer = comparer ?? Comparer<K>.Default;
-            Comparison<Tuple<T, int>> comparison = (x, y) =>
-            {
-                var result = comparer.Compare(keySelector(x.First), keySelector(y.First));
-                return (descending ? -1 : 1) * (result != 0 ? result : /* stabilizer */ x.Second.CompareTo(y.Second));
-            };            
+            
+            Comparison<T> comparison = (x, y) 
+                => (descending ? -1 : 1) * comparer.Compare(keySelector(x), keySelector(y));
+            
             _comparison = parent == null ? comparison : (x, y) =>
             {
                 var result = parent(x, y);
@@ -75,16 +74,22 @@ namespace BackLinq
         public IEnumerator<T> GetEnumerator()
         {
             //
-            // We convert the source sequence into a sequence of tuples 
+            // Convert the source sequence into a sequence of tuples 
             // where the second element tags the position of the element 
             // from the source sequence (First). The position is then used 
-            // to perform a stable sort so where two keys compare equal,
+            // to perform a stable sort. Where two keys compare equal,
             // the position can be used to break the tie.
             //
 
             var list = _source.Select((e, i) => new Tuple<T, int>(e, i)).ToList();
-            list.Sort(_comparison);
+            
+            list.Sort((x, y) => {
+                var result = _comparison(x.First, y.First);
+                return result != 0 ? result : /* stabilizer */ x.Second.CompareTo(y.Second);
+            });
+
             return list.Select(pv => pv.First).GetEnumerator();
+
         }
 
         IEnumerator IEnumerable.GetEnumerator()
