@@ -1385,7 +1385,7 @@ namespace System.Linq
             CheckNotNull(source, "source");
             CheckNotNull(keySelector, "keySelector");
 
-            return new OrderedEnumerable<TSource, TKey>(source, null, keySelector, comparer, /* descending */ false);
+            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, /* descending */ false);
         }
 
         /// <summary>
@@ -1412,7 +1412,7 @@ namespace System.Linq
             CheckNotNull(source, "source");
             CheckNotNull(source, "keySelector");
 
-            return new OrderedEnumerable<TSource, TKey>(source, null, keySelector, comparer, /* descending */ true);
+            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer, /* descending */ true);
         }
 
         /// <summary>

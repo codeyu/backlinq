@@ -5,7 +5,7 @@
 //
 //  Author(s):
 //
-//      Dominik Hug, http://www.dominikhug.ch
+//      Atif Aziz, http://www.raboof.com
 //
 // This library is free software; you can redistribute it and/or modify it 
 // under the terms of the New BSD License, a copy of which should have 
@@ -25,48 +25,51 @@
 //
 #endregion
 
-namespace BackLinq.Tests
+namespace BackLinq
 {
     #region Imports
 
     using System;
-    using System.Collections;
     using System.Collections.Generic;
+    using System.Text;
 
     #endregion
 
-    internal static class Enumerable2
+    [ Serializable ]
+    internal struct Tuple<TFirst, TSecond> : IEquatable<Tuple<TFirst, TSecond>>
     {
-        public static IEnumerable<T> Once<T>(this IEnumerable<T> source)
+        public TFirst First { get; private set; }
+        public TSecond Second { get; private set; }
+
+        public Tuple(TFirst first, TSecond second) : this()
         {
-            return new OnceEnumerable<T>(source);
-        }
-    }
-
-    /// <summary>
-    /// This wrapper is used to test if the LINQ operators call GetEnumerator() more than once.
-    /// </summary>
-
-    internal sealed class OnceEnumerable<T> : IEnumerable<T>
-    {
-        private IEnumerable<T> inner;
-
-        public OnceEnumerable(IEnumerable<T> inner)
-        {
-            this.inner = inner;
+            First = first;
+            Second = second;
         }
 
-        public IEnumerator<T> GetEnumerator()
+        public override bool Equals(object obj)
         {
-            if (inner == null) throw new Exception("A LINQ Operator called GetEnumerator() twice.");
-            IEnumerator<T> enumerator = inner.GetEnumerator();
-            inner = null;
-            return enumerator;
+            return obj != null 
+                   && obj is Tuple<TFirst, TSecond> 
+                   && base.Equals((Tuple<TFirst, TSecond>) obj);
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public bool Equals(Tuple<TFirst, TSecond> other)
         {
-            return GetEnumerator();
+            return EqualityComparer<TFirst>.Default.Equals(other.First, First) 
+                   && EqualityComparer<TSecond>.Default.Equals(other.Second, Second);
+        }
+
+        public override int GetHashCode()
+        {
+            var num = 0x7a2f0b42;
+            num = (-1521134295 * num) + EqualityComparer<TFirst>.Default.GetHashCode(First);
+            return (-1521134295 * num) + EqualityComparer<TSecond>.Default.GetHashCode(Second);
+        }
+
+        public override string ToString()
+        {
+            return string.Format(@"{{ First = {0}, Second = {1} }}", First, Second);
         }
     }
 }

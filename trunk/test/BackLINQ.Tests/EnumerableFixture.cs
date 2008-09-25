@@ -1051,6 +1051,40 @@ namespace BackLinq.Tests
             Assert.That(age, Is.EqualTo(25));
         }
 
+        [Test]
+        public void OrderBy_KeySelector_DataWithDuplicateKeys_YieldsStablySortedData()
+        {
+            var data = new[]
+            {
+                new { Number = 4, Text = "four" },
+                new { Number = 4, Text = "quatre" },
+                new { Number = 4, Text = "vier" },
+                new { Number = 4, Text = "quattro" },
+                new { Number = 1, Text = "one" },
+                new { Number = 2, Text = "two" },
+                new { Number = 2, Text = "deux" },
+                new { Number = 3, Text = "three" },
+                new { Number = 3, Text = "trois" },
+                new { Number = 3, Text = "drei" },
+            };
+
+            var result = data.Once().OrderBy(e => e.Number);
+            using (var e = result.GetEnumerator())
+            {
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("one"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("two"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("deux"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("three"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("trois"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("drei"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("four"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("quatre"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("vier"));
+                e.MoveNext(); Assert.That(e.Current.Text, Is.EqualTo("quattro"));
+                Assert.That(e.MoveNext(), Is.False);
+            }
+        }
+
         /// <summary>
         /// To sort ints in descending order.
         /// </summary>
