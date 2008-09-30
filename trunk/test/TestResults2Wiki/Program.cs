@@ -30,6 +30,7 @@ namespace TestResults2Wiki
     #region Imports
 
     using System;
+    using System.Diagnostics;
     using System.Linq;
     using System.Xml;
 
@@ -37,13 +38,26 @@ namespace TestResults2Wiki
 
     internal static class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
+        {
+            try
+            {
+                Run(args);
+                return 0;
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.Message);
+                Trace.TraceError(e.ToString());
+                return -1;
+            }
+        }
+
+        private static void Run(string[] args) 
         {
             if (args.Length != 1)
-            {
-                Console.WriteLine("usage: Pass the name of the NUnit XML output as argument.");
-                System.Environment.Exit(-1);
-            }
+                throw new ApplicationException("Missing NUnit XML output file name argument.");
+
             XmlDocument testResults = new XmlDocument()/*.Load(args[0])*/;
             testResults.Load(args[0]);
             Console.WriteLine("|| *Method under test* || *Test condition* || *Expected result* ||");
@@ -57,11 +71,11 @@ namespace TestResults2Wiki
                               let testMethod = new TestMethod(e.Attributes["name"].Value)
                               select
                                   string.Format("|| [{0} {1}]{2} || {3} || {4} ||", 
-                                      /* 0 */ string.Format(msdnUrlFormat, testMethod.MethodName.ToLowerInvariant()),
-                                      /* 1 */ testMethod.MethodName,
-                                      /* 2 */ testMethod.ArgumentsInBrackets,
-                                      /* 3 */ testMethod.TestCondition,
-                                      /* 4 */ testMethod.Expectation);
+                                                /* 0 */ string.Format(msdnUrlFormat, testMethod.MethodName.ToLowerInvariant()),
+                                                /* 1 */ testMethod.MethodName,
+                                                /* 2 */ testMethod.ArgumentsInBrackets,
+                                                /* 3 */ testMethod.TestCondition,
+                                                /* 4 */ testMethod.Expectation);
 
             foreach (var s in testMethods)
             {
