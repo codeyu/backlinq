@@ -100,7 +100,7 @@ namespace TestResults2Wiki
         {
             get
             {
-                var strCondition = getSplitElement(name, 1);
+                var strCondition = GetSplitElement(name, 1);
                 return CamelCaseToSentence(strCondition);
             }
         }
@@ -109,12 +109,12 @@ namespace TestResults2Wiki
         {
             get
             {
-                var strExpectation = getSplitElement(name, 0);
+                var strExpectation = GetSplitElement(name, 0);
                 return CamelCaseToSentence(strExpectation);
             }
         }
 
-        private static string getSplitElement(string input, int index)
+        private static string GetSplitElement(string input, int index)
         {
             var splits = input.Split('_');
             return splits[splits.Length - ++index];
@@ -157,7 +157,7 @@ namespace TestResults2Wiki
             for (int i = 0; i < camelCase.Length; i++)
             {
 
-                var l = checkException(camelCase.Substring(i));
+                var l = CheckException(camelCase.Substring(i));
                 if (l > -1)
                 {
                     yield return sb.ToString();
@@ -180,7 +180,7 @@ namespace TestResults2Wiki
                 yield return sb.ToString();
         }
 
-        private static int checkException(string remaining)
+        private static int CheckException(string remaining)
         {
             foreach (var s in exceptions)
             {
