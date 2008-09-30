@@ -12,7 +12,7 @@ public void Linq37() {
 
     var sortedProducts =
         from p in products
-        orderby p.Category, p.UnitPrice descending /* NEW -> , p.ProductID*/
+        orderby p.Category, p.UnitPrice descending
         select p;
 
     ObjectDumper.Write(sortedProducts);
