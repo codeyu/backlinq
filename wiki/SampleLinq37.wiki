@@ -26,10 +26,10 @@ public void Linq37() {
 ProductID=38    ProductName=Côte de Blaye       Category=Beverages      UnitPrice=263.5000      UnitsInStock=17
 ProductID=43    ProductName=Ipoh Coffee         Category=Beverages      UnitPrice=46.0000       UnitsInStock=17
 ProductID=2     ProductName=Chang       Category=Beverages      UnitPrice=19.0000       UnitsInStock=17
-ProductID=35    ProductName=Steeleye Stout      Category=Beverages      UnitPrice=18.0000       UnitsInStock=20
-ProductID=76    ProductName=Lakkalikööri        Category=Beverages      UnitPrice=18.0000       UnitsInStock=57
-ProductID=39    ProductName=Chartreuse verte    Category=Beverages      UnitPrice=18.0000       UnitsInStock=69
 ProductID=1     ProductName=Chai        Category=Beverages      UnitPrice=18.0000       UnitsInStock=39
+ProductID=35    ProductName=Steeleye Stout      Category=Beverages      UnitPrice=18.0000       UnitsInStock=20
+ProductID=39    ProductName=Chartreuse verte    Category=Beverages      UnitPrice=18.0000       UnitsInStock=69
+ProductID=76    ProductName=Lakkalikööri        Category=Beverages      UnitPrice=18.0000       UnitsInStock=57
 ProductID=70    ProductName=Outback Lager       Category=Beverages      UnitPrice=15.0000       UnitsInStock=15
 ProductID=34    ProductName=Sasquatch Ale       Category=Beverages      UnitPrice=14.0000       UnitsInStock=111
 ProductID=67    ProductName=Laughing Lumberjack Lager   Category=Beverages      UnitPrice=14.0000       UnitsInStock=52
