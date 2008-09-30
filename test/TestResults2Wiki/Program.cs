@@ -58,7 +58,7 @@ namespace TestResults2Wiki
             if (args.Length != 1)
                 throw new ApplicationException("Missing NUnit XML output file name argument.");
 
-            XmlDocument testResults = new XmlDocument()/*.Load(args[0])*/;
+            XmlDocument testResults = new XmlDocument();
             testResults.Load(args[0]);
             Console.WriteLine("|| *Method under test* || *Test condition* || *Expected result* ||");
 
