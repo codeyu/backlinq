@@ -39,14 +39,6 @@ namespace BackLinq.Tests
 
     #endregion
 
-    internal static class Enumerable2
-    {
-        public static Reader<T> Read<T>(this IEnumerable<T> source)
-        {
-            return new Reader<T>(source);
-        }
-    }
-
     internal sealed class Reader<T> : IEnumerable<T>
     {
         private IEnumerable<T> source;
