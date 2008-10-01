@@ -102,6 +102,7 @@ namespace System.Linq
         {
             return source.Select(selector).Average();
         }
+        
 
         /// <summary>
         /// Computes the sum of a sequence of <see cref="System.Int32" /> values.
@@ -168,6 +169,32 @@ namespace System.Linq
             Func<TSource, int?> selector)
         {
             return source.Select(selector).Average();
+        }
+        
+        /// <summary>
+        /// Returns the minimum value in a sequence of nullable 
+        /// <see cref="System.Int32" /> values.
+        /// </summary>
+
+        public static int? Min(
+            this IEnumerable<int?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return source.Where(x => x != null)
+                         .Aggregate((int?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the minimum nullable <see cref="System.Int32" /> value.
+        /// </summary>
+
+        public static int? Min<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, int?> selector) 
+        {
+            return source.Select(selector).Min();
         }
 
         /// <summary>
@@ -236,6 +263,7 @@ namespace System.Linq
         {
             return source.Select(selector).Average();
         }
+        
 
         /// <summary>
         /// Computes the sum of a sequence of <see cref="System.Int64" /> values.
@@ -302,6 +330,32 @@ namespace System.Linq
             Func<TSource, long?> selector)
         {
             return source.Select(selector).Average();
+        }
+        
+        /// <summary>
+        /// Returns the minimum value in a sequence of nullable 
+        /// <see cref="System.Int64" /> values.
+        /// </summary>
+
+        public static long? Min(
+            this IEnumerable<long?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return source.Where(x => x != null)
+                         .Aggregate((long?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the minimum nullable <see cref="System.Int64" /> value.
+        /// </summary>
+
+        public static long? Min<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, long?> selector) 
+        {
+            return source.Select(selector).Min();
         }
 
         /// <summary>
@@ -370,6 +424,7 @@ namespace System.Linq
         {
             return source.Select(selector).Average();
         }
+        
 
         /// <summary>
         /// Computes the sum of a sequence of <see cref="System.Single" /> values.
@@ -436,6 +491,32 @@ namespace System.Linq
             Func<TSource, float?> selector)
         {
             return source.Select(selector).Average();
+        }
+        
+        /// <summary>
+        /// Returns the minimum value in a sequence of nullable 
+        /// <see cref="System.Single" /> values.
+        /// </summary>
+
+        public static float? Min(
+            this IEnumerable<float?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return source.Where(x => x != null)
+                         .Aggregate((float?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the minimum nullable <see cref="System.Single" /> value.
+        /// </summary>
+
+        public static float? Min<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, float?> selector) 
+        {
+            return source.Select(selector).Min();
         }
 
         /// <summary>
@@ -504,6 +585,7 @@ namespace System.Linq
         {
             return source.Select(selector).Average();
         }
+        
 
         /// <summary>
         /// Computes the sum of a sequence of <see cref="System.Double" /> values.
@@ -570,6 +652,32 @@ namespace System.Linq
             Func<TSource, double?> selector)
         {
             return source.Select(selector).Average();
+        }
+        
+        /// <summary>
+        /// Returns the minimum value in a sequence of nullable 
+        /// <see cref="System.Double" /> values.
+        /// </summary>
+
+        public static double? Min(
+            this IEnumerable<double?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return source.Where(x => x != null)
+                         .Aggregate((double?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the minimum nullable <see cref="System.Double" /> value.
+        /// </summary>
+
+        public static double? Min<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, double?> selector) 
+        {
+            return source.Select(selector).Min();
         }
 
         /// <summary>
@@ -638,6 +746,7 @@ namespace System.Linq
         {
             return source.Select(selector).Average();
         }
+        
 
         /// <summary>
         /// Computes the sum of a sequence of <see cref="System.Decimal" /> values.
@@ -704,6 +813,32 @@ namespace System.Linq
             Func<TSource, decimal?> selector)
         {
             return source.Select(selector).Average();
+        }
+        
+        /// <summary>
+        /// Returns the minimum value in a sequence of nullable 
+        /// <see cref="System.Decimal" /> values.
+        /// </summary>
+
+        public static decimal? Min(
+            this IEnumerable<decimal?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return source.Where(x => x != null)
+                         .Aggregate((decimal?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the minimum nullable <see cref="System.Decimal" /> value.
+        /// </summary>
+
+        public static decimal? Min<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, decimal?> selector) 
+        {
+            return source.Select(selector).Min();
         }
     }
 }

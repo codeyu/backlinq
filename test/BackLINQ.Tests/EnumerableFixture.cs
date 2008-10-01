@@ -994,7 +994,6 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        [Ignore("Pending resolution of issue #8 (http://code.google.com/p/backlinq/issues/detail?id=8).")]
         public void Min_ListWithNullables_MinimumNonNullValueIsReturned()
         {
             var source = new Reader<int?>(new int?[] { 199, 15, null, 30 });
@@ -1002,11 +1001,10 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        [Ignore("Pending resolution of issue #8 (http://code.google.com/p/backlinq/issues/detail?id=8).")]
         public void Min_Selector_ValidArguments_MinimumNonNullValueIsReturned()
         {
             var persons = Read(Person.CreatePersons());
-            Assert.That(persons.Min<Person, int?>(p =>
+            Assert.That(persons.Min(p =>
             {
                 if (p.Age == 21) return null; // to test behavior if null belongs to result of transformation
                 else return (p.Age);
