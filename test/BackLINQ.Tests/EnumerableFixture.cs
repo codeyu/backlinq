@@ -311,8 +311,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Except_secondArg_ArgumentNull_ThrowsArgumentNullException()
         {
-            var source = new OnceEnumerable<int>(new[] { 1, 4, 7 });
-            source.Except(null);
+            new object[0].Once().Except(null);
         }
 
         [Test]
@@ -419,8 +418,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void GroupBy_KeySelectorArg_NullAsKeySelector_ThrowsArgumentNullException()
         {
-            var source = new OnceEnumerable<Person>(Person.CreatePersons());
-            source.GroupBy<Person, String>(null);
+            new object[0].Once().GroupBy<object, object>(null);
         }
 
         [Test]
@@ -757,8 +755,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Intersect_SecondArg_PassNullAsArgument_ThrowsArgumentNullException()
         {
-            var source = new OnceEnumerable<int>(new[] { 1, 2, 3 });
-            source.Intersect(null);
+            new object[0].Once().Intersect(null);
         }
 
         [Test]
@@ -782,8 +779,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsArgument_ThrowsArgumentNullException()
         {
-            var persons = new OnceEnumerable<Person>(Person.CreatePersons());
-            persons.Join<Person, string, string, string>(null, null, null, null);
+            new object[0].Once().Join<object, object, object, object>(null, null, null, null);
         }
 
         [Test]
@@ -884,8 +880,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Last_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
-            var source = new OnceEnumerable<int>(new[] { 1, 2, 3 });
-            source.Last(null);
+            new object[0].Once().Last(null);
         }
 
         [Test]
@@ -942,8 +937,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void LongCount_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
-            var source = new OnceEnumerable<int>(new[] { 1, 2, 3, 4 });
-            source.LongCount(null);
+            new object[0].Once().LongCount(null);
         }
 
         [Test]
@@ -1031,8 +1025,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void OrderBy_KeySelectorArg_NullAsKeySelector_ThrowsArgumentNullException()
         {
-            var source = new OnceEnumerable<int>(new[] { 1, 4, 2 });
-            source.OrderBy<int, int>(null);
+            new object[0].Once().OrderBy<object, object>(null);
         }
 
         [Test]
@@ -1265,8 +1258,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void SequenceEqual_SecondArg_NullAsArgument_ThrowsArgumentNullException()
         {
-            var source = new OnceEnumerable<int>(new[] { 1, 2, 3 });
-            source.SequenceEqual(null);
+            new object[0].Once().SequenceEqual(null);
         }
 
         [Test]
@@ -1332,8 +1324,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Single_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            var source = new[] { 1, 2, 3 };
-            source.Single(null);
+            new object[0].Once().Single(null);
         }
 
         [Test]
@@ -1393,8 +1384,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void SingleOrDefault_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            var source = new[] { 4 };
-            source.SingleOrDefault(null);
+            new object[0].Once().SingleOrDefault(null);
         }
 
         [Test]
@@ -1444,8 +1434,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void SkipWhile_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            var source = new[] { 1, 2, 3, 4, 5 };
-            source.SkipWhile((Func<int, bool>)null);
+            new object[0].Once().SkipWhile((Func<object, bool>) null);
         }
 
         [Test]
@@ -1525,8 +1514,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void TakeWhile_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            var source = new[] { 1, 2, 3, 4, 5 };
-            source.TakeWhile((Func<int, bool>)null);
+            new object[0].TakeWhile((Func<object, bool>) null);
         }
 
         [Test]
@@ -1634,8 +1622,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Union_SecondArg_PassNullAsArgument_ThrowsArgumentNullException()
         {
-            var source = new[] { 5, 3, 9, 7, 5, 9, 3, 7 };
-            source.Union(null);
+            new object[0].Once().Union(null);
         }
 
         [Test]
@@ -1658,8 +1645,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Where_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            var source = new[] { 1, 2, 3, 4 };
-            source.Where((Func<int, bool>)null);
+            new object[0].Once().Where((Func<object, bool>) null);
         }
 
         [Test]
