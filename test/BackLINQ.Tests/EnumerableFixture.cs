@@ -728,7 +728,7 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsInner_ThrowsArgumentNullException()
+        public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsOuterKeySelector_ThrowsArgumentNullException()
         {
             var persons = new OnceEnumerable<Person>(new[]
                                  {
@@ -753,25 +753,25 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Intersect_SecondArg_PassNullAsArgument_ThrowsArgumentNullException()
+        public void Intersect_NullSecondSource_ThrowsArgumentNullException()
         {
             new object[0].Once().Intersect(null);
         }
 
         [Test]
-        public void Intersect_SecondArg_ValidArguments_ReturnsIntersection()
+        public void Intersect_IntegerSources_YieldsCommonSet()
         {
-            var source = new OnceEnumerable<int>(new[] { 1, 2, 3 });
-            var argument = new OnceEnumerable<int>(new[] { 2, 3, 4 });
-            source.Intersect(argument).Compare(2, 3);
+            var first = new OnceEnumerable<int>(new[] { 1, 2, 3 });
+            var second = new OnceEnumerable<int>(new[] { 2, 3, 4 });
+            first.Intersect(second).Compare(2, 3);
         }
 
         [Test]
-        public void Intersect_SecondArgComparerArg_ValidArguments_EqualityComparerIsUsed()
+        public void Intersect_StringSourcesWithMixedCasingAndCaseInsensitiveComparer_YieldsCommonSetFromFirstSource()
         {
-            var enumerable = new OnceEnumerable<string>(new[] { "Heinrich", "Hubert", "Thomas" });
-            var argument = new OnceEnumerable<string>(new[] { "Heinrich", "hubert", "Joseph" });
-            var result = enumerable.Intersect(argument, StringComparer.CurrentCultureIgnoreCase);
+            var first = new OnceEnumerable<string>(new[] { "Heinrich", "Hubert", "Thomas" });
+            var second = new OnceEnumerable<string>(new[] { "Heinrich", "hubert", "Joseph" });
+            var result = first.Intersect(second, StringComparer.CurrentCultureIgnoreCase);
             result.Compare("Heinrich", "Hubert");
         }
 
@@ -1535,7 +1535,7 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ToDictionary_KeySelectorArg_KeySelectorProducesNullKey_ThrowsArgumentNullException()
+        public void ToDictionary_KeySelectorArg_KeySelectorYieldsNull_ThrowsArgumentNullException()
         {
             var source = new[] { "eagle", "deer" };
             source.ToDictionary<string, string>(s => null);
