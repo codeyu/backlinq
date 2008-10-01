@@ -157,13 +157,13 @@ namespace TestResults2Wiki
             for (int i = 0; i < camelCase.Length; i++)
             {
 
-                var l = CheckException(camelCase.Substring(i));
-                if (l > -1)
+                var l = TryGetExceptionLength(camelCase.Substring(i));
+                if (l.HasValue)
                 {
                     yield return sb.ToString();
                     sb.Length = 0;
-                    yield return camelCase.Substring(i, l);
-                    i += l;
+                    yield return camelCase.Substring(i, l.Value);
+                    i += l.Value;
                     continue;
                 }
 
@@ -180,16 +180,15 @@ namespace TestResults2Wiki
                 yield return sb.ToString();
         }
 
-        private static int CheckException(string remaining)
+        private static int? TryGetExceptionLength(string remaining)
         {
             foreach (var s in exceptions)
             {
                 if (remaining.StartsWith(s))
-                {
                     return s.Length;
-                }
             }
-            return -1;
+
+            return null;
         }
     }
 }
