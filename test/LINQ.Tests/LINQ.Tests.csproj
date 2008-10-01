@@ -36,8 +36,8 @@
     <Compile Include="..\BackLINQ.Tests\EnumerableFixture.cs">
       <Link>EnumerableFixture.cs</Link>
     </Compile>
-    <Compile Include="..\BackLINQ.Tests\OnceEnumerable.cs">
-      <Link>OnceEnumerable.cs</Link>
+    <Compile Include="..\BackLINQ.Tests\Reader.cs">
+      <Link>Reader.cs</Link>
     </Compile>
     <Compile Include="..\BackLINQ.Tests\Tester.cs">
       <Link>Tester.cs</Link>
