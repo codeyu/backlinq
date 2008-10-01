@@ -151,6 +151,34 @@ namespace System.Linq
         {
             return source.Select(selector).Average();
         }
+        
+<#      if (isNullable) { #>
+        /// <summary>
+        /// Returns the minimum value in a sequence of nullable 
+        /// <#= doc #> values.
+        /// </summary>
+
+        public static <#= csType #> Min(
+            this IEnumerable<<#= csType #>> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return source.Where(x => x != null)
+                         .Aggregate((<#= csType #>) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the minimum nullable <#= doc #> value.
+        /// </summary>
+
+        public static <#= csType #> Min<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, <#= csType #>> selector) 
+        {
+            return source.Select(selector).Min();
+        }
+<#      } #>
 <#  } #>
     }
 }
