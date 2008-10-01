@@ -60,6 +60,11 @@ namespace BackLinq.Tests
             }
         }
 
+        public object EOF
+        {
+            get { return Enumerator.MoveNext(); }
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             if (source == null) throw new Exception("A LINQ Operator called GetEnumerator() twice.");
@@ -73,52 +78,30 @@ namespace BackLinq.Tests
             return GetEnumerator();
         }
 
-        /// <summary>Returns true if there are no more elements in the collection. </summary>
-        public void AssertEnded()
-        {
-            Assert.That(Enumerator.MoveNext(), Is.False, "Too many elements in source.");
-        }
-
-        /// <returns>Next element in collection.</returns>
-        /// <exception cref="InvalidOperationException" if there are no more elements.<exception>
         public T Read()
         {
             if (!Enumerator.MoveNext())
                 throw new InvalidOperationException("No more elements in the source sequence.");
             return Enumerator.Current;
         }
+    }
 
-        /// <param name="constraint">Checks constraint for the next element.</param>
-        /// <returns>Itself</returns>
-        public Reader<T> Next(Constraint constraint)
+    internal static class ReaderTestExtensions
+    {
+        public static void AssertEnded<T>(this Reader<T> reader)
         {
+            Debug.Assert(reader != null);
+
+            Assert.That(reader.EOF, Is.False, "Too many elements in source.");
+        }
+
+        public static Reader<T> AssertNext<T>(this Reader<T> reader, Constraint constraint)
+        {
+            Debug.Assert(reader != null);
             Debug.Assert(constraint != null);
-            Assert.That(Read(), constraint);
-            return this;
-        }
 
-        /// <summary>
-        /// Checks first constraint for first elements, second constraint for second element...
-        /// </summary>
-        /// <param name="constraints"></param>
-        /// <returns></returns>
-        public Reader<T> Ensure(params Constraint[] constraints)
-        {
-            Debug.Assert(constraints != null);
-            foreach (var constraint in constraints)
-            {
-                Next(constraint);
-            }
-            return this;
-        }
-
-        public void Compare(params T[] lst)
-        {
-            foreach (var t1 in lst)
-            {
-                Next(Is.EqualTo(t1));
-            }
-            AssertEnded();
+            Assert.That(reader.Read(), constraint);
+            return reader;
         }
     }
 }
