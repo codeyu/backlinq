@@ -38,8 +38,8 @@
       <Link>ExtensionAttribute.cs</Link>
     </Compile>
     <Compile Include="EnumerableFixture.cs" />
-    <Compile Include="OnceEnumerable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reader.cs" />
     <Compile Include="Tester.cs" />
   </ItemGroup>
   <ItemGroup>
