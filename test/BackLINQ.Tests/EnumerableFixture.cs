@@ -1662,21 +1662,6 @@ namespace BackLinq.Tests
             var source = Read(new[] { "Camel", "Marlboro", "Parisienne", "Lucky Strike" });
             source.Where((s, i) => i % 2 == 0).Compare("Camel", "Parisienne");
         }
-
-        [Test]
-        public void EnsureTest()
-        {
-            var rd = Read(new[] { 1, 2, 3 });
-            rd.Ensure(Is.EqualTo(1), Is.EqualTo(2), Is.EqualTo(3));
-        }
-
-        [Test]
-        public void CompareTest()
-        {
-            var enumerable = new[] { 1, 2, 3 };
-            var reader = Read(enumerable);
-            reader.Compare(1, 2, 3);
-        }
     }
 
     [ Serializable ]
