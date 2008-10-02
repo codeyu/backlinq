@@ -33,6 +33,9 @@ namespace System.Linq
     using System.Collections.Generic;
 
     #endregion
+    
+    // This partial implementation was template-generated:
+    // Thu, 02 Oct 2008 09:49:53 GMT
 
     partial class Enumerable
     {
