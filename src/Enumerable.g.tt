@@ -52,6 +52,9 @@ namespace System.Linq
     using System.Collections.Generic;
 
     #endregion
+    
+    // This partial implementation was template-generated:
+    // <#= DateTime.UtcNow.ToString("r", System.Globalization.CultureInfo.InvariantCulture) #>
 
     partial class Enumerable
     {<#
