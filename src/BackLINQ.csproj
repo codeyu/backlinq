@@ -35,10 +35,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Enumerable.cs" />
-    <Compile Include="Enumerable.Sum+Average+Min.cs">
+    <Compile Include="Enumerable.g.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Enumerable.Sum+Average+Min.tt</DependentUpon>
+      <DependentUpon>Enumerable.g.tt</DependentUpon>
     </Compile>
     <Compile Include="ExtensionAttribute.cs" />
     <Compile Include="Func.cs" />
@@ -53,9 +53,9 @@
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Enumerable.Sum+Average+Min.tt">
+    <None Include="Enumerable.g.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Enumerable.Sum+Average+Min.cs</LastGenOutput>
+      <LastGenOutput>Enumerable.g.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
