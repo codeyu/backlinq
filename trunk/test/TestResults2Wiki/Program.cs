@@ -30,7 +30,9 @@ namespace TestResults2Wiki
     #region Imports
 
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Xml;
 
@@ -55,30 +57,76 @@ namespace TestResults2Wiki
 
         private static void Run(string[] args) 
         {
-            if (args.Length != 1)
+            if (args.Length == 0)
                 throw new ApplicationException("Missing NUnit XML output file name argument.");
 
-            var testResults = new XmlDocument();
-            testResults.Load(args[0]);
-            Console.WriteLine("|| *Method under test* || *Test condition* || *Expected result* ||");
+            const string testCaseXPath = "//test-suite[@name='EnumerableFixture']/results/test-case";
 
-            var testCases = testResults.SelectNodes("//test-suite[@name='EnumerableFixture']/results/test-case");
+            var reports = (
+                    from arg in args 
+                    let parts = arg.Split(new[]{'='}, 2) 
+                    let path = parts.Last()
+                    select new {
+                        Title = parts.Length > 1 && !string.IsNullOrEmpty(parts[0])
+                                ? parts[0] 
+                                : Path.GetFileNameWithoutExtension(path),
+                        TestCases = LoadXmlDocument(path).SelectNodes(testCaseXPath).Cast<XmlElement>().ToArray()
+                    }
+                ).ToArray();
+
+            var baseHeaders = new[]
+            {
+                "Method under test", 
+                "Test condition", 
+                "Expected result"
+            };
+
+            var headers = reports.Select(r => "*" + r.Title + "*").Concat(baseHeaders);
+            Console.WriteLine("|| " + string.Join(" || ", headers.ToArray()) + " ||");
+
+            var testByName = reports.SelectMany(r => r.TestCases).GroupBy(test => test.GetAttribute("name"));
 
             const string msdnUrlFormat = @"http://msdn.microsoft.com/en-us/library/system.linq.enumerable.{0}.aspx";
 
-            var rows = from XmlElement e in testCases
-                       where e.GetAttribute("name").Split('_').Length > 1
-                       let testMethod = new TestMethod(e.Attributes["name"].Value)
-                       select
-                           string.Format("|| [{0} {1}]{2} || {3} || {4} ||", 
-                                         /* 0 */ string.Format(msdnUrlFormat, testMethod.MethodName.ToLowerInvariant()),
-                                         /* 1 */ testMethod.MethodName,
-                                         /* 2 */ testMethod.ArgumentsInBrackets,
-                                         /* 3 */ testMethod.TestCondition,
-                                         /* 4 */ testMethod.Expectation);
+            var rows = from e in testByName
+                       where e.Key.Split('_').Length > 1
+                       let testMethod = new TestMethod(e.Key)
+                       let results = (
+                           from x in e
+                           let success = "true".Equals(x.GetAttribute("success"), StringComparison.OrdinalIgnoreCase)
+                           select new
+                           {
+                               Success = success,
+                               Executed = "true".Equals(x.GetAttribute("executed"), StringComparison.OrdinalIgnoreCase),
+                               Message = success ? null : x.SelectSingleNode("*/message").InnerText
+                           })
+                           .ToArray()
+                       select new { Test = testMethod, Results = results };
 
-            foreach (var row in rows) 
-                Console.WriteLine(row);
+            foreach (var row in rows)
+            {
+                var testMethod = row.Test;
+                Console.WriteLine("|| {0} ||", 
+                    string.Join(" || ",
+                        row.Results
+                        .Select(r => r.Executed ? (r.Success ? "PASS" : "*FAIL*") : "-")
+                        .Concat(new[] {
+                           string.Format(@"[{0} {1}]{2}",
+                              /* 0 */ string.Format(msdnUrlFormat, testMethod.MethodName.ToLowerInvariant()),
+                              /* 1 */ testMethod.MethodName,
+                              /* 2 */ testMethod.ArgumentsInBrackets),
+                           testMethod.TestCondition,
+                           testMethod.Expectation 
+                        })
+                        .ToArray()));
+            }
+        }
+
+        private static XmlDocument LoadXmlDocument(string path)
+        {
+            var document = new XmlDocument();
+            document.Load(path);
+            return document;
         }
     }
 }
