@@ -66,15 +66,17 @@ namespace TestResults2Wiki
             }
         }
 
-        /// <summary>Arguments of the methode to test.</summary>
+        /// <summary>Arguments of the method to test.</summary>
         public string[] Arguments
         {
             get
             {
                 if (name.Split('_').Length != 4) return new string[0];
-                return name.Split('_')[1].Substring(0, name.Split('_')[1].Length - 3).Split(new[] { "Arg" },
-                                                                                            StringSplitOptions.
-                                                                                                RemoveEmptyEntries);
+                string arguments = name.Split('_')[1];
+                return arguments.Substring(0, arguments.Length - 3).Split(new[] { "Arg" },
+                                                                            StringSplitOptions.
+                                                                                RemoveEmptyEntries);
+
             }
         }
 
@@ -98,22 +100,18 @@ namespace TestResults2Wiki
 
         public string TestCondition
         {
-            get
-            {
-                var strCondition = GetSplitElement(name, 1);
-                return CamelCaseToSentence(strCondition);
-            }
+            get { return CamelCaseToSentence(GetSplitElement(name, 1)); }
         }
 
         public string Expectation
         {
-            get
-            {
-                var strExpectation = GetSplitElement(name, 0);
-                return CamelCaseToSentence(strExpectation);
-            }
+            get { return CamelCaseToSentence(GetSplitElement(name, 0)); }
         }
 
+        /// <summary>
+        /// GetSplitElement("A_B_C_D", 0) returns "D",
+        /// GetSplitElement("A_B_C_D", 1) returns "C"
+        /// </summary>
         private static string GetSplitElement(string input, int index)
         {
             var splits = input.Split('_');
@@ -133,22 +131,6 @@ namespace TestResults2Wiki
             if (!exceptions.Contains(word))
                 return Char.ToLower(word[0]) + word.Substring(1);
             return word;
-        }
-
-        private static IEnumerable<string> SplitCamelCaseWordsOld(string camelCase)
-        {
-            var sb = new StringBuilder();
-            foreach (var ch in camelCase)
-            {
-                if (char.IsUpper(ch) && sb.Length > 0)
-                {
-                    yield return sb.ToString();
-                    sb.Length = 0;
-                }
-                sb.Append(ch);
-            }
-            if (sb.Length > 0)
-                yield return sb.ToString();
         }
 
         private static IEnumerable<string> SplitCamelCaseWords(string camelCase)
