@@ -103,24 +103,34 @@ namespace BackLinq.Tests
             }
         }
 
+        private IEnumerator<T> GetSourceEnumerator()
+        {
+            if (source != null && cursor == null)
+                throw new InvalidOperationException(/* GetEnumerator not called yet */);
+            if (source == null && cursor == null) 
+                throw new ObjectDisposedException(GetType().FullName);
+
+            return cursor;
+        }
+
         bool IEnumerator.MoveNext()
         {
-            return cursor.MoveNext();
+            return GetSourceEnumerator().MoveNext();
         }
 
         void IEnumerator.Reset()
         {
-            cursor.Reset();
+            GetSourceEnumerator().Reset();
         }
 
         T IEnumerator<T>.Current
         {
-            get { return cursor.Current; }
+            get { return GetSourceEnumerator().Current; }
         }
 
         object IEnumerator.Current
         {
-            get { return ((IEnumerator<T>)this).Current; }
+            get { return ((IEnumerator<T>) this).Current; }
         }
     }
 
