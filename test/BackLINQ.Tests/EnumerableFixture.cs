@@ -113,7 +113,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidCastException))]
         public void Cast_InvalidSource_ThrowsInvalidCastException()
         {
-            // .................................V----V Needed for Mono (CS0029)
+            // ...................V----V Needed for Mono (CS0029)
             var source = Read(new object[] { 1000, "hello", new object() });
             var target = source.Cast<byte>();
             // do something with the results so Cast will really be executed (deferred execution)
@@ -1014,7 +1014,7 @@ namespace BackLinq.Tests
         [Test]
         public void OfType_EnumerableWithElementsOfDifferentTypes_OnlyDecimalsAreReturned()
         {
-            // .................................V----V Needed for Mono (CS0029)
+            // ...................V----V Needed for Mono (CS0029)
             var source = Read(new object[] { 1, "Hello", 1.234m, new object() });
             var result = source.OfType<decimal>();
             result.Compare(1.234m);
