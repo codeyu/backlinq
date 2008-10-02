@@ -118,6 +118,9 @@ namespace TestResults2Wiki
             return splits[splits.Length - ++index];
         }
 
+        /// <summary>
+        /// i.e. "MinimumNonNullValueIsReturned" ==> "Minimum non value is returned"
+        /// </summary>
         private static string CamelCaseToSentence(string camelCase)
         {
             return string.Join(" ",
@@ -126,6 +129,9 @@ namespace TestResults2Wiki
                                    .ToArray());
         }
 
+        /// <summary>
+        /// Changes the first letter of word to lower case if word is not an Exception.
+        /// </summary>
         private static string Capitalize(string word)
         {
             if (!exceptions.Contains(word))
@@ -133,6 +139,9 @@ namespace TestResults2Wiki
             return word;
         }
 
+        /// <summary>
+        /// i.e. "ReturnsCorrectNumberOfElements" ==> {"Returns", "Correct", "Number", "Of", "Elements"}
+        /// </summary>
         private static IEnumerable<string> SplitCamelCaseWords(string camelCase)
         {
             var sb = new StringBuilder();
@@ -162,6 +171,11 @@ namespace TestResults2Wiki
                 yield return sb.ToString();
         }
 
+        /// <summary>
+        /// Checks weather remaining starts with an Exception name, 
+        /// if yes: returns the length of the Exception name, 
+        /// if no: returns null.
+        /// </summary>
         private static int? TryGetExceptionLength(string remaining)
         {
             foreach (var s in exceptions)
