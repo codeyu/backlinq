@@ -1289,13 +1289,22 @@ namespace System.Linq
             CheckNotNull(source, "source");
             Debug.Assert(lesser != null);
 
-            using (var e = source.GetEnumerator())
-            {
-                if (!e.MoveNext())
-                    throw new InvalidOperationException();
+            return source.Aggregate((a, item) => lesser(a, item) ? a : item);
+        }
 
-                return e.Renumerable().Aggregate(e.Current, (a, item) => lesser(a, item) ? a : item);
-            }
+        /// <summary>
+        /// Base implementation for Min/Max operator for nullable types.
+        /// </summary>
+
+        private static TSource? MinMaxImpl<TSource>(
+            this IEnumerable<TSource?> source,
+            TSource? seed, Func<TSource?, TSource?, bool> lesser) where TSource : struct
+        {
+            CheckNotNull(source, "source");
+            Debug.Assert(lesser != null);
+
+            return source.Aggregate(seed, (a, item) => lesser(a, item) ? a : item); 
+            //  == MinMaxImpl(Repeat<TSource?>(null, 1).Concat(source), lesser);
         }
 
         /// <summary>

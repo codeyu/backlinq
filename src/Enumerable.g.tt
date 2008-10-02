@@ -166,8 +166,7 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
             
-            return source.Where(x => x != null)
-                         .Aggregate((<#= csType #>) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+            return MinMaxImpl(source.Where(x => x != null), null, (min, x) => min < x);
         }
 
         /// <summary>
@@ -180,6 +179,32 @@ namespace System.Linq
             Func<TSource, <#= csType #>> selector) 
         {
             return source.Select(selector).Min();
+        }
+
+        /// <summary>
+        /// Returns the maximum value in a sequence of nullable 
+        /// <#= doc #> values.
+        /// </summary>
+
+        public static <#= csType #> Max(
+            this IEnumerable<<#= csType #>> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return MinMaxImpl(source.Where(x => x != null), 
+                null, (max, x) => x == null || (max != null && x.Value < max.Value));
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the maximum nullable <#= doc #> value.
+        /// </summary>
+
+        public static <#= csType #> Max<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, <#= csType #>> selector) 
+        {
+            return source.Select(selector).Max();
         }
 <#      } #>
 <#  } #>
