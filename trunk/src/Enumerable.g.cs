@@ -35,7 +35,7 @@ namespace System.Linq
     #endregion
     
     // This partial implementation was template-generated:
-    // Thu, 02 Oct 2008 09:55:41 GMT
+    // Thu, 02 Oct 2008 15:22:44 GMT
 
     partial class Enumerable
     {
@@ -184,8 +184,7 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
             
-            return source.Where(x => x != null)
-                         .Aggregate((int?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+            return MinMaxImpl(source.Where(x => x != null), null, (min, x) => min < x);
         }
 
         /// <summary>
@@ -198,6 +197,32 @@ namespace System.Linq
             Func<TSource, int?> selector) 
         {
             return source.Select(selector).Min();
+        }
+
+        /// <summary>
+        /// Returns the maximum value in a sequence of nullable 
+        /// <see cref="System.Int32" /> values.
+        /// </summary>
+
+        public static int? Max(
+            this IEnumerable<int?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return MinMaxImpl(source.Where(x => x != null), 
+                null, (max, x) => x == null || (max != null && x.Value < max.Value));
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the maximum nullable <see cref="System.Int32" /> value.
+        /// </summary>
+
+        public static int? Max<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, int?> selector) 
+        {
+            return source.Select(selector).Max();
         }
 
         /// <summary>
@@ -345,8 +370,7 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
             
-            return source.Where(x => x != null)
-                         .Aggregate((long?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+            return MinMaxImpl(source.Where(x => x != null), null, (min, x) => min < x);
         }
 
         /// <summary>
@@ -359,6 +383,32 @@ namespace System.Linq
             Func<TSource, long?> selector) 
         {
             return source.Select(selector).Min();
+        }
+
+        /// <summary>
+        /// Returns the maximum value in a sequence of nullable 
+        /// <see cref="System.Int64" /> values.
+        /// </summary>
+
+        public static long? Max(
+            this IEnumerable<long?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return MinMaxImpl(source.Where(x => x != null), 
+                null, (max, x) => x == null || (max != null && x.Value < max.Value));
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the maximum nullable <see cref="System.Int64" /> value.
+        /// </summary>
+
+        public static long? Max<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, long?> selector) 
+        {
+            return source.Select(selector).Max();
         }
 
         /// <summary>
@@ -506,8 +556,7 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
             
-            return source.Where(x => x != null)
-                         .Aggregate((float?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+            return MinMaxImpl(source.Where(x => x != null), null, (min, x) => min < x);
         }
 
         /// <summary>
@@ -520,6 +569,32 @@ namespace System.Linq
             Func<TSource, float?> selector) 
         {
             return source.Select(selector).Min();
+        }
+
+        /// <summary>
+        /// Returns the maximum value in a sequence of nullable 
+        /// <see cref="System.Single" /> values.
+        /// </summary>
+
+        public static float? Max(
+            this IEnumerable<float?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return MinMaxImpl(source.Where(x => x != null), 
+                null, (max, x) => x == null || (max != null && x.Value < max.Value));
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the maximum nullable <see cref="System.Single" /> value.
+        /// </summary>
+
+        public static float? Max<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, float?> selector) 
+        {
+            return source.Select(selector).Max();
         }
 
         /// <summary>
@@ -667,8 +742,7 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
             
-            return source.Where(x => x != null)
-                         .Aggregate((double?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+            return MinMaxImpl(source.Where(x => x != null), null, (min, x) => min < x);
         }
 
         /// <summary>
@@ -681,6 +755,32 @@ namespace System.Linq
             Func<TSource, double?> selector) 
         {
             return source.Select(selector).Min();
+        }
+
+        /// <summary>
+        /// Returns the maximum value in a sequence of nullable 
+        /// <see cref="System.Double" /> values.
+        /// </summary>
+
+        public static double? Max(
+            this IEnumerable<double?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return MinMaxImpl(source.Where(x => x != null), 
+                null, (max, x) => x == null || (max != null && x.Value < max.Value));
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the maximum nullable <see cref="System.Double" /> value.
+        /// </summary>
+
+        public static double? Max<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, double?> selector) 
+        {
+            return source.Select(selector).Max();
         }
 
         /// <summary>
@@ -828,8 +928,7 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
             
-            return source.Where(x => x != null)
-                         .Aggregate((decimal?) null, (min, x) => min == null || x.Value < min.Value ? x : min);
+            return MinMaxImpl(source.Where(x => x != null), null, (min, x) => min < x);
         }
 
         /// <summary>
@@ -842,6 +941,32 @@ namespace System.Linq
             Func<TSource, decimal?> selector) 
         {
             return source.Select(selector).Min();
+        }
+
+        /// <summary>
+        /// Returns the maximum value in a sequence of nullable 
+        /// <see cref="System.Decimal" /> values.
+        /// </summary>
+
+        public static decimal? Max(
+            this IEnumerable<decimal?> source) 
+        {
+            CheckNotNull(source, "source");
+            
+            return MinMaxImpl(source.Where(x => x != null), 
+                null, (max, x) => x == null || (max != null && x.Value < max.Value));
+        }
+
+        /// <summary>
+        /// Invokes a transform function on each element of a sequence and 
+        /// returns the maximum nullable <see cref="System.Decimal" /> value.
+        /// </summary>
+
+        public static decimal? Max<TSource>(
+            this IEnumerable<TSource> source,
+            Func<TSource, decimal?> selector) 
+        {
+            return source.Select(selector).Max();
         }
     }
 }

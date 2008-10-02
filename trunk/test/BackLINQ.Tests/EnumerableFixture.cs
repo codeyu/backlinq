@@ -957,6 +957,18 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Max_EmptyNullableIntegerArray_ReturnsNull()
+        {
+            Assert.That(Read(new int?[0]).Max(), Is.Null);
+        }
+
+        [Test]
+        public void Max_NullableIntegerArrayWithNullsOnly_ReturnsNull()
+        {
+            Assert.That(Read(new int?[] { null, null, null }).Max(), Is.Null);
+        }
+
+        [Test]
         public void Max_ListOfInts_MaxValueIsReturned()
         {
             var source = Read(new[] { 1000, 203, -9999 });
