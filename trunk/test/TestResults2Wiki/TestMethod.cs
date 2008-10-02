@@ -41,12 +41,12 @@ namespace TestResults2Wiki
     {
         private static readonly string[] exceptions = new[] 
         {
-            "ArgumentOutOfRangeException", 
-            "InvalidOperationException", 
-            "ArgumentNullException",
-            "ArgumentException",
-            "OverflowException",
-            "InvalidCastException"
+            typeof(ArgumentOutOfRangeException).Name, 
+            typeof(InvalidOperationException).Name, 
+            typeof(ArgumentNullException).Name,
+            typeof(ArgumentException).Name,
+            typeof(OverflowException).Name,
+            typeof(InvalidCastException).Name
         };
 
         private readonly string name;
