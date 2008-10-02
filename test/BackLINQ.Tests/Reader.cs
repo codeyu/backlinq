@@ -39,10 +39,12 @@ namespace BackLinq.Tests
 
     #endregion
 
-    internal sealed class Reader<T> : IEnumerable<T>
+    internal sealed class Reader<T> : IEnumerable<T>, IEnumerator<T>
     {
+        public event EventHandler Disposed;
+
         private IEnumerable<T> source;
-        private IEnumerator<T> e;
+        private IEnumerator<T> cursor;
 
         public Reader(IEnumerable<T> values)
         {
@@ -54,9 +56,9 @@ namespace BackLinq.Tests
         {
             get
             {
-                if (e == null)
-                    e = GetEnumerator();
-                return e;
+                if (cursor == null)
+                    GetEnumerator();
+                return this;
             }
         }
 
@@ -68,9 +70,9 @@ namespace BackLinq.Tests
         public IEnumerator<T> GetEnumerator()
         {
             if (source == null) throw new Exception("A LINQ Operator called GetEnumerator() twice.");
-            var enumerator = source.GetEnumerator();
+            cursor = source.GetEnumerator();
             source = null;
-            return enumerator;
+            return this;
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -83,6 +85,42 @@ namespace BackLinq.Tests
             if (!Enumerator.MoveNext())
                 throw new InvalidOperationException("No more elements in the source sequence.");
             return Enumerator.Current;
+        }
+
+        void IDisposable.Dispose()
+        {
+            source = null;
+            var e = cursor;
+            cursor = null;
+
+            if (e != null)
+            {
+                e.Dispose();
+
+                var handler = Disposed;
+                if (handler != null)
+                    handler(this, EventArgs.Empty);
+            }
+        }
+
+        bool IEnumerator.MoveNext()
+        {
+            return cursor.MoveNext();
+        }
+
+        void IEnumerator.Reset()
+        {
+            cursor.Reset();
+        }
+
+        T IEnumerator<T>.Current
+        {
+            get { return cursor.Current; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return ((IEnumerator<T>)this).Current; }
         }
     }
 
