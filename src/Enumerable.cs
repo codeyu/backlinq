@@ -1190,6 +1190,8 @@ namespace System.Linq
         public static bool Any<TSource>(
             this IEnumerable<TSource> source)
         {
+            CheckNotNull(source, "source");
+
             using (var e = source.GetEnumerator())
                 return e.MoveNext();
         }
