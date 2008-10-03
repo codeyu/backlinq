@@ -1149,6 +1149,19 @@ namespace BackLinq.Tests
             }
         }
 
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TheyBy_NullSource_ThrowsArgumentNullException()
+        {
+            Enumerable.ThenBy<object, object>(null, e => { throw new NotImplementedException(); });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TheyBy_NullKeySelector_ThrowsArgumentNullException()
+        {
+            ReadEmpty<object>().OrderBy<object, object>(e => { throw new NotImplementedException(); }).ThenBy<object, object>(null);
+        }
         /// <summary>
         /// To sort ints in descending order.
         /// </summary>

@@ -1451,6 +1451,8 @@ namespace System.Linq
             Func<TSource, TKey> keySelector, 
             IComparer<TKey> comparer)
         {
+            CheckNotNull(source, "source");
+
             return source.CreateOrderedEnumerable(keySelector, comparer, /* descending */ false);
         }
 
