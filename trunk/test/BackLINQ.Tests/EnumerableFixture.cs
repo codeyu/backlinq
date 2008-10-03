@@ -173,6 +173,13 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Any_NullSource_ThrowsArgumentNullException()
+        {
+            Enumerable.Any<object>(null);
+        }
+
+        [Test]
         public void Any_EmptySource_ReturnsFalse()
         {
             var source = new object[0];
