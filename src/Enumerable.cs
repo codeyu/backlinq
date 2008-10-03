@@ -1052,6 +1052,9 @@ namespace System.Linq
             this IEnumerable<TSource> source,
             Func<TSource, TSource, TSource> func)
         {
+            CheckNotNull(source, "source");
+            CheckNotNull(func, "func");
+
             using (var e = source.GetEnumerator())
             {
                 if (!e.MoveNext())

@@ -93,6 +93,20 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Aggregate_NullSource_ThrowsArgumentNullException()
+        {
+            Enumerable.Aggregate<object>(null, (a, e) => { throw new NotImplementedException(); });
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Aggregate_NullFunc_ThrowsArgumentNullException()
+        {
+            ReadEmpty<object>().Aggregate(null);
+        }
+
+        [Test]
         public void Empty_YieldsEmptySource()
         {
             var source = Enumerable.Empty<String>();
