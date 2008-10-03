@@ -35,7 +35,7 @@ namespace System.Linq
     #endregion
     
     // This partial implementation was template-generated:
-    // Thu, 02 Oct 2008 15:22:44 GMT
+    // Fri, 03 Oct 2008 23:23:42 GMT
 
     partial class Enumerable
     {
@@ -140,7 +140,7 @@ namespace System.Linq
         /// Computes the average of a sequence of <see cref="System.Int32" /> values.
         /// </summary>
 
-        public static double Average(
+        public static double? Average(
             this IEnumerable<int?> source)
         {
             CheckNotNull(source, "source");
@@ -156,9 +156,9 @@ namespace System.Linq
             }
 
             if (count == 0)
-                throw new InvalidOperationException();
+                return null;
 
-            return (double) sum / count;
+            return (double?) sum / count;
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace System.Linq
         /// element of the input sequence.
         /// </summary>
 
-        public static double Average<TSource>(
+        public static double? Average<TSource>(
             this IEnumerable<TSource> source,
             Func<TSource, int?> selector)
         {
@@ -326,7 +326,7 @@ namespace System.Linq
         /// Computes the average of a sequence of <see cref="System.Int64" /> values.
         /// </summary>
 
-        public static double Average(
+        public static double? Average(
             this IEnumerable<long?> source)
         {
             CheckNotNull(source, "source");
@@ -342,9 +342,9 @@ namespace System.Linq
             }
 
             if (count == 0)
-                throw new InvalidOperationException();
+                return null;
 
-            return (double) sum / count;
+            return (double?) sum / count;
         }
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace System.Linq
         /// element of the input sequence.
         /// </summary>
 
-        public static double Average<TSource>(
+        public static double? Average<TSource>(
             this IEnumerable<TSource> source,
             Func<TSource, long?> selector)
         {
@@ -512,7 +512,7 @@ namespace System.Linq
         /// Computes the average of a sequence of <see cref="System.Single" /> values.
         /// </summary>
 
-        public static float Average(
+        public static float? Average(
             this IEnumerable<float?> source)
         {
             CheckNotNull(source, "source");
@@ -528,9 +528,9 @@ namespace System.Linq
             }
 
             if (count == 0)
-                throw new InvalidOperationException();
+                return null;
 
-            return (float) sum / count;
+            return (float?) sum / count;
         }
 
         /// <summary>
@@ -539,7 +539,7 @@ namespace System.Linq
         /// element of the input sequence.
         /// </summary>
 
-        public static float Average<TSource>(
+        public static float? Average<TSource>(
             this IEnumerable<TSource> source,
             Func<TSource, float?> selector)
         {
@@ -698,7 +698,7 @@ namespace System.Linq
         /// Computes the average of a sequence of <see cref="System.Double" /> values.
         /// </summary>
 
-        public static double Average(
+        public static double? Average(
             this IEnumerable<double?> source)
         {
             CheckNotNull(source, "source");
@@ -714,9 +714,9 @@ namespace System.Linq
             }
 
             if (count == 0)
-                throw new InvalidOperationException();
+                return null;
 
-            return (double) sum / count;
+            return (double?) sum / count;
         }
 
         /// <summary>
@@ -725,7 +725,7 @@ namespace System.Linq
         /// element of the input sequence.
         /// </summary>
 
-        public static double Average<TSource>(
+        public static double? Average<TSource>(
             this IEnumerable<TSource> source,
             Func<TSource, double?> selector)
         {
@@ -884,7 +884,7 @@ namespace System.Linq
         /// Computes the average of a sequence of <see cref="System.Decimal" /> values.
         /// </summary>
 
-        public static decimal Average(
+        public static decimal? Average(
             this IEnumerable<decimal?> source)
         {
             CheckNotNull(source, "source");
@@ -900,9 +900,9 @@ namespace System.Linq
             }
 
             if (count == 0)
-                throw new InvalidOperationException();
+                return null;
 
-            return (decimal) sum / count;
+            return (decimal?) sum / count;
         }
 
         /// <summary>
@@ -911,7 +911,7 @@ namespace System.Linq
         /// element of the input sequence.
         /// </summary>
 
-        public static decimal Average<TSource>(
+        public static decimal? Average<TSource>(
             this IEnumerable<TSource> source,
             Func<TSource, decimal?> selector)
         {
