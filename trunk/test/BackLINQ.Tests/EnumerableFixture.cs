@@ -214,6 +214,19 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Average_EmptySource_ThrowsInvalidOperationException()
+        {
+            ReadEmpty<int>().Average();
+        }
+
+        [Test]
+        public void Average_EmptyArrayOfNullableIntegers_ReturnsNull()
+        {
+            Assert.That(ReadEmpty<int?>().Average(), Is.Null);
+        }
+
+        [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Concat_FirstSourceNull_ThrowsArgumentNullException()
         {

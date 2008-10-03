@@ -114,8 +114,8 @@ namespace System.Linq
 <#
         string csSumType = type == typeof(int) || type == typeof(long) || type == typeof(int?) || type == typeof(long?) 
                          ? "long" : csBaseType;
-        string csAvgType = type == typeof(int) || type == typeof(long) || type == typeof(int?) || type == typeof(long?) 
-                         ? "double" : csBaseType;
+        string csAvgType = (type == typeof(int) || type == typeof(long) || type == typeof(int?) || type == typeof(long?) 
+                            ? "double" : csBaseType) + (isNullable ? "?" : string.Empty);
 #>        
         /// <summary>
         /// Computes the average of a sequence of <#= doc #> values.
@@ -137,7 +137,7 @@ namespace System.Linq
             }
 
             if (count == 0)
-                throw new InvalidOperationException();
+                <# if (isNullable) { #>return null<# } else { #>throw new InvalidOperationException()<# } #>;
 
             return (<#= csAvgType #>) sum / count;
         }
