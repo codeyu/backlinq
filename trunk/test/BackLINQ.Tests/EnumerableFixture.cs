@@ -207,6 +207,23 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Average_Longs_ReturnsAverage()
+        {
+            Assert.That(Read(new[] {25L, 75L}).Average(), Is.EqualTo(50));
+        }
+
+        [Test]
+        public void Average_NullableLongs_ReturnsAverage()
+        {
+            Assert.That(Read(new long?[] {1L, 2L, 3L, null}).Average(), Is.EqualTo(2));
+        }
+
+        [Test]
+        public void Average_NullableInts_ReturnsAverage() {
+            Assert.That(Read(new int?[] { 1, 2, 3, null }).Average(), Is.EqualTo(2));
+        }
+
+        [Test]
         public void Average_Decimals_ReturnsToleratableAverage()
         {
             var source = Read(new[] { -10000m, 2.0001m, 50m });
@@ -224,6 +241,48 @@ namespace BackLinq.Tests
         public void Average_EmptyArrayOfNullableIntegers_ReturnsNull()
         {
             Assert.That(ReadEmpty<int?>().Average(), Is.Null);
+        }
+
+        [Test]
+        public void Average_Selector_ArrayOfPersons_AverageAge()
+        {
+            var source = Read(Person.CreatePersons());
+            Assert.That(source.Average(p => p.Age).Equals(22.5));
+        }
+
+        [Test]
+        public void Average_ArrayOfDoubles_ReturnsAverage() 
+        {
+            var source = Read(new[] {-3.45, 9.001, 10000.01});
+            Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
+        }
+
+        [Test]
+        public void Average_ArrayOfFloats_ReturnsAverage()
+        {
+            var source = Read(new[] { -3.45F, 9.001F, 10000.01F });
+            Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
+        }
+
+        [Test]
+        public void Average_ArrayOfNullableFloats_ReturnsAverage() 
+        {
+            var source = Read(new float?[] {-3.45F, 9.001F, 10000.01F, null});
+            Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
+        }
+
+        [Test]
+        public void Average_NullableDoubles_ReturnsAverage()
+        {
+            var source = Read(new double?[] { -3.45, 9.001, 10000.01, null });
+            Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
+        }
+
+        [Test]
+        public void Average_NullableDecimals_ReturnsAverage()
+        {
+            var source = Read(new decimal?[] { -3.45m, 9.001m, 10000.01m, null });
+            Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
         [Test]
@@ -246,6 +305,13 @@ namespace BackLinq.Tests
             var first = Read(new[] { 1, 2, 3 });
             var second = Read(new[] { 4, 5, 6 });
             first.Concat(second).Compare(1, 2, 3, 4, 5, 6);
+        }
+
+        [Test]
+        public void Count_Ints_ReturnsNumberOfElements()
+        {
+            Assert.That(Read(new int[] {1, 2, 3}).Count(), Is.EqualTo(3));
+
         }
 
         [Test]
@@ -1010,6 +1076,28 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Max_NullableLongs_MaxValueIsReturned()
+        {
+            Assert.That(Read(new long?[] {1L, 2L, 3L, null}).Max(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void Max_NullableDoubles_MaxValueIsReturned() {
+            Assert.That(Read(new double?[] { 1, 2, 3, null }).Max(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void Max_NullableDecimals_MaxValueIsReturned() {
+            Assert.That(Read(new decimal?[] { 1m, 2m, 3m, null }).Max(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void Max_NullableFloats_MaxValueIsReturned()
+        {
+            Assert.That(Read(new float?[] {-1000, -100, -1, null}).Max(), Is.EqualTo(-1));
+        }
+
+        [Test]
         public void Max_ListWithNullableType_ReturnsMaximum()
         {
             var source = new Reader<int?>(new int?[] { 1, 4, null, 10 });
@@ -1537,6 +1625,48 @@ namespace BackLinq.Tests
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             Assert.That(source.Sum(), Is.EqualTo(55));
+        }
+
+        [Test]
+        public void Sum_Longs_ReturnsSum()
+        {
+            Assert.That(Read(new[] {1L, 2L, 3L}).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_Floats_ReturnsSum()
+        {
+            Assert.That(Read(new float[] {1F, 2F, 3F}).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_NullableFloats_ReturnsSum() {
+            Assert.That(Read(new float?[] { 1F, 2F, 3F, null }).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_Doubles_ReturnsSum() {
+            Assert.That(Read(new double[] { 1, 2, 3 }).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_NullableDoubles_ReturnsSum() {
+            Assert.That(Read(new double?[] { 1, 2, 3, null }).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_Decimals_ReturnsSum() {
+            Assert.That(Read(new decimal[] { 1m, 2m, 3m }).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_NullableDecimals_ReturnsSum() {
+            Assert.That(Read(new decimal?[] { 1m, 2m, 3m, null }).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_NullableLongs_ReturnsSum() {
+            Assert.That(Read(new long?[] { 1L, 2L, 3L, null }).Sum(), Is.EqualTo(6));
         }
 
         [Test]
