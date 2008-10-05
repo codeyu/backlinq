@@ -1408,7 +1408,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void SequenceEqual_SecondArg_EqualArgument_ResultIsTrue()
+        public void SequenceEqual_EqualSequences_ReturnsTrue()
         {
             var source = Read(new[] { 1, 2, 3 });
             var argument = Read(new[] { 1, 2, 3 });
@@ -1416,14 +1416,22 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void SequenceEqual_SecondArg_DifferentArgument_ResultIsFalse()
+        public void SequenceEqual_LongerSecondSequence_ReturnsFalse()
         {
             var source = Read(new[] { 1, 2, 3 });
             var argument = Read(new[] { 1, 2, 3, 4 });
             Assert.That(source.SequenceEqual(argument), Is.False);
         }
 
-        class FloatComparer : IEqualityComparer<float>
+        [Test]
+        public void SequenceEqual_FloatsWithTolerantComparer_ComparerIsUsed()
+        {
+            var source = Read(new[] { 1f, 2f, 3f });
+            var argument = Read(new[] { 1.03f, 1.99f, 3.02f });
+            Assert.That(source.SequenceEqual(argument, new FloatComparer()), Is.True);
+        }
+
+        private sealed class FloatComparer : IEqualityComparer<float>
         {
             public bool Equals(float x, float y)
             {
@@ -1431,16 +1439,8 @@ namespace BackLinq.Tests
             }
             public int GetHashCode(float x)
             {
-                return -1;
+                throw new NotImplementedException();
             }
-        }
-
-        [Test]
-        public void SequenceEqual_SecondArgComparerArg_ValidArguments_ComparerIsUsed()
-        {
-            var source = Read(new[] { 1f, 2f, 3f });
-            var argument = Read(new[] { 1.03f, 1.99f, 3.02f });
-            Assert.That(source.SequenceEqual(argument, new FloatComparer()), Is.True);
         }
 
         [Test]
