@@ -1831,20 +1831,20 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Where_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
+        public void Where_NullPredicate_ThrowsArgumentNullException()
         {
             ReadEmpty<object>().Where((Func<object, bool>) null);
         }
 
         [Test]
-        public void Where_PredicateArg_Integers_YieldsEvenIntegers()
+        public void Where_IntegersWithEvensPredicate_YieldsEvenIntegers()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             source.Where(i => i % 2 == 0).Compare(2, 4);
         }
 
         [Test]
-        public void Where_Predicate3Arg_Strings_YieldsElementsWithEvenIndex()
+        public void Where_StringsWithEvenIndexPredicate_YieldsElementsWithEvenIndex()
         {
             var source = Read(new[] { "Camel", "Marlboro", "Parisienne", "Lucky Strike" });
             source.Where((s, i) => i % 2 == 0).Compare("Camel", "Parisienne");
