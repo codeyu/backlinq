@@ -53,6 +53,15 @@ namespace System.Linq
     static partial class Enumerable
     {
         /// <summary>
+        /// Returns the input typed as <see cref="IEnumerable{T}"/>.
+        /// </summary>
+
+        public static IEnumerable<TSource> AsEnumerable<TSource>(IEnumerable<TSource> source)
+        {
+            return source;
+        }
+
+        /// <summary>
         /// Returns an empty <see cref="IEnumerable{T}"/> that has the 
         /// specified type argument.
         /// </summary>

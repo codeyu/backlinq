@@ -1849,6 +1849,19 @@ namespace BackLinq.Tests
             var source = Read(new[] { "Camel", "Marlboro", "Parisienne", "Lucky Strike" });
             source.Where((s, i) => i % 2 == 0).Compare("Camel", "Parisienne");
         }
+
+        [Test]
+        public void AsEnumerable_NonNullSource_YieldsSourceReference()
+        {
+            var source = new object[0];
+            Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
+        }
+
+        [Test]
+        public void AsEnumerable_NonSource_YieldsNull()
+        {
+            Assert.That(Enumerable.AsEnumerable<object>(null), Is.Null);
+        }
     }
 
     [ Serializable ]
