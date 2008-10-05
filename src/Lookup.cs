@@ -37,27 +37,6 @@ namespace System.Linq
     #endregion
 
     /// <summary>
-    /// Defines an indexer, size property, and Boolean search method for 
-    /// data structures that map keys to <see cref="IEnumerable{T}"/> 
-    /// sequences of values.
-    /// </summary>
-
-    #region Access modifier
-    #if BACKLINQ_LIB
-        public 
-    #else
-        internal
-    #endif
-    #endregion
-
-    interface ILookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
-    {
-        bool Contains(TKey key);
-        int Count { get; }
-        IEnumerable<TElement> this[TKey key] { get; }
-    }
-
-    /// <summary>
     /// Represents a collection of keys each mapped to one or more values.
     /// </summary>
 
