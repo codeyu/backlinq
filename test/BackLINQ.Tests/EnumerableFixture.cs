@@ -1851,14 +1851,14 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void AsEnumerable_NonNullSource_YieldsSourceReference()
+        public void AsEnumerable_NonNullSource_ReturnsSourceReference()
         {
             var source = new object[0];
             Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
         }
 
         [Test]
-        public void AsEnumerable_NonSource_YieldsNull()
+        public void AsEnumerable_NonSource_ReturnsNull()
         {
             Assert.That(Enumerable.AsEnumerable<object>(null), Is.Null);
         }
