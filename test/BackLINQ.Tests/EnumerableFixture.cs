@@ -1402,7 +1402,14 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void SequenceEqual_SecondArg_NullAsArgument_ThrowsArgumentNullException()
+        public void SequenceEqual_NullFirstSequence_ThrowsArgumentNullException()
+        {
+            Enumerable.SequenceEqual(null, ReadEmpty<object>());
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SequenceEqual_NullSecondSequence_ThrowsArgumentNullException()
         {
             ReadEmpty<object>().SequenceEqual(null);
         }
@@ -1416,11 +1423,27 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void SequenceEqual_DifferentSequences_ReturnsTrue()
+        {
+            var source = Read(new[] { 1, 2, 3 });
+            var argument = Read(new[] { 1, 3, 2 });
+            Assert.That(source.SequenceEqual(argument), Is.False);
+        }
+
+        [Test]
         public void SequenceEqual_LongerSecondSequence_ReturnsFalse()
         {
             var source = Read(new[] { 1, 2, 3 });
             var argument = Read(new[] { 1, 2, 3, 4 });
             Assert.That(source.SequenceEqual(argument), Is.False);
+        }
+
+        [Test]
+        public void SequenceEqual_ShorterSecondSequence_ReturnsFalse()
+        {
+            var first = Read(new[] { 1, 2, 3, 4 });
+            var second = Read(new[] { 1, 2, 3 });
+            Assert.That(first.SequenceEqual(second), Is.False);
         }
 
         [Test]
