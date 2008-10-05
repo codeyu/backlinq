@@ -79,17 +79,17 @@ namespace BackLinq.Tests
         [Test]
         public void Aggregate_AddFuncOnIntegers_ReturnsTotal()
         {
-            var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            var source = Read(new[] { 12, 34, 56, 78, 910, 1112, 1314, 1516, 1718, 1920 });
             var result = source.Aggregate((a, b) => a + b);
-            Assert.That(result, Is.EqualTo(55));
+            Assert.That(result, Is.EqualTo(8670));
         }
 
         [Test]
         public void Aggregate_AddFuncOnIntegersWithSeed_ReturnsTotal()
         {
-            var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+            var source = Read(new[] { 12, 34, 56, 78, 910, 1112, 1314, 1516, 1718, 1920 });
             var result = source.Aggregate(100, (a, b) => a + b);
-            Assert.That(result, Is.EqualTo(155));
+            Assert.That(result, Is.EqualTo(8770));
         }
 
         [Test]
@@ -215,12 +215,12 @@ namespace BackLinq.Tests
         [Test]
         public void Average_NullableLongs_ReturnsAverage()
         {
-            Assert.That(Read(new long?[] {1L, 2L, 3L, null}).Average(), Is.EqualTo(2));
+            Assert.That(Read(new long?[] { 12L, 34L, null, 56L }).Average(), Is.EqualTo(34.0));
         }
 
         [Test]
         public void Average_NullableInts_ReturnsAverage() {
-            Assert.That(Read(new int?[] { 1, 2, 3, null }).Average(), Is.EqualTo(2));
+            Assert.That(Read(new int?[] { 12, 34, null, 56 }).Average(), Is.EqualTo(34.0));
         }
 
         [Test]
@@ -302,34 +302,34 @@ namespace BackLinq.Tests
         [Test]
         public void Concat_TwoLists_CorrectOrder()
         {
-            var first = Read(new[] { 1, 2, 3 });
-            var second = Read(new[] { 4, 5, 6 });
-            first.Concat(second).Compare(1, 2, 3, 4, 5, 6);
+            var first = Read(new[] { 12, 34, 56 });
+            var second = Read(new[] { 78, 910, 1112 });
+            first.Concat(second).Compare(12, 34, 56, 78, 910, 1112);
         }
 
         [Test]
         public void Count_Ints_ReturnsNumberOfElements()
         {
-            Assert.That(Read(new int[] {1, 2, 3}).Count(), Is.EqualTo(3));
+            Assert.That(Read(new[] { 12, 34, 56 }).Count(), Is.EqualTo(3));
 
         }
 
         [Test]
         public void DefaultIfEmpty_Inegers_YieldsIntegersInOrder()
         {
-            var source = Read(new[] { 1, 2, 3 });
-            source.DefaultIfEmpty(1).Compare(1, 2, 3);
+            var source = Read(new[] { 12, 34, 56 });
+            source.DefaultIfEmpty(1).Compare(12, 34, 56);
         }
 
         [Test]
-        public void DefaultIfEmpty_EmptyIntegerArray_ReturnsZero()
+        public void DefaultIfEmpty_EmptyIntegersSource_ReturnsZero()
         {
             var source = Read(new int[0]);
             source.DefaultIfEmpty().Compare(0);
         }
 
         [Test]
-        public void DefaultIfEmpty_DefaultValueArg_EmptyIntegerArray_ReturnsDefault()
+        public void DefaultIfEmpty_EmptyIntegersSourceWithNonZeroDefault_ReturnNonZeroDefault()
         {
             var source = Read(new int[0]);
             source.DefaultIfEmpty(5).Compare(5);
@@ -338,8 +338,8 @@ namespace BackLinq.Tests
         [Test]
         public void DefaultIfEmpty_DefaultValueArg_Integers_YieldsIntegersInOrder()
         {
-            var source = Read(new[] { 1, 2, 3 });
-            source.DefaultIfEmpty(5).Compare(1, 2, 3);
+            var source = Read(new[] { 12, 34, 56 });
+            source.DefaultIfEmpty(5).Compare(12, 34, 56);
         }
 
         [Test]
@@ -352,8 +352,8 @@ namespace BackLinq.Tests
         [Test]
         public void Distinct_IntegersWithSomeDuplicates_YieldsIntegersInSourceOrderWithoutDuplicates()
         {
-            var source = Read(new[] { 1, 2, 2, 3, 4, 4, 4, 4, 5 });
-            source.Distinct().Compare(1, 2, 3, 4, 5);
+            var source = Read(new[] { 12, 34, 34, 56, 78, 78, 78, 910, 78 });
+            source.Distinct().Compare(12, 34, 56, 78, 910);
         }
 
         [Test]
@@ -417,7 +417,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Except_secondArg_ValidArgument_ReturnsCorrectEnumerable()
+        public void Except_SecondArg_ValidArgument_ReturnsCorrectEnumerable() // TODO Improve test name
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var argument = Read(new[] { 1, 3, 5, 7, 9 });
@@ -425,7 +425,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Except_secondArgComparerArg_ComparerIsUsed()
+        public void Except_SecondArgComparerArg_ComparerIsUsed()
         {
             var source = Read(new[] { "albert", "john", "simon" });
             var argument = Read(new[] { "ALBERT" });
@@ -434,66 +434,64 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void First_EmptyArray_ThrowsInvalidOperationException()
+        public void First_EmptySource_ThrowsInvalidOperationException()
         {
-            var source = new int[0];
-            source.First();
+            ReadEmpty<int>().First();
         }
 
         [Test]
-        public void First_IntArray_ReturnsFirst()
+        public void First_Integers_ReturnsFirst()
         {
-            var source = Read(new[] { 1, 2, 3, 4 });
-            Assert.That(source.First(), Is.EqualTo(1));
+            var source = Read(new[] { 12, 34, 56 });
+            Assert.That(source.First(), Is.EqualTo(12));
         }
 
         [Test]
-        public void First_PredicateArg_IntArray_PredicateIsUsed()
+        public void First_IntegersWithEvensPredicate_FirstEvenInteger()
         {
-            var source = Read(new[] { 1, 2, 3, 4 });
-            Assert.That(source.First(i => i % 2 == 0), Is.EqualTo(2));
+            var source = Read(new[] { 15, 20, 25, 30 });
+            Assert.That(source.First(i => i % 2 == 0), Is.EqualTo(20));
         }
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void First_PredicateArg_NoElementMatches_InvalidOperationExceptionIsThrown()
+        public void First_IntegersWithNonMatchingPredicate_ThrowsInvalidOperationException()
         {
-            var source = Read(new[] { 1, 2, 3, 4 });
-            Assert.That(source.First(i => i > 5), Is.EqualTo(0));
+            var source = Read(new[] { 12, 34, 56, 78 });
+            Assert.That(source.First(i => i > 100), Is.EqualTo(0));
         }
 
         [Test]
-        public void FirstOrDefault_EmptyBoolArray_FalseIsReturned()
+        public void FirstOrDefault_EmptyBooleanSource_ReturnsFalse()
         {
-            var source = Read(new bool[0]);
-            Assert.That(source.FirstOrDefault(), Is.False);
+            Assert.That(ReadEmpty<bool>().FirstOrDefault(), Is.False);
         }
 
         [Test]
-        public void FirstOrDefault_ObjectArray_FirstIsReturned()
+        public void FirstOrDefault_Objects_ReturnsFirstReference()
         {
             var first = new object();
             var source = Read(new[] { first, new object() });
-            Assert.That(source.FirstOrDefault(), Is.EqualTo(first));
+            Assert.That(source.FirstOrDefault(), Is.SameAs(first));
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void FirstOrDefault_PredicateArg_NullAsPredicate_ArgumentNullExceptionIsThrown()
+        public void FirstOrDefault_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
             var source = new[] { 3, 5, 7 };
             source.FirstOrDefault(null);
         }
 
         [Test]
-        public void FirstOrDefault_PredicateArg_ValidPredicate_FirstMatchingItemIsReturned()
+        public void FirstOrDefault_PredicateArg_ValidPredicate_ReturnsFirstMatchingItem()
         {
             var source = Read(new[] { 1, 4, 8 });
             Assert.That(source.FirstOrDefault(i => i % 2 == 0), Is.EqualTo(4));
         }
 
         [Test]
-        public void FirstOrDefault_PredicateArg_NoMatchesInArray_DefaultValueOfTypeIsReturned()
+        public void FirstOrDefault_PredicateArg_NoMatchesInArray_ReturnsDefaultValueOfType()
         {
             var source = Read(new[] { 1, 4, 6 });
             Assert.That(source.FirstOrDefault(i => i > 10), Is.EqualTo(0));
@@ -993,35 +991,35 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Last_PredicateArg_ListOfInts_LastMatchingElementIsReturned()
+        public void Last_PredicateArg_ListOfInts_ReturnsLastMatchingElement()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             Assert.That(source.Last(i => i % 2 == 0), Is.EqualTo(4));
         }
 
         [Test]
-        public void LastOrDefault_EmptySource_ZeroIsReturned()
+        public void LastOrDefault_EmptySource_ReturnsZero()
         {
             var source = Read(new int[0]);
             Assert.That(source.LastOrDefault(), Is.EqualTo(0));
         }
 
         [Test]
-        public void LastOrDefault_NonEmptyList_LastElementIsReturned()
+        public void LastOrDefault_NonEmptyList_ReturnsLastElement()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             Assert.That(source.LastOrDefault(), Is.EqualTo(5));
         }
 
         [Test]
-        public void LastOrDefault_PredicateArg_ValidArguments_LastMatchingElementIsReturned()
+        public void LastOrDefault_PredicateArg_ValidArguments_RetunsLastMatchingElement()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             Assert.That(source.LastOrDefault(i => i % 2 == 0), Is.EqualTo(4));
         }
 
         [Test]
-        public void LastOrDefault_PredicateArg_NoMatchingElement_ZeroIsReturned()
+        public void LastOrDefault_PredicateArg_NoMatchingElement_ReturnsZero()
         {
             var source = Read(new[] { 1, 3, 5, 7 });
             Assert.That(source.LastOrDefault(i => i % 2 == 0), Is.EqualTo(0));
@@ -1069,30 +1067,30 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Max_ListOfInts_MaxValueIsReturned()
+        public void Max_Integers_ReturnsMaxValue()
         {
             var source = Read(new[] { 1000, 203, -9999 });
             Assert.That(source.Max(), Is.EqualTo(1000));
         }
 
         [Test]
-        public void Max_NullableLongs_MaxValueIsReturned()
+        public void Max_NullableLongs_ReturnsMaxValue()
         {
             Assert.That(Read(new long?[] {1L, 2L, 3L, null}).Max(), Is.EqualTo(3));
         }
 
         [Test]
-        public void Max_NullableDoubles_MaxValueIsReturned() {
+        public void Max_NullableDoubles_ReturnsMaxValue() {
             Assert.That(Read(new double?[] { 1, 2, 3, null }).Max(), Is.EqualTo(3));
         }
 
         [Test]
-        public void Max_NullableDecimals_MaxValueIsReturned() {
+        public void Max_NullableDecimals_ReturnsMaxValue() {
             Assert.That(Read(new decimal?[] { 1m, 2m, 3m, null }).Max(), Is.EqualTo(3));
         }
 
         [Test]
-        public void Max_NullableFloats_MaxValueIsReturned()
+        public void Max_NullableFloats_ReturnsMaxValue()
         {
             Assert.That(Read(new float?[] {-1000, -100, -1, null}).Max(), Is.EqualTo(-1));
         }
@@ -1112,7 +1110,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Max_SelectorArg_ListOfObjects_MaxSelectedValueIsReturned()
+        public void Max_SelectorArg_ListOfObjects_ReturnsMaxSelectedValue()
         {
             var persons = Read(Person.CreatePersons());
             // .....................V-----------------V Needed for Mono (CS0121)
@@ -1128,14 +1126,14 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Min_ListWithNullables_MinimumNonNullValueIsReturned()
+        public void Min_IntegersWithSomeNull_ReturnsMinimumNonNullValue()
         {
             var source = new Reader<int?>(new int?[] { 199, 15, null, 30 });
             Assert.That(source.Min(), Is.EqualTo(15));
         }
 
         [Test]
-        public void Min_Selector_ValidArguments_MinimumNonNullValueIsReturned()
+        public void Min_Selector_ValidArguments_ReturnsMinimumNonNullValue()
         {
             var persons = Read(Person.CreatePersons());
             Assert.That(persons.Min(p =>
@@ -1490,9 +1488,9 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Single_SourceWithOneElement_SingleElementIsReturned()
+        public void Single_SourceWithOneElement_ReturnsSingleElement()
         {
-            var source = new[] { 1 };
+            var source = new[] { 1 }; // FIXME Use Read
             Assert.That(source.Single(), Is.EqualTo(1));
         }
 
@@ -1507,7 +1505,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_NoElementSatisfiesCondition_ThrowsInvalidOperationException()
         {
-            var source = new[] { 1, 3, 5 };
+            var source = new[] { 1, 3, 5 }; // FIXME Use Read
             source.Single(i => i % 2 == 0);
         }
 
@@ -1515,7 +1513,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_MoreThanOneElementSatisfiedCondition_ThrowsInvalidOperationException()
         {
-            var source = new[] { 1, 2, 3, 4 };
+            var source = new[] { 1, 2, 3, 4 }; // FIXME Use Read
             source.Single(i => i % 2 == 0);
         }
 
@@ -1523,12 +1521,12 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_SourceIsEmpty_ThrowsInvalidOperationException()
         {
-            var source = new int[0];
+            var source = new int[0]; // FIXME Use Read
             source.Single(i => i % 2 == 0);
         }
 
         [Test]
-        public void Single_PredicateArg_ArrayOfIntWithOnlyOneElementSatisfyingCondition_OnlyThisElementIsReturned()
+        public void Single_PredicateArg_ArrayOfIntWithOnlyOneElementSatisfyingCondition_ReturnsOnlyThisElement()
         {
             var source = Read(new[] { 1, 2, 3 });
             Assert.That(source.Single(i => i % 2 == 0), Is.EqualTo(2));
@@ -1538,21 +1536,21 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void SingleOrDefault_MoreThanOneElementInSource_ThrowsInvalidOperationException()
         {
-            var source = new[] { 1, 2, 3 };
+            var source = new[] { 1, 2, 3 }; // FIXME Use Read
             source.SingleOrDefault();
         }
 
         [Test]
-        public void SingleOrDefault_EmptySource_ZeroIsReturned()
+        public void SingleOrDefault_EmptySource_ReturnsZero()
         {
-            var source = new int[0];
+            var source = new int[0]; // FIXME Use Read
             Assert.That(source.SingleOrDefault(), Is.EqualTo(0));
         }
 
         [Test]
-        public void SingleOrDefault_SourceWithOneElement_SingleElementIsReturned()
+        public void SingleOrDefault_SourceWithOneElement_ReturnsSingleElement()
         {
-            var source = new[] { 5 };
+            var source = new[] { 5 }; // FIXME Use Read
             Assert.That(source.SingleOrDefault(), Is.EqualTo(5));
         }
 
@@ -1564,9 +1562,9 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void SingleOrDefault_PredicateArg_EmptySource_ZeroIsReturned()
+        public void SingleOrDefault_PredicateArg_EmptySource_ReturnsZero()
         {
-            var source = new int[0];
+            var source = new int[0]; // FIXME Use Read
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
         }
 
@@ -1579,14 +1577,14 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void SingleOrDefault_PredicateArg_NoElementSatisfiesCondition_ZeroIsReturned()
+        public void SingleOrDefault_PredicateArg_NoElementSatisfiesCondition_ReturnsZero()
         {
             var source = Read(new[] { 1, 3, 5 });
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
         }
 
         [Test]
-        public void SingleOrDefault_PredicateArg_OneElementSatisfiesCondition_CorrectElementIsReturned()
+        public void SingleOrDefault_PredicateArg_OneElementSatisfiesCondition_ReturnsCorrectElement()
         {
             var source = Read(new[] { 1, 2, 3 });
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(2));
@@ -1700,7 +1698,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Sum_NullableIntsAsArguments_CorrectSumIsReturned()
+        public void Sum_NullableIntsAsArguments_ReturnsCorrectSum()
         {
             var source = new Reader<int?>(new int?[] { 1, 2, null });
             Assert.That(source.Sum(), Is.EqualTo(3));
@@ -1797,7 +1795,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void ToList_IntsFromOneToTen_ListOfIntsContainingAllElementsIsReturned()
+        public void ToList_IntsFromOneToTen_ReturnsListOfIntsContainingAllElements()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var result = source.ToList();
@@ -1806,7 +1804,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void ToLookup_KeySelectorArg_Strings_LookupArrayWithStringLengthAsKeyIsReturned()
+        public void ToLookup_KeySelectorArg_Strings_ReturnsLookupArrayWithStringLengthAsKey()
         {
             var source = Read(new[] { "eagle", "dog", "cat", "bird", "camel" });
             var result = source.ToLookup(s => s.Length);
