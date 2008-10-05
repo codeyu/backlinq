@@ -1298,6 +1298,13 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Range_NegativeCount_ThrowsArgumentOutOfRangeException()
+        {
+            Enumerable.Range(0, -1);
+        }
+
+        [Test]
         public void Range_Start10Count5_IntsFrom10To14()
         {
             var result = Enumerable.Range(10, 5);
