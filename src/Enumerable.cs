@@ -1241,11 +1241,15 @@ namespace System.Linq
         {
             CheckNotNull(source, "source");
 
+            if (comparer == null)
+            {
+                var collection = source as ICollection<TSource>;
+                if (collection != null)
+                    return collection.Contains(value);
+            }
+
             comparer = comparer ?? EqualityComparer<TSource>.Default;
-            var collection = source as ICollection<TSource>;
-            return collection != null 
-                 ? collection.Contains(value)
-                 : source.Any(item => comparer.Equals(item, value));
+            return source.Any(item => comparer.Equals(item, value));
         }
 
         /// <summary>
