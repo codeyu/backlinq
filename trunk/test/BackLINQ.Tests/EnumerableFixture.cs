@@ -1133,14 +1133,10 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Min_Selector_ValidArguments_ReturnsMinimumNonNullValue()
+        public void Min_StringsWithLengthSelector_ReturnsMinimumNonNullStringLength()
         {
-            var persons = Read(Person.CreatePersons());
-            Assert.That(persons.Min(p =>
-            {
-                if (p.Age == 21) return null; // to test behavior if null belongs to result of transformation
-                else return (p.Age);
-            }), Is.EqualTo(22));
+            var strings = Read(new[] { "five", "four", null, "three", null, "two", "one", "zero" });
+            Assert.That(strings.Min(s => s != null ? s.Length : (int?) null), Is.EqualTo(3));
         }
 
         [Test]
