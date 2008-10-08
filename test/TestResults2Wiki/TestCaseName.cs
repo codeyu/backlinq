@@ -64,8 +64,9 @@ namespace TestResults2Wiki
                              .TakeWhile(s => s.Length > 0)
                              .ToArray();
 
-            if (parts.Count > 1)
-                StateUnderTest = CamelCaseToSentence(parts.Dequeue());
+            StateUnderTest = parts.Count > 1 
+                           ? CamelCaseToSentence(parts.Dequeue()) 
+                           : string.Empty;
 
             ExpectedBehavior = parts.Dequeue();
 
