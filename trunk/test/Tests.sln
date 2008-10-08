@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackLINQ.Tests", "BackLINQ.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LINQ.Tests", "LINQ.Tests\LINQ.Tests.csproj", "{FF0FB762-A5DB-4AF2-A917-BD185E97F90B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestResults2Wiki", "TestResults2Wiki\TestResults2Wiki.csproj", "{13CDFE15-3BA8-4FA5-B21E-832E56525541}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestResultsWiki", "TestResultsWiki\TestResultsWiki.csproj", "{13CDFE15-3BA8-4FA5-B21E-832E56525541}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,8 +8,8 @@
     <ProjectGuid>{13CDFE15-3BA8-4FA5-B21E-832E56525541}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TestResults2Wiki</RootNamespace>
-    <AssemblyName>TestResults2Wiki</AssemblyName>
+    <RootNamespace>TestResultsWiki</RootNamespace>
+    <AssemblyName>TestResultsWiki</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
