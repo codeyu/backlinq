@@ -30,7 +30,6 @@ namespace TestResults2Wiki
     #region Imports
 
     using System;
-    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -88,35 +87,37 @@ namespace TestResults2Wiki
 
             const string msdnUrlFormat = @"http://msdn.microsoft.com/en-us/library/system.linq.enumerable.{0}.aspx";
 
-            var rows = from e in testByName
-                       where e.Key.Split('_').Length > 1
-                       let testMethod = new TestMethod(e.Key)
-                       let results = (
-                           from x in e
-                           let success = "true".Equals(x.GetAttribute("success"), StringComparison.OrdinalIgnoreCase)
-                           select new
-                           {
-                               Success = success,
-                               Executed = "true".Equals(x.GetAttribute("executed"), StringComparison.OrdinalIgnoreCase),
-                               Message = success ? null : x.SelectSingleNode("*/message").InnerText
-                           })
-                           .ToArray()
-                       select new { Test = testMethod, Results = results };
+            var suite = from nodes in testByName
+                        where nodes.Key.Contains("_")
+                        let description = new TestCaseName(nodes.Key.Split('.').Last())
+                        let results = (
+                            from node in nodes
+                            let success = "true".Equals(node.GetAttribute("success"), StringComparison.OrdinalIgnoreCase)
+                            select new
+                            {
+                                Success = success,
+                                Executed = "true".Equals(node.GetAttribute("executed"), StringComparison.OrdinalIgnoreCase),
+                                Message = success ? null : node.SelectSingleNode("*/message").InnerText
+                            })
+                            .ToArray()
+                        select new { Description = description, Results = results };
 
-            foreach (var row in rows)
+            foreach (var test in suite)
             {
-                var testMethod = row.Test;
+                var info = test.Description;
                 Console.WriteLine("|| {0} ||", 
                     string.Join(" || ",
-                        row.Results
+                        test.Results
                         .Select(r => r.Executed ? (r.Success ? "PASS" : "*FAIL*") : "-")
                         .Concat(new[] {
                            string.Format(@"[{0} {1}]{2}",
-                              /* 0 */ string.Format(msdnUrlFormat, testMethod.MethodName.ToLowerInvariant()),
-                              /* 1 */ testMethod.MethodName,
-                              /* 2 */ testMethod.ArgumentsInBrackets),
-                           testMethod.TestCondition,
-                           testMethod.Expectation 
+                              /* 0 */ string.Format(msdnUrlFormat, info.MethodName.ToLowerInvariant()),
+                              /* 1 */ info.MethodName,
+                              /* 2 */ info.Arguments.Any() 
+                                      ? "(" + string.Join(", ", info.Arguments.ToArray()) + ")" 
+                                      : string.Empty),
+                           info.StateUnderTest,
+                           info.ExpectedBehavior 
                         })
                         .ToArray()));
             }
