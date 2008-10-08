@@ -25,7 +25,7 @@
 //
 #endregion
 
-namespace TestResults2Wiki
+namespace TestResultsWiki
 {
     #region Imports
 
