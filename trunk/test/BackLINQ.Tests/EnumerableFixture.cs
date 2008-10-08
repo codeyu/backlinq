@@ -142,13 +142,13 @@ namespace BackLinq.Tests
         public void Cast_ObjectSourceContainingIntegers_YieldsDowncastedIntegers()
         {
             var source = Read(new object[] { 1, 10, 100 });
-            source.Cast<int>().Compare(1, 10, 100);
+            source.Cast<int>().AssertEquals(1, 10, 100);
         }
 
         [Test]
         public void Cast_Integers_YieldsUpcastedObjects()
         {
-            Read(new[] { 1, 10, 100 }).Cast<object>().Compare(1, 10, 100);
+            Read(new[] { 1, 10, 100 }).Cast<object>().AssertEquals(1, 10, 100);
         }
 
         [Test]
@@ -304,7 +304,7 @@ namespace BackLinq.Tests
         {
             var first = Read(new[] { 12, 34, 56 });
             var second = Read(new[] { 78, 910, 1112 });
-            first.Concat(second).Compare(12, 34, 56, 78, 910, 1112);
+            first.Concat(second).AssertEquals(12, 34, 56, 78, 910, 1112);
         }
 
         [Test]
@@ -318,28 +318,28 @@ namespace BackLinq.Tests
         public void DefaultIfEmpty_Inegers_YieldsIntegersInOrder()
         {
             var source = Read(new[] { 12, 34, 56 });
-            source.DefaultIfEmpty(1).Compare(12, 34, 56);
+            source.DefaultIfEmpty(1).AssertEquals(12, 34, 56);
         }
 
         [Test]
         public void DefaultIfEmpty_EmptyIntegersSource_ReturnsZero()
         {
             var source = Read(new int[0]);
-            source.DefaultIfEmpty().Compare(0);
+            source.DefaultIfEmpty().AssertEquals(0);
         }
 
         [Test]
         public void DefaultIfEmpty_EmptyIntegersSourceWithNonZeroDefault_ReturnNonZeroDefault()
         {
             var source = Read(new int[0]);
-            source.DefaultIfEmpty(5).Compare(5);
+            source.DefaultIfEmpty(5).AssertEquals(5);
         }
 
         [Test]
         public void DefaultIfEmpty_DefaultValueArg_Integers_YieldsIntegersInOrder()
         {
             var source = Read(new[] { 12, 34, 56 });
-            source.DefaultIfEmpty(5).Compare(12, 34, 56);
+            source.DefaultIfEmpty(5).AssertEquals(12, 34, 56);
         }
 
         [Test]
@@ -353,14 +353,14 @@ namespace BackLinq.Tests
         public void Distinct_IntegersWithSomeDuplicates_YieldsIntegersInSourceOrderWithoutDuplicates()
         {
             var source = Read(new[] { 12, 34, 34, 56, 78, 78, 78, 910, 78 });
-            source.Distinct().Compare(12, 34, 56, 78, 910);
+            source.Distinct().AssertEquals(12, 34, 56, 78, 910);
         }
 
         [Test]
         public void Distinct_MixedSourceStringsWithCaseIgnoringComparer_YieldsFirstCaseOfEachDistinctStringInSourceOrder()
         {
             var source = Read("Foo Bar BAZ BaR baz FOo".Split());
-            source.Distinct(StringComparer.InvariantCultureIgnoreCase).Compare("Foo", "Bar", "BAZ");
+            source.Distinct(StringComparer.InvariantCultureIgnoreCase).AssertEquals("Foo", "Bar", "BAZ");
         }
 
         [Test]
@@ -421,7 +421,7 @@ namespace BackLinq.Tests
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var argument = Read(new[] { 1, 3, 5, 7, 9 });
-            source.Except(argument).Compare(2, 4, 6, 8, 10);
+            source.Except(argument).AssertEquals(2, 4, 6, 8, 10);
         }
 
         [Test]
@@ -429,7 +429,7 @@ namespace BackLinq.Tests
         {
             var source = Read(new[] { "albert", "john", "simon" });
             var argument = Read(new[] { "ALBERT" });
-            source.Except(argument, StringComparer.CurrentCultureIgnoreCase).Compare("john", "simon");
+            source.Except(argument, StringComparer.CurrentCultureIgnoreCase).AssertEquals("john", "simon");
         }
 
         [Test]
@@ -632,7 +632,7 @@ namespace BackLinq.Tests
                                                     return ageSum;
                                                 }
                                                 );
-            result.Compare(43, 47);
+            result.AssertEquals(43, 47);
         }
 
         [Test]
@@ -673,7 +673,7 @@ namespace BackLinq.Tests
                                                                           }
                                                                           return totalAge;
                                                                       });
-            result.Compare(43, 47);
+            result.AssertEquals(43, 47);
         }
 
         [Test]
@@ -697,7 +697,7 @@ namespace BackLinq.Tests
                                                                           return totalAge;
                                                                       },
                                                                       StringComparer.CurrentCultureIgnoreCase);
-            result.Compare(43, 47);
+            result.AssertEquals(43, 47);
         }
 
         [Test]
@@ -720,7 +720,7 @@ namespace BackLinq.Tests
                                                                           }
                                                                           return totalAge;
                                                                       }, StringComparer.CurrentCultureIgnoreCase);
-            result.Compare(43, 47);
+            result.AssertEquals(43, 47);
         }
 
         class Pet
@@ -862,7 +862,7 @@ namespace BackLinq.Tests
         {
             var first = Read(new[] { 1, 2, 3 });
             var second = Read(new[] { 2, 3, 4 });
-            first.Intersect(second).Compare(2, 3);
+            first.Intersect(second).AssertEquals(2, 3);
         }
 
         [Test]
@@ -871,7 +871,7 @@ namespace BackLinq.Tests
             var first = Read(new[] { "Heinrich", "Hubert", "Thomas" });
             var second = Read(new[] { "Heinrich", "hubert", "Joseph" });
             var result = first.Intersect(second, StringComparer.CurrentCultureIgnoreCase);
-            result.Compare("Heinrich", "Hubert");
+            result.AssertEquals("Heinrich", "Hubert");
         }
 
         [Test]
@@ -1145,7 +1145,7 @@ namespace BackLinq.Tests
             // ...................V----V Needed for Mono (CS0029)
             var source = Read(new object[] { 1, "Hello", 1.234m, new object() });
             var result = source.OfType<decimal>();
-            result.Compare(1.234m);
+            result.AssertEquals(1.234m);
         }
 
         [Test]
@@ -1302,7 +1302,7 @@ namespace BackLinq.Tests
         public void Range_Start10Count5_IntsFrom10To14()
         {
             var result = Enumerable.Range(10, 5);
-            result.Compare(10, 11, 12, 13, 14);
+            result.AssertEquals(10, 11, 12, 13, 14);
         }
 
         [Test]
@@ -1316,28 +1316,28 @@ namespace BackLinq.Tests
         public void Repeat_StringArgumentCount2_ReturnValueContainsStringArgumentTwice()
         {
             var result = Enumerable.Repeat("Hello World", 2);
-            result.Compare("Hello World", "Hello World");
+            result.AssertEquals("Hello World", "Hello World");
         }
 
         [Test]
         public void Reverse_SeriesOfInts_IntsAreCorrectlyReversed()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
-            source.Reverse().Compare(5, 4, 3, 2, 1);
+            source.Reverse().AssertEquals(5, 4, 3, 2, 1);
         }
 
         [Test]
         public void Select_ArrayOfPersons_AgeOfPersonsIsSelectedAccordingToPassedLambdaExpression()
         {
             var persons = Read(Person.CreatePersons());
-            persons.Select(p => p.Age).Compare(21, 22, 23, 24);
+            persons.Select(p => p.Age).AssertEquals(21, 22, 23, 24);
         }
 
         [Test]
         public void Select_SelectorArg_LambdaThatTakesIndexAsArgument_ReturnValueContainsElementsMultipliedByIndex()
         {
             var source = Read(new[] { 0, 1, 2, 3 });
-            source.Select((i, index) => i * index).Compare(0, 1, 4, 9);
+            source.Select((i, index) => i * index).AssertEquals(0, 1, 4, 9);
         }
 
         [Test]
@@ -1375,7 +1375,7 @@ namespace BackLinq.Tests
             IEnumerable<string> result =
                 petOwners.SelectMany((petOwner, index) =>
                              petOwner.Pets.Select(pet => index + pet));
-            result.Compare("0Scruffy", "0Sam", "1Walker", "1Sugar", "2Scratches", "2Diesel", "3Dusty");
+            result.AssertEquals("0Scruffy", "0Sam", "1Walker", "1Sugar", "2Scratches", "2Diesel", "3Dusty");
         }
 
         [Test]
@@ -1590,14 +1590,14 @@ namespace BackLinq.Tests
         public void Skip_IntsFromOneToTenAndFifeAsSecondArg_IntsFromSixToTen()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            source.Skip(5).Compare(6, 7, 8, 9, 10);
+            source.Skip(5).AssertEquals(6, 7, 8, 9, 10);
         }
 
         [Test]
         public void Skip_PassNegativeValueAsCount_SameBehaviorAsMicrosoftImplementation()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
-            source.Skip(-5).Compare(1, 2, 3, 4, 5);
+            source.Skip(-5).AssertEquals(1, 2, 3, 4, 5);
         }
 
         [Test]
@@ -1611,14 +1611,14 @@ namespace BackLinq.Tests
         public void SkipWhile_PredicateArg_IntsFromOneToFive_ElementsAreSkippedAsLongAsConditionIsSatisfied()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
-            source.SkipWhile(i => i < 3).Compare(3, 4, 5);
+            source.SkipWhile(i => i < 3).AssertEquals(3, 4, 5);
         }
 
         [Test]
         public void SkipWhile_PredicateArg_ArrayOfIntsWithElementsNotSatisfyingConditionAtTheEnd_IntsAtTheEndArePartOfResult()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 1, 2, 3 });
-            source.SkipWhile(i => i < 3).Compare(3, 4, 5, 1, 2, 3);
+            source.SkipWhile(i => i < 3).AssertEquals(3, 4, 5, 1, 2, 3);
         }
 
         [Test]
@@ -1633,7 +1633,7 @@ namespace BackLinq.Tests
         public void SkipWhile_Predicate3Arg_IntsFromOneToNine_ElementsAreSkippedWhileIndexLessThanFive()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-            source.SkipWhile((i, index) => index < 5).Compare(6, 7, 8, 9);
+            source.SkipWhile((i, index) => index < 5).AssertEquals(6, 7, 8, 9);
         }
 
         [Test]
@@ -1712,14 +1712,14 @@ namespace BackLinq.Tests
         public void Take_IntsFromOneToSixAndThreeAsCount_IntsFromOneToThreeAreReturned()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6 });
-            source.Take(3).Compare(1, 2, 3);
+            source.Take(3).AssertEquals(1, 2, 3);
         }
 
         [Test]
         public void Take_CountBiggerThanList_ReturnsAllElements()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
-            source.Take(10).Compare(1, 2, 3, 4, 5);
+            source.Take(10).AssertEquals(1, 2, 3, 4, 5);
         }
 
         [Test]
@@ -1733,7 +1733,7 @@ namespace BackLinq.Tests
         public void TakeWhile_IntsFromOneToTenAndConditionThatSquareIsSmallerThan50_IntsFromOneToSeven()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-            source.TakeWhile(i => i * i < 50).Compare(1, 2, 3, 4, 5, 6, 7);
+            source.TakeWhile(i => i * i < 50).AssertEquals(1, 2, 3, 4, 5, 6, 7);
         }
 
         [Test]
@@ -1742,7 +1742,7 @@ namespace BackLinq.Tests
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var result = source.ToArray();
             Assert.That(result, Is.TypeOf(typeof(int[])));
-            result.Compare(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            result.AssertEquals(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         }
 
         [Test]
@@ -1796,7 +1796,7 @@ namespace BackLinq.Tests
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             var result = source.ToList();
             Assert.That(result, Is.TypeOf(typeof(List<int>)));
-            result.Compare(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            result.AssertEquals(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         }
 
         [Test]
@@ -1805,9 +1805,9 @@ namespace BackLinq.Tests
             var source = Read(new[] { "eagle", "dog", "cat", "bird", "camel" });
             var result = source.ToLookup(s => s.Length);
 
-            result[3].Compare("dog", "cat");
-            result[4].Compare("bird");
-            result[5].Compare("eagle", "camel");
+            result[3].AssertEquals("dog", "cat");
+            result[4].AssertEquals("bird");
+            result[5].AssertEquals("eagle", "camel");
         }
 
         [Test]
@@ -1842,7 +1842,7 @@ namespace BackLinq.Tests
         {
             var source = Read(new[] { 5, 3, 9, 7, 5, 9, 3, 7 });
             var argument = Read(new[] { 8, 3, 6, 4, 4, 9, 1, 0 });
-            source.Union(argument).Compare(5, 3, 9, 7, 8, 6, 4, 1, 0);
+            source.Union(argument).AssertEquals(5, 3, 9, 7, 8, 6, 4, 1, 0);
         }
 
         [Test]
@@ -1850,7 +1850,7 @@ namespace BackLinq.Tests
         {
             var source = Read(new[] { "A", "B", "C", "D", "E", "F" });
             var argument = Read(new[] { "a", "b", "c", "d", "e", "f" });
-            source.Union(argument, StringComparer.CurrentCultureIgnoreCase).Compare("A", "B", "C", "D", "E", "F");
+            source.Union(argument, StringComparer.CurrentCultureIgnoreCase).AssertEquals("A", "B", "C", "D", "E", "F");
         }
 
         [Test]
@@ -1864,14 +1864,14 @@ namespace BackLinq.Tests
         public void Where_IntegersWithEvensPredicate_YieldsEvenIntegers()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
-            source.Where(i => i % 2 == 0).Compare(2, 4);
+            source.Where(i => i % 2 == 0).AssertEquals(2, 4);
         }
 
         [Test]
         public void Where_StringsWithEvenIndexPredicate_YieldsElementsWithEvenIndex()
         {
             var source = Read(new[] { "Camel", "Marlboro", "Parisienne", "Lucky Strike" });
-            source.Where((s, i) => i % 2 == 0).Compare("Camel", "Parisienne");
+            source.Where((s, i) => i % 2 == 0).AssertEquals("Camel", "Parisienne");
         }
 
         [Test]

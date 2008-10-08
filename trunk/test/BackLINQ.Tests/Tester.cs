@@ -30,28 +30,25 @@ namespace BackLinq.Tests
     #region Imports
 
     using System.Collections.Generic;
-    using System.Linq;
     using NUnit.Framework;
     using NUnit.Framework.SyntaxHelpers;
 
     #endregion
 
-    internal static class Tester {
-        public static void Compare<T>(this IEnumerable<T> result, params T[] list) {
-            IEnumerator<T> enumerator = result.GetEnumerator();
-            foreach (T item in list) {
-                enumerator.MoveNext(); Assert.That(enumerator.Current, Is.EqualTo(item));
-            }
-            Assert.That(enumerator.MoveNext(), Is.False);
-        }
+    internal static class Tester
+    {
+        public static void AssertEquals<T>(this IEnumerable<T> actuals, params T[] expectations)
+        {
+            using (var e = actuals.GetEnumerator())
+            {
+                foreach (var expected in expectations)
+                {
+                    e.MoveNext();
+                    Assert.That(e.Current, Is.EqualTo(expected));
+                }
 
-        public static void Compare<TKey, TElement>(this IGrouping<TKey, TElement> result, TKey key, params TElement[] list) {
-            Assert.That(result.Key, Is.EqualTo(key));
-            IEnumerator<TElement> enumerator = result.GetEnumerator();
-            foreach (TElement item in list) {
-                enumerator.MoveNext(); Assert.That(enumerator.Current, Is.EqualTo(item));
+                Assert.That(e.MoveNext(), Is.False);
             }
-            Assert.That(enumerator.MoveNext(), Is.False);
         }
     }
 }
