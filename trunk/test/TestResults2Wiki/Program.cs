@@ -80,9 +80,7 @@ namespace TestResults2Wiki
                 "Expected result"
             };
 
-            var headers = reports.Select(r => "*" + r.Title + "*").Concat(baseHeaders);
-            Console.WriteLine("|| " + string.Join(" || ", headers.ToArray()) + " ||");
-
+            var headers = reports.Select(r => "*" + r.Title + "*").Concat(baseHeaders).ToArray();
             var testByName = reports.SelectMany(r => r.TestCases).GroupBy(test => test.GetAttribute("name"));
 
             const string msdnUrlFormat = @"http://msdn.microsoft.com/en-us/library/system.linq.enumerable.{0}.aspx";
@@ -102,24 +100,50 @@ namespace TestResults2Wiki
                             .ToArray()
                         select new { Description = description, Results = results };
 
-            foreach (var test in suite)
+            //
+            // Create the table of results, which is an array (rows) of 
+            // string array (columns).
+            //
+
+            var table = //...
+                Enumerable.Repeat(headers, 1) // prepend headers to rows...
+                .Concat(
+                    from test in suite
+                    let info = test.Description
+                    select (
+                       test.Results
+                       .Select(r => r.Executed ? (r.Success ? "PASS" : "*FAIL*") : "-")
+                       .Concat(new[] {
+                          string.Format(@"[{0} {1}]{2}",
+                             /* 0 */ string.Format(msdnUrlFormat, info.MethodName.ToLowerInvariant()),
+                             /* 1 */ info.MethodName,
+                             /* 2 */ info.Arguments.Any() 
+                                     ? "(" + string.Join(", ", info.Arguments.ToArray()) + ")" 
+                                     : string.Empty),
+                          info.StateUnderTest,
+                          info.ExpectedBehavior 
+                       }))
+                       .ToArray()
+                ).ToArray();
+
+            //
+            // Calculate the fixed width for each column based on maximum
+            // width across corresponding cells.
+            //
+
+            var widths = headers.Select((h, i) => table.Max(cols => cols[i].Length))
+                                .ToArray();
+
+            //
+            // Write out the table in Wiki format where each cell is padded 
+            // to the columns width.
+            //
+
+            foreach (var row in table)
             {
-                var info = test.Description;
-                Console.WriteLine("|| {0} ||", 
-                    string.Join(" || ",
-                        test.Results
-                        .Select(r => r.Executed ? (r.Success ? "PASS" : "*FAIL*") : "-")
-                        .Concat(new[] {
-                           string.Format(@"[{0} {1}]{2}",
-                              /* 0 */ string.Format(msdnUrlFormat, info.MethodName.ToLowerInvariant()),
-                              /* 1 */ info.MethodName,
-                              /* 2 */ info.Arguments.Any() 
-                                      ? "(" + string.Join(", ", info.Arguments.ToArray()) + ")" 
-                                      : string.Empty),
-                           info.StateUnderTest,
-                           info.ExpectedBehavior 
-                        })
-                        .ToArray()));
+                Console.WriteLine("|| {0} ||",
+                    string.Join(" || ", 
+                        row.Select((col, i) => col.PadRight(widths[i])).ToArray()));
             }
         }
 
