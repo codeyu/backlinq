@@ -46,27 +46,14 @@ namespace BackLinq.Tests
     public sealed class EnumerableFixture
     {
         private CultureInfo initialCulture; // Thread culture saved during Setup to be undone in TearDown.
-
-        private MethodInfo currentTestMethod;
-        private AssertionHandler disposalAssertion;
-
-        private static readonly string[] aggregators = new[]
-        {
-            "Aggregate", "All", "Any", "Average", "Count", 
-            "ElementAt", "ElementAtOrDefault", 
-            "First", "FirstOrDefault", "Last", "LastOrDefault", 
-            "LongCount", "Max", "Min",
-            "SequenceEqual", "Single", "SingleOrDefault", "Sum", 
-            "ToArray", "ToDictionary", "ToList", "ToLookup"
-        };
-
+        private AssertionHandler tearDownAssertions;
+        
         private delegate void AssertionHandler();
 
         [SetUp]
         public void SetUp()
         {
-            currentTestMethod = null;
-            disposalAssertion = null;
+            tearDownAssertions = null;
             initialCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
         }
@@ -74,68 +61,9 @@ namespace BackLinq.Tests
         [TearDown]
         public void TearDown()
         {
-            if (disposalAssertion != null)
-                disposalAssertion();
-
+            if (tearDownAssertions != null)
+                tearDownAssertions();
             System.Threading.Thread.CurrentThread.CurrentCulture = initialCulture;
-        }
-
-        private Reader<T> Read<T>(IEnumerable<T> source)
-        {
-            return ReadImpl(source);
-        }
-
-        private Reader<T> ReadEmpty<T>()
-        {
-            return ReadImpl(new T[0]);
-        }
-
-        private Reader<T> ReadImpl<T>(IEnumerable<T> source)
-        {
-            Debug.Assert(source != null);
-
-            var reader = new Reader<T>(source);
-
-            var testMethod = GetTestMethodFromStack();
-            if (currentTestMethod != null && currentTestMethod != testMethod)
-            {
-                throw new InvalidOperationException(string.Format(
-                        "Test method was changed from {0} to {1}.",
-                        currentTestMethod, testMethod));
-            }
-
-            if (!Attribute.IsDefined(testMethod, typeof(ExpectedExceptionAttribute)))
-            {
-                currentTestMethod = testMethod;
-                var name = testMethod.Name.Split('_').First();
-                if (null != Array.Find(aggregators, m => string.CompareOrdinal(m, name) == 0))
-                {
-                    var disposed = false;
-                    reader.Disposed += delegate { disposed = true; };
-                    AssertionHandler assertion = () => Assert.That(disposed, Is.True, "Enumerator not disposed.");
-                    disposalAssertion = (AssertionHandler)Delegate.Combine(disposalAssertion, assertion);
-                }
-            }
-
-            return reader;
-        }
-
-        /// <summary>
-        /// Walks the stack and returns the first public method decorated 
-        /// with the <see cref="TestAttribute"/> attribute.
-        /// </summary>
-
-        private static MethodInfo GetTestMethodFromStack()
-        {
-            var stack = new StackTrace(/* needFileInfo */ false);
-            for (var i = 0; i < stack.FrameCount; i++)
-            {
-                var method = stack.GetFrame(i).GetMethod();
-                if (method.IsPublic && Attribute.IsDefined(method, typeof(TestAttribute)))
-                    return (MethodInfo) method;
-            }
-
-            throw new Exception("Test method not found in stack.");
         }
 
         [Test]
@@ -1955,6 +1883,78 @@ namespace BackLinq.Tests
         public void AsEnumerable_NullSource_ReturnsNull()
         {
             Assert.That(Enumerable.AsEnumerable<object>(null), Is.Null);
+        }
+
+        private Reader<T> Read<T>(IEnumerable<T> source)
+        {
+            return ReadImpl(source);
+        }
+
+        private Reader<T> ReadEmpty<T>()
+        {
+            return ReadImpl(new T[0]);
+        }
+
+        private Reader<T> ReadImpl<T>(IEnumerable<T> source)
+        {
+            Debug.Assert(source != null);
+
+            var reader = new Reader<T>(source);
+
+            //
+            // If the calling test method is not expecting an exception
+            // and it tests an aggregator then check that the source
+            // enumerator will be disposed by the time the test is torn.
+            //
+
+            var testMethod = GetTestMethodFromStack();
+            if (!Attribute.IsDefined(testMethod, typeof(ExpectedExceptionAttribute)))
+            {
+                var op = testMethod.Name.Split('_').First();
+                if (null != Array.Find(aggregators, a => string.CompareOrdinal(a, op) == 0))
+                {
+                    var disposed = false;
+                    reader.Disposed += delegate { disposed = true; };
+                    AssertionHandler assertion = () => Assert.That(disposed, Is.True, "Enumerator not disposed.");
+                    tearDownAssertions = (AssertionHandler) Delegate.Combine(tearDownAssertions, assertion);
+                }
+            }
+
+            return reader;
+        }
+
+        //
+        // The following LINQ operators are considered as aggregators
+        // that so not produce an enumeration and therefore are tested
+        // for disposing the source enumerator on completion.
+        //
+
+        private static readonly string[] aggregators = new[]
+        {
+            "Aggregate", "All", "Any", "Average", "Count", 
+            "ElementAt", "ElementAtOrDefault", 
+            "First", "FirstOrDefault", "Last", "LastOrDefault", 
+            "LongCount", "Max", "Min",
+            "SequenceEqual", "Single", "SingleOrDefault", "Sum", 
+            "ToArray", "ToDictionary", "ToList", "ToLookup"
+        };
+
+        /// <summary>
+        /// Walks the stack and returns the first public method decorated 
+        /// with the <see cref="TestAttribute"/> attribute.
+        /// </summary>
+
+        private static MethodInfo GetTestMethodFromStack()
+        {
+            var stack = new StackTrace(/* needFileInfo */ false);
+            for (var i = 0; i < stack.FrameCount; i++)
+            {
+                var method = stack.GetFrame(i).GetMethod();
+                if (method.IsPublic && Attribute.IsDefined(method, typeof(TestAttribute)))
+                    return (MethodInfo)method;
+            }
+
+            throw new Exception("Test method not found in stack.");
         }
     }
 
