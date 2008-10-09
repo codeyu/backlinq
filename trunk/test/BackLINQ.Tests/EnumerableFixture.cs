@@ -37,6 +37,8 @@ namespace BackLinq.Tests
     using NUnit.Framework;
     using System.Linq;
     using NUnit.Framework.SyntaxHelpers;
+    using System.Diagnostics;
+    using System.Reflection;
 
     #endregion
 
@@ -45,9 +47,26 @@ namespace BackLinq.Tests
     {
         private CultureInfo initialCulture; // Thread culture saved during Setup to be undone in TearDown.
 
+        private MethodInfo currentTestMethod;
+        private AssertionHandler disposalAssertion;
+
+        private static readonly string[] aggregators = new[]
+        {
+            "Aggregate", "All", "Any", "Average", "Count", 
+            "ElementAt", "ElementAtOrDefault", 
+            "First", "FirstOrDefault", "Last", "LastOrDefault", 
+            "LongCount", "Max", "Min",
+            "SequenceEqual", "Single", "SingleOrDefault", "Sum", 
+            "ToArray", "ToDictionary", "ToList", "ToLookup"
+        };
+
+        private delegate void AssertionHandler();
+
         [SetUp]
         public void SetUp()
         {
+            currentTestMethod = null;
+            disposalAssertion = null;
             initialCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
             System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
         }
@@ -55,17 +74,71 @@ namespace BackLinq.Tests
         [TearDown]
         public void TearDown()
         {
+            if (currentTestMethod == null)
+                throw new Exception("Read/ReadEmpty<T> was not used by test.");
+
+            if (disposalAssertion != null)
+                disposalAssertion();
+
             System.Threading.Thread.CurrentThread.CurrentCulture = initialCulture;
         }
 
-        private static Reader<T> Read<T>(IEnumerable<T> source)
+        private Reader<T> Read<T>(IEnumerable<T> source)
         {
-            return new Reader<T>(source);
+            return ReadImpl(source);
         }
 
-        private static Reader<T> ReadEmpty<T>()
+        private Reader<T> ReadEmpty<T>()
         {
-            return new Reader<T>(new T[0]);
+            return ReadImpl(new T[0]);
+        }
+
+        private Reader<T> ReadImpl<T>(IEnumerable<T> source)
+        {
+            Debug.Assert(source != null);
+
+            var reader = new Reader<T>(source);
+
+            var testMethod = GetTestMethodFromStack();
+            if (currentTestMethod != null && currentTestMethod != testMethod)
+            {
+                throw new InvalidOperationException(string.Format(
+                        "Test method was changed from {0} to {1}.",
+                        currentTestMethod, testMethod));
+            }
+
+            if (!Attribute.IsDefined(testMethod, typeof(ExpectedExceptionAttribute)))
+            {
+                currentTestMethod = testMethod;
+                var name = testMethod.Name.Split('_').First();
+                if (null != Array.Find(aggregators, m => string.CompareOrdinal(m, name) == 0))
+                {
+                    var disposed = false;
+                    reader.Disposed += delegate { disposed = true; };
+                    AssertionHandler assertion = () => Assert.That(disposed, Is.True, "Enumerator not disposed.");
+                    disposalAssertion = (AssertionHandler)Delegate.Combine(disposalAssertion, assertion);
+                }
+            }
+
+            return reader;
+        }
+
+        /// <summary>
+        /// Walks the stack and returns the first public method decorated 
+        /// with the <see cref="TestAttribute"/> attribute.
+        /// </summary>
+
+        private static MethodInfo GetTestMethodFromStack()
+        {
+            var stack = new StackTrace(/* needFileInfo */ false);
+            for (var i = 0; i < stack.FrameCount; i++)
+            {
+                var method = stack.GetFrame(i).GetMethod();
+                if (method.IsPublic && Attribute.IsDefined(method, typeof(TestAttribute)))
+                    return (MethodInfo) method;
+            }
+
+            throw new Exception("Test method not found in stack.");
         }
 
         [Test]
