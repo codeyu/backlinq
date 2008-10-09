@@ -74,9 +74,6 @@ namespace BackLinq.Tests
         [TearDown]
         public void TearDown()
         {
-            if (currentTestMethod == null)
-                throw new Exception("Read/ReadEmpty<T> was not used by test.");
-
             if (disposalAssertion != null)
                 disposalAssertion();
 
@@ -255,7 +252,7 @@ namespace BackLinq.Tests
         [Test]
         public void Any_EmptySource_ReturnsFalse()
         {
-            var source = new object[0];
+            var source = ReadEmpty<object>();
             Assert.That(source.Any(), Is.False);
         }
 
@@ -622,13 +619,13 @@ namespace BackLinq.Tests
         // TODO: make better
         public void GroupBy_KeySelectorArg_ValidArguments_CorrectCaseSensitiveGrouping()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter"},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert"},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert"},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor"}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter"},
+                new Person {FamilyName = "müller", FirstName = "Herbert"},
+                new Person {FamilyName = "Meier", FirstName = "Hubert"},
+                new Person {FamilyName = "meier", FirstName = "Isidor"}
+            });
             var result = persons.GroupBy(person => person.FamilyName);
             var enumerator = result.GetEnumerator();
             enumerator.MoveNext();
@@ -650,13 +647,13 @@ namespace BackLinq.Tests
         [Test]
         public void GroupBy_KeySelectorArgComparerArg_KeysThatDifferInCasingNonCaseSensitiveStringComparer_CorrectGrouping()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter"},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert"},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert"},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor"}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter"},
+                new Person {FamilyName = "müller", FirstName = "Herbert"},
+                new Person {FamilyName = "Meier", FirstName = "Hubert"},
+                new Person {FamilyName = "meier", FirstName = "Isidor"}
+            });
             var result = persons.GroupBy(person => person.FamilyName, StringComparer.InvariantCultureIgnoreCase);
             var enumerator = result.GetEnumerator();
             enumerator.MoveNext();
@@ -711,13 +708,13 @@ namespace BackLinq.Tests
         [Test]
         public void GroupByKey_KeySelectorArgElementSelectorArgComparerArg_ValidArguments_CorrectGroupingAndProcessing()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+            });
 
             IEnumerable<IGrouping<string, int>> result = persons.GroupBy(person => person.FamilyName,
                                                 person => person.Age,
@@ -752,13 +749,13 @@ namespace BackLinq.Tests
         [Test]
         public void GroupBy_KeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+            });
             var result = persons.GroupBy(p => p.FamilyName,
                                                                       (name, enumerable2) =>
                                                                       {
@@ -776,13 +773,13 @@ namespace BackLinq.Tests
         [Test]
         public void GroupBy_KeySelectorArgElementSelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+            });
             var result = persons.GroupBy(p => p.FamilyName, p => p.Age,
                                                                       (name, enumerable2) =>
                                                                       {
@@ -805,21 +802,21 @@ namespace BackLinq.Tests
         [Test]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_ValidArguments_CorrectGroupingAndJoining()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+            });
 
-            var pets = new Reader<Pet>(new[]
-                           {
-                               new Pet {Name = "Barley", Owner = "Peter"},
-                               new Pet {Name = "Boots", Owner = "Herbert"},
-                               new Pet {Name = "Whiskers", Owner = "Herbert"},
-                               new Pet {Name = "Daisy", Owner = "Isidor"}
-                           });
+            var pets = Read(new[]
+            {
+                new Pet {Name = "Barley", Owner = "Peter"},
+                new Pet {Name = "Boots", Owner = "Herbert"},
+                new Pet {Name = "Whiskers", Owner = "Herbert"},
+                new Pet {Name = "Daisy", Owner = "Isidor"}
+            });
 
             var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
                               (person, petCollection) =>
@@ -857,21 +854,21 @@ namespace BackLinq.Tests
         [Test]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndJoining()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+            });
 
-            var pets = new Reader<Pet>(new[]
-                           {
-                               new Pet {Name = "Barley", Owner = "Peter"},
-                               new Pet {Name = "Boots", Owner = "Herbert"},
-                               new Pet {Name = "Whiskers", Owner = "herbert"}, // This pet is not associated to "Herbert"
-                               new Pet {Name = "Daisy", Owner = "Isidor"}
-                           });
+            var pets = Read(new[]
+            {
+                new Pet {Name = "Barley", Owner = "Peter"},
+                new Pet {Name = "Boots", Owner = "Herbert"},
+                new Pet {Name = "Whiskers", Owner = "herbert"}, // This pet is not associated to "Herbert"
+                new Pet {Name = "Daisy", Owner = "Isidor"}
+            });
 
             var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
                               (person, petCollection) =>
@@ -902,21 +899,21 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsOuterKeySelector_ThrowsArgumentNullException()
         {
-            var persons = new Reader<Person>(new[]
-                                 {
-                                     new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                                     new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
-                                     new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                                     new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
-                                 });
+            var persons = Read(new[]
+            {
+                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+            });
 
-            var pets = new Reader<Pet>(new[]
-                           {
-                               new Pet {Name = "Barley", Owner = "Peter"},
-                               new Pet {Name = "Boots", Owner = "Herbert"},
-                               new Pet {Name = "Whiskers", Owner = "Herbert"},
-                               new Pet {Name = "Daisy", Owner = "Isidor"}
-                           });
+            var pets = Read(new[]
+            {
+                new Pet {Name = "Barley", Owner = "Peter"},
+                new Pet {Name = "Boots", Owner = "Herbert"},
+                new Pet {Name = "Whiskers", Owner = "Herbert"},
+                new Pet {Name = "Daisy", Owner = "Isidor"}
+            });
 
             persons.GroupJoin(pets, null, pet => pet.Owner,
                               (person, petCollection) =>
@@ -1171,14 +1168,14 @@ namespace BackLinq.Tests
         [Test]
         public void Max_ListWithNullableType_ReturnsMaximum()
         {
-            var source = new Reader<int?>(new int?[] { 1, 4, null, 10 });
+            var source = Read(new int?[] { 1, 4, null, 10 });
             Assert.That(source.Max(), Is.EqualTo(10));
         }
 
         [Test]
         public void Max_NullableList_ReturnsMaxNonNullValue()
         {
-            var source = new Reader<int?>(new int?[] { -5, -2, null });
+            var source = Read(new int?[] { -5, -2, null });
             Assert.That(source.Max(), Is.EqualTo(-2));
         }
 
@@ -1194,14 +1191,14 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Min_EmptyList_ThrowsInvalidOperationException()
         {
-            var source = Read(new int[0]);
+            var source = ReadEmpty<int>();
             source.Min();
         }
 
         [Test]
         public void Min_IntegersWithSomeNull_ReturnsMinimumNonNullValue()
         {
-            var source = new Reader<int?>(new int?[] { 199, 15, null, 30 });
+            var source = Read(new int?[] { 199, 15, null, 30 });
             Assert.That(source.Min(), Is.EqualTo(15));
         }
 
@@ -1436,7 +1433,7 @@ namespace BackLinq.Tests
         [Test]
         public void SelectMany_Selector3Arg_ArrayOfPetOwners_SelectorUsesElementIndexArgument()
         {
-            var petOwners = new Reader<PetOwner>(new[] 
+            var petOwners = Read(new[] 
                 { new PetOwner { Name="Higa, Sidney", 
                       Pets = new List<string>{ "Scruffy", "Sam" } },
                   new PetOwner { Name="Ashkenazi, Ronen", 
@@ -1454,7 +1451,7 @@ namespace BackLinq.Tests
         [Test]
         public void SelectMany_CollectionSelectorArgResultSelectorArg_ArrayOfPetOwner_ResultContainsElementForEachPetAPetOwnerHas()
         {
-            var petOwners = new Reader<PetOwner>(new[]
+            var petOwners = Read(new[]
                 { new PetOwner { Name="Higa", 
                       Pets = new List<string>{ "Scruffy", "Sam" } },
                   new PetOwner { Name="Ashkenazi", 
@@ -1544,7 +1541,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_EmptySource_ThrowsInvalidOperationException()
         {
-            var source = new int[0];
+            var source = ReadEmpty<int>();
             source.Single();
         }
 
@@ -1552,14 +1549,14 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_SourceWithMoreThanOneElement_ThrowsInvalidOperationException()
         {
-            var source = new[] { 3, 6 };
+            var source = Read(new[] { 3, 6 });
             source.Single();
         }
 
         [Test]
         public void Single_SourceWithOneElement_ReturnsSingleElement()
         {
-            var source = new[] { 1 }; // FIXME Use Read
+            var source = Read(new[] {1});
             Assert.That(source.Single(), Is.EqualTo(1));
         }
 
@@ -1574,7 +1571,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_NoElementSatisfiesCondition_ThrowsInvalidOperationException()
         {
-            var source = new[] { 1, 3, 5 }; // FIXME Use Read
+            var source = Read(new[] { 1, 3, 5 });
             source.Single(i => i % 2 == 0);
         }
 
@@ -1582,7 +1579,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_MoreThanOneElementSatisfiedCondition_ThrowsInvalidOperationException()
         {
-            var source = new[] { 1, 2, 3, 4 }; // FIXME Use Read
+            var source = Read(new[] { 1, 2, 3, 4 });
             source.Single(i => i % 2 == 0);
         }
 
@@ -1590,7 +1587,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_SourceIsEmpty_ThrowsInvalidOperationException()
         {
-            var source = new int[0]; // FIXME Use Read
+            var source = ReadEmpty<int>();
             source.Single(i => i % 2 == 0);
         }
 
@@ -1605,21 +1602,21 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void SingleOrDefault_MoreThanOneElementInSource_ThrowsInvalidOperationException()
         {
-            var source = new[] { 1, 2, 3 }; // FIXME Use Read
+            var source = Read(new[] { 1, 2, 3 });
             source.SingleOrDefault();
         }
 
         [Test]
         public void SingleOrDefault_EmptySource_ReturnsZero()
         {
-            var source = new int[0]; // FIXME Use Read
+            var source = ReadEmpty<int>();
             Assert.That(source.SingleOrDefault(), Is.EqualTo(0));
         }
 
         [Test]
         public void SingleOrDefault_SourceWithOneElement_ReturnsSingleElement()
         {
-            var source = new[] { 5 }; // FIXME Use Read
+            var source = Read(new[] { 5 });
             Assert.That(source.SingleOrDefault(), Is.EqualTo(5));
         }
 
@@ -1633,7 +1630,7 @@ namespace BackLinq.Tests
         [Test]
         public void SingleOrDefault_PredicateArg_EmptySource_ReturnsZero()
         {
-            var source = new int[0]; // FIXME Use Read
+            var source = ReadEmpty<int>();
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
         }
 
@@ -1733,7 +1730,7 @@ namespace BackLinq.Tests
         [Test]
         public void Sum_Floats_ReturnsSum()
         {
-            Assert.That(Read(new float[] {1F, 2F, 3F}).Sum(), Is.EqualTo(6));
+            Assert.That(Read(new[] {1F, 2F, 3F}).Sum(), Is.EqualTo(6));
         }
 
         [Test]
@@ -1753,7 +1750,7 @@ namespace BackLinq.Tests
 
         [Test]
         public void Sum_Decimals_ReturnsSum() {
-            Assert.That(Read(new decimal[] { 1m, 2m, 3m }).Sum(), Is.EqualTo(6));
+            Assert.That(Read(new[] { 1m, 2m, 3m }).Sum(), Is.EqualTo(6));
         }
 
         [Test]
@@ -1769,7 +1766,7 @@ namespace BackLinq.Tests
         [Test]
         public void Sum_NullableIntsAsArguments_ReturnsCorrectSum()
         {
-            var source = new Reader<int?>(new int?[] { 1, 2, null });
+            var source = Read<int?>(new int?[] { 1, 2, null });
             Assert.That(source.Sum(), Is.EqualTo(3));
         }
 
@@ -1950,12 +1947,12 @@ namespace BackLinq.Tests
         [Test]
         public void AsEnumerable_NonNullSource_ReturnsSourceReference()
         {
-            var source = new object[0];
+            var source = ReadEmpty<object>();
             Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
         }
 
         [Test]
-        public void AsEnumerable_NonSource_ReturnsNull()
+        public void AsEnumerable_NullSource_ReturnsNull()
         {
             Assert.That(Enumerable.AsEnumerable<object>(null), Is.Null);
         }
