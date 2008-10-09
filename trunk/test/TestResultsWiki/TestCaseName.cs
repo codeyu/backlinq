@@ -32,7 +32,6 @@ namespace TestResultsWiki
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Text;
 
     #endregion
 
@@ -65,7 +64,7 @@ namespace TestResultsWiki
                              .ToArray();
 
             StateUnderTest = parts.Count > 1 
-                           ? CamelCaseToSentence(parts.Dequeue()) 
+                           ? CamelCase.FormatSentence(parts.Dequeue()) 
                            : string.Empty;
 
             ExpectedBehavior = parts.Dequeue();
@@ -79,7 +78,7 @@ namespace TestResultsWiki
             }
             else
             {
-                ExpectedBehavior = CamelCaseToSentence(ExpectedBehavior);
+                ExpectedBehavior = CamelCase.FormatSentence(ExpectedBehavior);
             }
         }
 
@@ -87,58 +86,5 @@ namespace TestResultsWiki
         public IList<string> Arguments { get; private set; }
         public string StateUnderTest { get; private set; }
         public string ExpectedBehavior { get; private set; }
-
-        /// <summary>
-        /// Creates a sentence out of a camel-cased string of words. 
-        /// For example, <c>"TheQuickBrownFox"</c> is converted to 
-        /// <c>"The quick brown fox"</c>.
-        /// </summary>
-        
-        private static string CamelCaseToSentence(string camelCase)
-        {
-            return string.Join(" ",
-                               SplitCamelCaseWords(camelCase)
-                                   .Select((word, i) => i > 0 ? Decap(word) : word)
-                                   .ToArray());
-        }
-
-        /// <summary>
-        /// De-capitalizes by changing the first letter of the given word to 
-        /// lower case.
-        /// </summary>
-
-        private static string Decap(string word)
-        {
-            return string.IsNullOrEmpty(word)
-                 ? string.Empty
-                 : char.IsUpper(word, 0)
-                   ? Char.ToLower(word[0]) + word.Substring(1)
-                   : word;
-        }
-
-        /// <summary>
-        /// Parses and yields words from a string of camel-cased words.
-        /// For example, <c>"HelloWorld"</c> is parse 
-        /// into the sequence { <c>"Hello"</c>, <c>"World"</c> }.
-        /// </summary>
-
-        private static IEnumerable<string> SplitCamelCaseWords(string camelCase)
-        {
-            var sb = new StringBuilder();
-            
-            for (var i = 0; i < camelCase.Length; i++)
-            {
-                var ch = camelCase[i];
-                if (char.IsUpper(ch) && sb.Length > 0)
-                {
-                    yield return sb.ToString();
-                    sb.Length = 0;
-                }
-                sb.Append(ch);
-            }
-
-            if (sb.Length > 0)
-                yield return sb.ToString();
-        }
     }
 }
