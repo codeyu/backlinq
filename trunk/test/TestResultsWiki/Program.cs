@@ -81,13 +81,26 @@ namespace TestResultsWiki
             };
 
             var headers = reports.Select(r => "*" + r.Title + "*").Concat(baseHeaders).ToArray();
-            var testByName = reports.SelectMany(r => r.TestCases).GroupBy(test => test.GetAttribute("name"));
+            var testByName = reports.SelectMany(r => r.TestCases)
+                                    .GroupBy(test => test.GetAttribute("name").Split('.').Last())
+                                    .ToArray();
+
+            if (reports.Length > 1)
+            {
+                var inconsistencies = testByName.Where(g => g.Count() != reports.Length).ToArray();
+                if (inconsistencies.Length > 0)
+                {
+                    foreach (var test in inconsistencies)
+                        Console.Error.WriteLine("Missing results for {0}.", test.Key);
+                    throw new ApplicationException("Tests results are inconsistent.");
+                }
+            }
 
             const string msdnUrlFormat = @"http://msdn.microsoft.com/en-us/library/system.linq.enumerable.{0}.aspx";
 
             var suite = from nodes in testByName
                         where nodes.Key.Contains("_")
-                        let description = new TestCaseName(nodes.Key.Split('.').Last())
+                        let description = new TestCaseName(nodes.Key)
                         let results = (
                             from node in nodes
                             let success = "true".Equals(node.GetAttribute("success"), StringComparison.OrdinalIgnoreCase)
