@@ -31,6 +31,7 @@ namespace TestResultsWiki
 
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
 
     #endregion
@@ -42,7 +43,7 @@ namespace TestResultsWiki
     [ Serializable ]
     internal sealed class TestCaseName
     {
-        private static readonly string[] zeroArguments = new string[0];
+        private static readonly IList<string> zeroArguments = new string[0];
 
         /// <param name="name">
         /// String like <c>"Distinct_ComparerArg_NonDistinctValues_ReturnsOnlyDistinctValues"</c>.</param>
@@ -58,10 +59,11 @@ namespace TestResultsWiki
 
             Arguments = parts.Count < 3 
                       ? zeroArguments 
-                      : parts.Dequeue()
-                             .Split(new[] {"Arg"}, StringSplitOptions.RemoveEmptyEntries)
-                             .TakeWhile(s => s.Length > 0)
-                             .ToArray();
+                      : new ReadOnlyCollection<string>(
+                            parts.Dequeue()
+                                 .Split(new[] {"Arg"}, StringSplitOptions.RemoveEmptyEntries)
+                                 .TakeWhile(s => s.Length > 0)
+                                 .ToArray());
 
             StateUnderTest = parts.Count > 1 
                            ? CamelCase.FormatSentence(parts.Dequeue()) 
