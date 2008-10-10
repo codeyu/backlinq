@@ -70,7 +70,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Aggregate_EmptySource_ThrowsInvalidOperationException()
         {
-            var source = ReadEmpty<object>();
+            var source = Read<object>();
             source.Aggregate((a, b) => { throw new NotImplementedException(); });
         }
 
@@ -101,7 +101,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Aggregate_NullFunc_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Aggregate(null);
+            Read<object>().Aggregate(null);
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace BackLinq.Tests
         [Test]
         public void Any_EmptySource_ReturnsFalse()
         {
-            var source = ReadEmpty<object>();
+            var source = Read<object>();
             Assert.That(source.Any(), Is.False);
         }
 
@@ -232,13 +232,13 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Average_EmptySource_ThrowsInvalidOperationException()
         {
-            ReadEmpty<int>().Average();
+            Read<int>().Average();
         }
 
         [Test]
         public void Average_EmptyArrayOfNullableIntegers_ReturnsNull()
         {
-            Assert.That(ReadEmpty<int?>().Average(), Is.Null);
+            Assert.That(Read<int?>().Average(), Is.Null);
         }
 
         [Test]
@@ -411,7 +411,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Except_secondArg_ArgumentNull_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Except(null);
+            Read<object>().Except(null);
         }
 
         [Test]
@@ -434,7 +434,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void First_EmptySource_ThrowsInvalidOperationException()
         {
-            ReadEmpty<int>().First();
+            Read<int>().First();
         }
 
         [Test]
@@ -462,7 +462,7 @@ namespace BackLinq.Tests
         [Test]
         public void FirstOrDefault_EmptyBooleanSource_ReturnsFalse()
         {
-            Assert.That(ReadEmpty<bool>().FirstOrDefault(), Is.False);
+            Assert.That(Read<bool>().FirstOrDefault(), Is.False);
         }
 
         [Test]
@@ -516,7 +516,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void GroupBy_KeySelectorArg_NullAsKeySelector_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().GroupBy<object, object>(null);
+            Read<object>().GroupBy<object, object>(null);
         }
 
         [Test]
@@ -852,7 +852,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Intersect_NullSecondSource_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Intersect(null);
+            Read<object>().Intersect(null);
         }
 
         [Test]
@@ -876,7 +876,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsArgument_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Join<object, object, object, object>(null, null, null, null);
+            Read<object>().Join<object, object, object, object>(null, null, null, null);
         }
 
         [Test]
@@ -977,7 +977,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Last_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Last(null);
+            Read<object>().Last(null);
         }
 
         [Test]
@@ -1034,7 +1034,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void LongCount_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().LongCount(null);
+            Read<object>().LongCount(null);
         }
 
         [Test]
@@ -1119,7 +1119,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Min_EmptyList_ThrowsInvalidOperationException()
         {
-            var source = ReadEmpty<int>();
+            var source = Read<int>();
             source.Min();
         }
 
@@ -1150,7 +1150,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void OrderBy_KeySelectorArg_NullAsKeySelector_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().OrderBy<object, object>(null);
+            Read<object>().OrderBy<object, object>(null);
         }
 
         [Test]
@@ -1240,7 +1240,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void TheyBy_NullKeySelector_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().OrderBy<object, object>(e => { throw new NotImplementedException(); }).ThenBy<object, object>(null);
+            Read<object>().OrderBy<object, object>(e => { throw new NotImplementedException(); }).ThenBy<object, object>(null);
         }
         /// <summary>
         /// To sort ints in descending order.
@@ -1403,14 +1403,14 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void SequenceEqual_NullFirstSequence_ThrowsArgumentNullException()
         {
-            Enumerable.SequenceEqual(null, ReadEmpty<object>());
+            Enumerable.SequenceEqual(null, Read<object>());
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void SequenceEqual_NullSecondSequence_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().SequenceEqual(null);
+            Read<object>().SequenceEqual(null);
         }
 
         [Test]
@@ -1469,7 +1469,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_EmptySource_ThrowsInvalidOperationException()
         {
-            var source = ReadEmpty<int>();
+            var source = Read<int>();
             source.Single();
         }
 
@@ -1492,7 +1492,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Single_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Single(null);
+            Read<object>().Single(null);
         }
 
         [Test]
@@ -1515,7 +1515,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_SourceIsEmpty_ThrowsInvalidOperationException()
         {
-            var source = ReadEmpty<int>();
+            var source = Read<int>();
             source.Single(i => i % 2 == 0);
         }
 
@@ -1537,7 +1537,7 @@ namespace BackLinq.Tests
         [Test]
         public void SingleOrDefault_EmptySource_ReturnsZero()
         {
-            var source = ReadEmpty<int>();
+            var source = Read<int>();
             Assert.That(source.SingleOrDefault(), Is.EqualTo(0));
         }
 
@@ -1552,13 +1552,13 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void SingleOrDefault_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().SingleOrDefault(null);
+            Read<object>().SingleOrDefault(null);
         }
 
         [Test]
         public void SingleOrDefault_PredicateArg_EmptySource_ReturnsZero()
         {
-            var source = ReadEmpty<int>();
+            var source = Read<int>();
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
         }
 
@@ -1602,7 +1602,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void SkipWhile_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().SkipWhile((Func<object, bool>) null);
+            Read<object>().SkipWhile((Func<object, bool>) null);
         }
 
         [Test]
@@ -1832,7 +1832,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Union_SecondArg_PassNullAsArgument_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Union(null);
+            Read<object>().Union(null);
         }
 
         [Test]
@@ -1855,7 +1855,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Where_NullPredicate_ThrowsArgumentNullException()
         {
-            ReadEmpty<object>().Where((Func<object, bool>) null);
+            Read<object>().Where((Func<object, bool>) null);
         }
 
         [Test]
@@ -1875,7 +1875,7 @@ namespace BackLinq.Tests
         [Test]
         public void AsEnumerable_NonNullSource_ReturnsSourceReference()
         {
-            var source = ReadEmpty<object>();
+            var source = Read<object>();
             Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
         }
 
@@ -1885,17 +1885,7 @@ namespace BackLinq.Tests
             Assert.That(Enumerable.AsEnumerable<object>(null), Is.Null);
         }
 
-        private Reader<T> Read<T>(IEnumerable<T> source)
-        {
-            return ReadImpl(source);
-        }
-
-        private Reader<T> ReadEmpty<T>()
-        {
-            return ReadImpl(new T[0]);
-        }
-
-        private Reader<T> ReadImpl<T>(IEnumerable<T> source)
+        private Reader<T> Read<T>(params T[] source)
         {
             Debug.Assert(source != null);
 
