@@ -1875,7 +1875,7 @@ namespace BackLinq.Tests
         [Test]
         public void AsEnumerable_NonNullSource_ReturnsSourceReference()
         {
-            var source = Read<object>();
+            var source = new object[0];
             Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
         }
 
@@ -1893,41 +1893,20 @@ namespace BackLinq.Tests
 
             //
             // If the calling test method is not expecting an exception
-            // and it tests an aggregator then check that the source
-            // enumerator will be disposed by the time the test is torn.
+            // then check that the source enumerator will be disposed 
+            // by the time the test is torn.
             //
 
-            var testMethod = GetTestMethodFromStack();
-            if (!Attribute.IsDefined(testMethod, typeof(ExpectedExceptionAttribute)))
+            if (!Attribute.IsDefined(GetTestMethodFromStack(), typeof(ExpectedExceptionAttribute)))
             {
-                var op = testMethod.Name.Split('_').First();
-                if (null != Array.Find(aggregators, a => string.CompareOrdinal(a, op) == 0))
-                {
-                    var disposed = false;
-                    reader.Disposed += delegate { disposed = true; };
-                    AssertionHandler assertion = () => Assert.That(disposed, Is.True, "Enumerator not disposed.");
-                    tearDownAssertions = (AssertionHandler) Delegate.Combine(tearDownAssertions, assertion);
-                }
+                var disposed = false;
+                reader.Disposed += delegate { disposed = true; };
+                AssertionHandler assertion = () => Assert.That(disposed, Is.True, "Enumerator not disposed.");
+                tearDownAssertions = (AssertionHandler) Delegate.Combine(tearDownAssertions, assertion);
             }
 
             return reader;
         }
-
-        //
-        // The following LINQ operators are considered as aggregators
-        // that so not produce an enumeration and therefore are tested
-        // for disposing the source enumerator on completion.
-        //
-
-        private static readonly string[] aggregators = new[]
-        {
-            "Aggregate", "All", "Any", "Average", "Count", 
-            "ElementAt", "ElementAtOrDefault", 
-            "First", "FirstOrDefault", "Last", "LastOrDefault", 
-            "LongCount", "Max", "Min",
-            "SequenceEqual", "Single", "SingleOrDefault", "Sum", 
-            "ToArray", "ToDictionary", "ToList", "ToLookup"
-        };
 
         /// <summary>
         /// Walks the stack and returns the first public method decorated 
