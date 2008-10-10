@@ -1897,33 +1897,14 @@ namespace BackLinq.Tests
             // by the time the test is torn.
             //
 
-            if (!Attribute.IsDefined(GetTestMethodFromStack(), typeof(ExpectedExceptionAttribute)))
-            {
-                var disposed = false;
-                reader.Disposed += delegate { disposed = true; };
-                AssertionHandler assertion = () => Assert.That(disposed, Is.True, "Enumerator not disposed.");
-                tearDownAssertions = (AssertionHandler) Delegate.Combine(tearDownAssertions, assertion);
-            }
+            var disposed = false;
+            var read = false;
+            reader.Disposed += delegate { disposed = true; };
+            reader.Reading += delegate { read = true; };
+            AssertionHandler assertion = () => Assert.That(!read || disposed, Is.True, "Enumerator not disposed.");
+            tearDownAssertions = (AssertionHandler) Delegate.Combine(tearDownAssertions, assertion);
 
             return reader;
-        }
-
-        /// <summary>
-        /// Walks the stack and returns the first public method decorated 
-        /// with the <see cref="TestAttribute"/> attribute.
-        /// </summary>
-
-        private static MethodInfo GetTestMethodFromStack()
-        {
-            var stack = new StackTrace(/* needFileInfo */ false);
-            for (var i = 0; i < stack.FrameCount; i++)
-            {
-                var method = stack.GetFrame(i).GetMethod();
-                if (method.IsPublic && Attribute.IsDefined(method, typeof(TestAttribute)))
-                    return (MethodInfo)method;
-            }
-
-            throw new Exception("Test method not found in stack.");
         }
     }
 
