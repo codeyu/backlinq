@@ -42,6 +42,7 @@ namespace BackLinq.Tests
     internal sealed class Reader<T> : IEnumerable<T>, IEnumerator<T>
     {
         public event EventHandler Disposed;
+        public event EventHandler Reading;
 
         private IEnumerable<T> source;
         private IEnumerator<T> cursor;
@@ -84,6 +85,11 @@ namespace BackLinq.Tests
         {
             if (!Enumerator.MoveNext())
                 throw new InvalidOperationException("No more elements in the source sequence.");
+            
+            var handler = Reading;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
+
             return Enumerator.Current;
         }
 
