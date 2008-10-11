@@ -306,10 +306,37 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Contains_IntsContainingPassedValue_ReturnsTrue()
+        {
+            var source = Read(new[] {12, -15, 21});
+            Assert.That(source.Contains(21), Is.True);
+        }
+
+        [Test]
+        public void Contains_IntsThatDoNotContainPassedValue_ReturnsFalse()
+        {
+            var source = Read(new[] {-2, 4, 8});
+            Assert.That(source.Contains(9), Is.False);
+        }
+
+        [Test]
+        public void Contains_ListOfIntsContainingPassedValue_ReturnsTrue()
+        {
+            var source = new List<int>() {1, 2, 3};
+            Assert.That(source.Contains(3), Is.True);
+        }
+
+        [Test]
         public void Count_Ints_ReturnsNumberOfElements()
         {
             Assert.That(Read(new[] { 12, 34, 56 }).Count(), Is.EqualTo(3));
+        }
 
+        [Test]
+        public void Count_PredicateArg_Strings_CountsOnlyStringsWithEvenLength()
+        {
+            var source = new[] {"A", "AB", "ABC", "ABCD"};
+            Assert.That(source.Count(s => s.Length % 2 == 0), Is.EqualTo(2));
         }
 
         [Test]
@@ -379,6 +406,14 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void ElementAt_NegativeIndex_ThrowsArgumentOutOfRangeException()
+        {
+            var source = new[] {1, 2, 3};
+            source.ElementAt(-1);
+        }
+        
+        [Test]
         public void ElementAtOrDefault_Integers_ReturnsZeroIfIndexOutOfRange()
         {
             var source = Read(new[] { 3, 6, 8 });
@@ -390,6 +425,20 @@ namespace BackLinq.Tests
         {
             var source = Read(new[] { 3, 6, 9 });
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(9));
+        }
+
+        [Test]
+        public void ElementAtOrDefault_ListOfInts_ReturnsCorrectElement()
+        {
+            var source = new List<int>() {1, 2, 3, 4, 5, 6};
+            Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void ElementAtOrDefault_NegativeIndex_ReturnsDefault()
+        {
+            var source = new[] {true, false, true, false};
+            Assert.That(source.ElementAtOrDefault(-3), Is.False);
         }
 
         [Test]
@@ -1131,6 +1180,34 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Min_NullableLongs_ReturnsMinimumNonNullValue()
+        {
+            var source = Read(new long?[] {199, 15, null, 30});
+            Assert.That(source.Min(), Is.EqualTo(15));
+        }
+
+        [Test]
+        public void Min_NullableFloats_ReturnsMinimumNonNullValue()
+        {
+            var source = Read(new float?[] {1.111f, null, 2.222f});
+            Assert.That(source.Min(), Is.EqualTo(1.111f).Within(0.01));
+        }
+
+        [Test]
+        public void Min_NullableDoubles_ReturnsMinimumNonNullValue()
+        {
+            var source = Read(new double?[] {1.111, null, 2.222});
+            Assert.That(source.Min(), Is.EqualTo(1.111).Within(0.01));
+        }
+
+        [Test]
+        public void Min_NullableDecimals_ReturnsMinimumNonNullValue()
+        {
+            var source = Read(new decimal?[] {1.111m, null, 2.222m});
+            Assert.That(source.Min(), Is.EqualTo(1.111m).Within(0.01));
+        }
+
+        [Test]
         public void Min_StringsWithLengthSelector_ReturnsMinimumNonNullStringLength()
         {
             var strings = Read(new[] { "five", "four", null, "three", null, "two", "one", "zero" });
@@ -1231,14 +1308,14 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void TheyBy_NullSource_ThrowsArgumentNullException()
+        public void ThenBy_NullSource_ThrowsArgumentNullException()
         {
             Enumerable.ThenBy<object, object>(null, e => { throw new NotImplementedException(); });
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void TheyBy_NullKeySelector_ThrowsArgumentNullException()
+        public void ThenBy_NullKeySelector_ThrowsArgumentNullException()
         {
             Read<object>().OrderBy<object, object>(e => { throw new NotImplementedException(); }).ThenBy<object, object>(null);
         }
@@ -1251,6 +1328,14 @@ namespace BackLinq.Tests
             {
                 return y.CompareTo(x);
             }
+        }
+
+        [Test]
+        public void ThenByDescending_KeySelectorArgComparerArg_StringArray_CorrectOrdering()
+        {
+            var source = Read(new string[] {"AA", "AB", "AC", "-BA", "-BB", "-BC"});
+            var result = source.OrderBy(s => s.ToCharArray()[s.ToCharArray().Length - 1]).ThenByDescending(s => s.Length); /*.AssertEquals("butterfly", "elephant", "dog", "snake", "ape"); */
+            result.AssertEquals("-BA", "AA", "-BB", "AB", "-BC", "AC");
         }
 
         [Test]
