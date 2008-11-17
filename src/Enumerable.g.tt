@@ -44,6 +44,8 @@
 //
 #endregion
 
+// $Id$
+
 namespace System.Linq
 {
     #region Imports

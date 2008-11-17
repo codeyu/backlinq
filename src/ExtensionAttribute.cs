@@ -1,4 +1,6 @@
-﻿namespace System.Runtime.CompilerServices
+﻿// $Id$
+
+namespace System.Runtime.CompilerServices
 {
     /// <remarks>
     /// This attribute allows us to define extension methods without 
