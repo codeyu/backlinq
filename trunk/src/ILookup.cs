@@ -25,6 +25,8 @@
 //
 #endregion
 
+// $Id$
+
 namespace System.Linq
 {
     using System.Collections.Generic;

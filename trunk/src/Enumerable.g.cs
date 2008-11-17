@@ -25,6 +25,8 @@
 //
 #endregion
 
+// $Id$
+
 namespace System.Linq
 {
     #region Imports
@@ -35,7 +37,7 @@ namespace System.Linq
     #endregion
     
     // This partial implementation was template-generated:
-    // Fri, 03 Oct 2008 23:23:42 GMT
+    // Mon, 17 Nov 2008 09:25:47 GMT
 
     partial class Enumerable
     {

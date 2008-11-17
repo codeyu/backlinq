@@ -25,6 +25,8 @@
 //
 #endregion
 
+// $Id$
+
 namespace BackLinq
 {
     #region Imports
