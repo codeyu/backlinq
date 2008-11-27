@@ -1,4 +1,4 @@
-﻿// $Id$
+// $Id$
 
 namespace System.Runtime.CompilerServices
 {
