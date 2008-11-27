@@ -1,5 +1,5 @@
 #summary Ways in which you help this project
-#labels Featured
+#labels Deprecated
 
 = Help Wanted =
 
