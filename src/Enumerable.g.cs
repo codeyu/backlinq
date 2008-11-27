@@ -37,7 +37,7 @@ namespace System.Linq
     #endregion
     
     // This partial implementation was template-generated:
-    // Mon, 17 Nov 2008 09:28:31 GMT
+    // Thu, 27 Nov 2008 18:14:23 GMT
 
     partial class Enumerable
     {

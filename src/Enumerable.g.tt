@@ -1,4 +1,4 @@
-﻿<#@ Template Language="C#" #>
+<#@ Template Language="C#" #>
 <#@ Import Namespace="System.CodeDom" #>
 <#@ Import Namespace="System.CodeDom.Compiler" #>
 <#@ Import Namespace="Microsoft.CSharp" #>
