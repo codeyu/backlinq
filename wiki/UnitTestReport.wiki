@@ -12,6 +12,8 @@
 
 = Comparison =
 
+See also [ColoredUnitTestReport colored version of this report].
+
 || *BackLINQ* || *Microsoft* || *LINQBridge* || *LINQ-SQO* || *Mono* || Method under test                                                                                                                                              || Test condition                                                   || Expected result                                                    ||
 || PASS       || PASS        || PASS         || *FAIL*     || PASS   || [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.aggregate.aspx Aggregate]                                                                      || Add func on integers                                             || Returns total                                                      ||
 || PASS       || PASS        || PASS         || PASS       || PASS   || [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.aggregate.aspx Aggregate]                                                                      || Add func on integers with seed                                   || Returns total                                                      ||
