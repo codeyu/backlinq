@@ -1,4 +1,4 @@
-﻿#region License, Terms and Author(s)
+#region License, Terms and Author(s)
 //
 // BackLINQ
 // Copyright (c) 2008 Atif Aziz. All rights reserved.

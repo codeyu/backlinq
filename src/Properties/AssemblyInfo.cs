@@ -1,4 +1,4 @@
-﻿#region License, Terms and Author(s)
+#region License, Terms and Author(s)
 //
 // BackLINQ
 // Copyright (c) 2008 Atif Aziz. All rights reserved.
@@ -47,4 +47,4 @@ using System.Runtime.InteropServices;
 [assembly: Guid("1d8ca19d-f7ef-47f2-8144-4099aab2b2b7")]
 
 [assembly: AssemblyVersion("0.6.0.0")]
-[assembly: AssemblyFileVersion("0.6.10417.2054")]
+[assembly: AssemblyFileVersion("0.6.10627.1756")]
