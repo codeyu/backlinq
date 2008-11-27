@@ -6,6 +6,7 @@
 //  Author(s):
 //
 //      Dominik Hug, http://www.dominikhug.ch
+//      Atif Aziz, http://www.raboof.com
 //
 // This library is free software; you can redistribute it and/or modify it 
 // under the terms of the New BSD License, a copy of which should have 
@@ -42,7 +43,7 @@ namespace BackLinq.Tests
     internal sealed class Reader<T> : IEnumerable<T>, IEnumerator<T>
     {
         public event EventHandler Disposed;
-        public event EventHandler Reading;
+        public event EventHandler Enumerated;
 
         private IEnumerable<T> source;
         private IEnumerator<T> cursor;
@@ -73,6 +74,11 @@ namespace BackLinq.Tests
             if (source == null) throw new Exception("A LINQ Operator called GetEnumerator() twice.");
             cursor = source.GetEnumerator();
             source = null;
+
+            var handler = Enumerated;
+            if (handler != null)
+                handler(this, EventArgs.Empty);
+
             return this;
         }
 
@@ -85,11 +91,6 @@ namespace BackLinq.Tests
         {
             if (!Enumerator.MoveNext())
                 throw new InvalidOperationException("No more elements in the source sequence.");
-            
-            var handler = Reading;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
-
             return Enumerator.Current;
         }
 
