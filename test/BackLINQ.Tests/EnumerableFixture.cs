@@ -1983,10 +1983,10 @@ namespace BackLinq.Tests
             //
 
             var disposed = false;
-            var read = false;
+            var enumerated = false;
             reader.Disposed += delegate { disposed = true; };
-            reader.Reading += delegate { read = true; };
-            AssertionHandler assertion = () => Assert.That(!read || disposed, Is.True, "Enumerator not disposed.");
+            reader.Enumerated += delegate { enumerated = true; };
+            AssertionHandler assertion = () => Assert.That(!enumerated || disposed, Is.True, "Enumerator not disposed.");
             tearDownAssertions = (AssertionHandler) Delegate.Combine(tearDownAssertions, assertion);
 
             return reader;
