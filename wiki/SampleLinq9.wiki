@@ -1,4 +1,5 @@
 #summary Projection Operators: Select - Anonymous Types 1
+#sidebar SamplesTree
 
 == Projection Operators: Select - Anonymous Types 1 == 
 

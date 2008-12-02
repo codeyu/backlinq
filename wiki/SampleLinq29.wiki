@@ -1,4 +1,5 @@
 #summary Ordering Operators: OrderBy - Simple 2
+#sidebar SamplesTree
 
 == Ordering Operators: OrderBy - Simple 2 == 
 

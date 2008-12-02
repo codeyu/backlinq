@@ -1,4 +1,5 @@
 #summary Join Operators: Left Outer Join
+#sidebar SamplesTree
 
 == Join Operators: Left Outer Join == 
 

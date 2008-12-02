@@ -1,4 +1,5 @@
 #summary Partitioning Operators: Skip - Simple
+#sidebar SamplesTree
 
 == Partitioning Operators: Skip - Simple == 
 

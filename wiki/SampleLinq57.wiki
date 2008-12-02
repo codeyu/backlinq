@@ -1,4 +1,5 @@
 #summary Conversion Operators: OfType
+#sidebar SamplesTree
 
 == Conversion Operators: OfType == 
 

@@ -1,4 +1,5 @@
 #summary Join Operators: Group Join
+#sidebar SamplesTree
 
 == Join Operators: Group Join == 
 

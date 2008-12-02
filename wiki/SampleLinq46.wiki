@@ -1,4 +1,5 @@
 #summary Set Operators: Distinct - 1
+#sidebar SamplesTree
 
 == Set Operators: Distinct - 1 == 
 

@@ -1,4 +1,5 @@
 #summary Miscellaneous Operators: Concat - 1
+#sidebar SamplesTree
 
 == Miscellaneous Operators: Concat - 1 == 
 

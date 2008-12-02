@@ -1,4 +1,5 @@
 #summary Projection Operators: SelectMany - Compound from 2
+#sidebar SamplesTree
 
 == Projection Operators: SelectMany - Compound from 2 == 
 

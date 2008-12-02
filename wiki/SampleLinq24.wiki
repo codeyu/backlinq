@@ -1,4 +1,5 @@
 #summary Partitioning Operators: TakeWhile - Simple
+#sidebar SamplesTree
 
 == Partitioning Operators: TakeWhile - Simple == 
 

@@ -1,4 +1,5 @@
 #summary Set Operators: Except - 1
+#sidebar SamplesTree
 
 == Set Operators: Except - 1 == 
 

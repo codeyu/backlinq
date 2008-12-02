@@ -1,4 +1,5 @@
 #summary Query Execution: Deferred Execution
+#sidebar SamplesTree
 
 == Query Execution: Deferred Execution == 
 

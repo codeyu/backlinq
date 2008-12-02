@@ -1,4 +1,5 @@
 #summary Ordering Operators: ThenBy - Simple
+#sidebar SamplesTree
 
 == Ordering Operators: ThenBy - Simple == 
 

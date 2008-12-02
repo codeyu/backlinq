@@ -1,4 +1,5 @@
 #summary Element Operators: ElementAt
+#sidebar SamplesTree
 
 == Element Operators: ElementAt == 
 

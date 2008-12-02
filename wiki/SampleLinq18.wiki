@@ -1,4 +1,5 @@
 #summary Projection Operators: SelectMany - Multiple from
+#sidebar SamplesTree
 
 == Projection Operators: SelectMany - Multiple from == 
 

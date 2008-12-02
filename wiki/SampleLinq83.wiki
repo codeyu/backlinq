@@ -1,4 +1,5 @@
 #summary Aggregate Operators: Min - Grouped
+#sidebar SamplesTree
 
 == Aggregate Operators: Min - Grouped == 
 

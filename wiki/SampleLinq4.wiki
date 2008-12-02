@@ -1,4 +1,5 @@
 #summary Restriction Operators: Where - Drilldown
+#sidebar SamplesTree
 
 == Restriction Operators: Where - Drilldown == 
 

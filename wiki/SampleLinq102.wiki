@@ -1,4 +1,5 @@
 #summary Join Operators: Cross Join
+#sidebar SamplesTree
 
 == Join Operators: Cross Join == 
 

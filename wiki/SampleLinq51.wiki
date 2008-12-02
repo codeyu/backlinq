@@ -1,4 +1,5 @@
 #summary Set Operators: Intersect - 2
+#sidebar SamplesTree
 
 == Set Operators: Intersect - 2 == 
 

@@ -1,4 +1,5 @@
 #summary Miscellaneous Operators: EqualAll - 2
+#sidebar SamplesTree
 
 == Miscellaneous Operators: EqualAll - 2 == 
 

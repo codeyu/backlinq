@@ -1,4 +1,5 @@
 #summary Quantifiers: All - Grouped
+#sidebar SamplesTree
 
 == Quantifiers: All - Grouped == 
 

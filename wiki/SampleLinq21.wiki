@@ -1,4 +1,5 @@
 #summary Partitioning Operators: Take - Nested
+#sidebar SamplesTree
 
 == Partitioning Operators: Take - Nested == 
 

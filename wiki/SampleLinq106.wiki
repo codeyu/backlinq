@@ -1,6 +1,7 @@
-#summary * Sample Data *: CustomerList / ProductList
+#summary Sample Data: CustomerList / ProductList
+#sidebar SamplesTree
 
-== * Sample Data *: CustomerList / ProductList == 
+== Sample Data: CustomerList / ProductList == 
 
 This method displays the sample data used by the queries above.  You can also see the method below that constructs the lists.  ProductList is built using a collection initializer and CustomerList uses XLinq to read its values into memory from an XML document.
 

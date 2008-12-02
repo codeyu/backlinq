@@ -1,4 +1,5 @@
 #summary Query Execution: Immediate Execution
+#sidebar SamplesTree
 
 == Query Execution: Immediate Execution == 
 

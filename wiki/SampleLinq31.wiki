@@ -1,4 +1,5 @@
 #summary Ordering Operators: OrderBy - Comparer
+#sidebar SamplesTree
 
 == Ordering Operators: OrderBy - Comparer == 
 

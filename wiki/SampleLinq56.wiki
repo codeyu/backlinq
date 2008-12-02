@@ -1,4 +1,5 @@
 #summary Conversion Operators: ToDictionary
+#sidebar SamplesTree
 
 == Conversion Operators: ToDictionary == 
 

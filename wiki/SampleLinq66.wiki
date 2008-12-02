@@ -1,4 +1,5 @@
 #summary Generation Operators: Repeat
+#sidebar SamplesTree
 
 == Generation Operators: Repeat == 
 

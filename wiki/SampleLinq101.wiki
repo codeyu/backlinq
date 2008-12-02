@@ -1,4 +1,5 @@
 #summary Query Execution: Query Reuse
+#sidebar SamplesTree
 
 == Query Execution: Query Reuse == 
 

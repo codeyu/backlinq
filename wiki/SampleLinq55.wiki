@@ -1,4 +1,5 @@
 #summary Conversion Operators: ToList
+#sidebar SamplesTree
 
 == Conversion Operators: ToList == 
 

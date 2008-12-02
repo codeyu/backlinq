@@ -1,4 +1,5 @@
 #summary Element Operators: First - Simple
+#sidebar SamplesTree
 
 == Element Operators: First - Simple == 
 

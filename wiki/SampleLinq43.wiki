@@ -1,4 +1,5 @@
 #summary Grouping Operators: GroupBy - Nested
+#sidebar SamplesTree
 
 == Grouping Operators: GroupBy - Nested == 
 

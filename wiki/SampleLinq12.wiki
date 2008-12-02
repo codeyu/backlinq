@@ -1,4 +1,5 @@
 #summary Projection Operators: Select - Indexed
+#sidebar SamplesTree
 
 == Projection Operators: Select - Indexed == 
 

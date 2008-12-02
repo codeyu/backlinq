@@ -1,4 +1,5 @@
 #summary Set Operators: Union - 1
+#sidebar SamplesTree
 
 == Set Operators: Union - 1 == 
 

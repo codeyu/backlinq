@@ -1,4 +1,5 @@
 #summary Projection Operators: Select - Filtered
+#sidebar SamplesTree
 
 == Projection Operators: Select - Filtered == 
 

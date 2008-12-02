@@ -1,4 +1,5 @@
 #summary Grouping Operators: GroupBy - Simple 1
+#sidebar SamplesTree
 
 == Grouping Operators: GroupBy - Simple 1 == 
 

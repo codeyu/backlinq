@@ -1,4 +1,5 @@
 #summary Conversion Operators: ToArray
+#sidebar SamplesTree
 
 == Conversion Operators: ToArray == 
 

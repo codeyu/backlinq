@@ -1,4 +1,5 @@
 #summary Grouping Operators: GroupBy - Comparer, Mapped
+#sidebar SamplesTree
 
 == Grouping Operators: GroupBy - Comparer, Mapped == 
 

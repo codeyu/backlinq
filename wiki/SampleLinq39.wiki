@@ -1,4 +1,5 @@
 #summary Ordering Operators: Reverse
+#sidebar SamplesTree
 
 == Ordering Operators: Reverse == 
 

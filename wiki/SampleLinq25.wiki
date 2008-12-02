@@ -1,4 +1,5 @@
 #summary Partitioning Operators: TakeWhile - Indexed
+#sidebar SamplesTree
 
 == Partitioning Operators: TakeWhile - Indexed == 
 

@@ -1,4 +1,5 @@
 #summary Quantifiers: All - Simple
+#sidebar SamplesTree
 
 == Quantifiers: All - Simple == 
 
