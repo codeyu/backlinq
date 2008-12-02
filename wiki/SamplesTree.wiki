@@ -1,5 +1,6 @@
 #summary Navigation tree of 101 LINQ samples
 
+  * [SamplesIndex Index]
   * Aggregate Operators
    * SampleLinq93
    * SampleLinq92
