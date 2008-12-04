@@ -34,23 +34,23 @@ namespace BackLinq.Tests
     using System.Collections.Generic;
     using System.Globalization;
     using System.Text;
-    using NUnit.Framework;
     using System.Linq;
-    using NUnit.Framework.SyntaxHelpers;
     using System.Diagnostics;
     using System.Reflection;
+    
+    using Assert = NUnit.Framework.Assert;
+    using Is = NUnit.Framework.SyntaxHelpers.Is;
+    using ExpectedExceptionAttribute = NUnit.Framework.ExpectedExceptionAttribute;
 
     #endregion
 
-    [TestFixture]
-    public sealed class EnumerableFixture
+    public sealed class EnumerableFixture : ITestSetUp, ITestTearDown
     {
         private CultureInfo initialCulture; // Thread culture saved during Setup to be undone in TearDown.
         private AssertionHandler tearDownAssertions;
         
         private delegate void AssertionHandler();
 
-        [SetUp]
         public void SetUp()
         {
             tearDownAssertions = null;
@@ -58,7 +58,6 @@ namespace BackLinq.Tests
             System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("de-CH");
         }
 
-        [TearDown]
         public void TearDown()
         {
             if (tearDownAssertions != null)
@@ -66,7 +65,7 @@ namespace BackLinq.Tests
             System.Threading.Thread.CurrentThread.CurrentCulture = initialCulture;
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Aggregate_EmptySource_ThrowsInvalidOperationException()
         {
@@ -74,7 +73,7 @@ namespace BackLinq.Tests
             source.Aggregate((a, b) => { throw new NotImplementedException(); });
         }
 
-        [Test]
+        [Fact]
         public void Aggregate_AddFuncOnIntegers_ReturnsTotal()
         {
             var source = Read(new[] { 12, 34, 56, 78, 910, 1112, 1314, 1516, 1718, 1920 });
@@ -82,7 +81,7 @@ namespace BackLinq.Tests
             Assert.That(result, Is.EqualTo(8670));
         }
 
-        [Test]
+        [Fact]
         public void Aggregate_AddFuncOnIntegersWithSeed_ReturnsTotal()
         {
             var source = Read(new[] { 12, 34, 56, 78, 910, 1112, 1314, 1516, 1718, 1920 });
@@ -90,21 +89,21 @@ namespace BackLinq.Tests
             Assert.That(result, Is.EqualTo(8770));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Aggregate_NullSource_ThrowsArgumentNullException()
         {
             Enumerable.Aggregate<object>(null, (a, e) => { throw new NotImplementedException(); });
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Aggregate_NullFunc_ThrowsArgumentNullException()
         {
             Read<object>().Aggregate(null);
         }
 
-        [Test]
+        [Fact]
         public void Empty_YieldsEmptySource()
         {
             var source = Enumerable.Empty<String>();
@@ -114,14 +113,14 @@ namespace BackLinq.Tests
             Assert.That(e.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Cast_NullSource_ThrowsArgumentNullException()
         {
             Enumerable.Cast<object>(null);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidCastException))]
         public void Cast_InvalidSource_ThrowsInvalidCastException()
         {
@@ -136,168 +135,168 @@ namespace BackLinq.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void Cast_ObjectSourceContainingIntegers_YieldsDowncastedIntegers()
         {
             var source = Read(new object[] { 1, 10, 100 });
             source.Cast<int>().AssertEquals(1, 10, 100);
         }
 
-        [Test]
+        [Fact]
         public void Cast_Integers_YieldsUpcastedObjects()
         {
             Read(new[] { 1, 10, 100 }).Cast<object>().AssertEquals(1, 10, 100);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void All_NullSource_ThrowsArgumentNullException()
         {
             Enumerable.All(null, (int i) => { throw new NotImplementedException(); });
         }
 
-        [Test]
+        [Fact]
         public void All_SomeSourceElementsNotSatifyingPredicate_ReturnsFalse()
         {
             var source = Read(new[] { -100, -1, 0, 1, 100 });
             Assert.That(source.All(i => i >= 0), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void All_SourceElementsSatisfyingPredicate_ReturnsTrue()
         {
             var source = Read(new[] { -100, -1, 0, 1, 100 });
             Assert.That(source.All(i => i >= -100), Is.True);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Any_NullSource_ThrowsArgumentNullException()
         {
             Enumerable.Any<object>(null);
         }
 
-        [Test]
+        [Fact]
         public void Any_EmptySource_ReturnsFalse()
         {
             var source = Read<object>();
             Assert.That(source.Any(), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void Any_NonEmptySource_ReturnsTrue()
         {
             var source = Read(new[] { new object() });
             Assert.That(source.Any(), Is.True);
         }
 
-        [Test]
+        [Fact]
         public void Any_PredicateArg_EmptySource_ReturnsFalse()
         {
             var source = Read(new int[0]);
             Assert.That(source.Any(i => { throw new NotImplementedException(); }), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void Any_PredicateArg_NonEmptySource_ReturnsTrue()
         {
             Assert.That(Read(new[] { 100 }).Any(i => i > 0), Is.True);
         }
 
-        [Test]
+        [Fact]
         public void Average_Longs_ReturnsAverage()
         {
             Assert.That(Read(new[] {25L, 75L}).Average(), Is.EqualTo(50));
         }
 
-        [Test]
+        [Fact]
         public void Average_NullableLongs_ReturnsAverage()
         {
             Assert.That(Read(new long?[] { 12L, 34L, null, 56L }).Average(), Is.EqualTo(34.0));
         }
 
-        [Test]
+        [Fact]
         public void Average_NullableInts_ReturnsAverage() {
             Assert.That(Read(new int?[] { 12, 34, null, 56 }).Average(), Is.EqualTo(34.0));
         }
 
-        [Test]
+        [Fact]
         public void Average_Decimals_ReturnsToleratableAverage()
         {
             var source = Read(new[] { -10000m, 2.0001m, 50m });
             Assert.That(source.Average(), Is.EqualTo(-3315.999966).Within(0.00001));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Average_EmptySource_ThrowsInvalidOperationException()
         {
             Read<int>().Average();
         }
 
-        [Test]
+        [Fact]
         public void Average_EmptyArrayOfNullableIntegers_ReturnsNull()
         {
             Assert.That(Read<int?>().Average(), Is.Null);
         }
 
-        [Test]
+        [Fact]
         public void Average_Selector_ArrayOfPersons_AverageAge()
         {
             var source = Read(Person.CreatePersons());
             Assert.That(source.Average(p => p.Age).Equals(22.5));
         }
 
-        [Test]
+        [Fact]
         public void Average_ArrayOfDoubles_ReturnsAverage() 
         {
             var source = Read(new[] {-3.45, 9.001, 10000.01});
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         public void Average_ArrayOfFloats_ReturnsAverage()
         {
             var source = Read(new[] { -3.45F, 9.001F, 10000.01F });
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         public void Average_ArrayOfNullableFloats_ReturnsAverage() 
         {
             var source = Read(new float?[] {-3.45F, 9.001F, 10000.01F, null});
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         public void Average_NullableDoubles_ReturnsAverage()
         {
             var source = Read(new double?[] { -3.45, 9.001, 10000.01, null });
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         public void Average_NullableDecimals_ReturnsAverage()
         {
             var source = Read(new decimal?[] { -3.45m, 9.001m, 10000.01m, null });
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Concat_FirstSourceNull_ThrowsArgumentNullException()
         {
             Enumerable.Concat(null, new object[0]);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Concat_SecondSourceNull_ThrowsArgumentNullException()
         {
             new object[0].Concat(null);
         }
 
-        [Test]
+        [Fact]
         public void Concat_TwoLists_CorrectOrder()
         {
             var first = Read(new[] { 12, 34, 56 });
@@ -305,90 +304,90 @@ namespace BackLinq.Tests
             first.Concat(second).AssertEquals(12, 34, 56, 78, 910, 1112);
         }
 
-        [Test]
+        [Fact]
         public void Contains_IntsContainingPassedValue_ReturnsTrue()
         {
             var source = Read(new[] {12, -15, 21});
             Assert.That(source.Contains(21), Is.True);
         }
 
-        [Test]
+        [Fact]
         public void Contains_IntsThatDoNotContainPassedValue_ReturnsFalse()
         {
             var source = Read(new[] {-2, 4, 8});
             Assert.That(source.Contains(9), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void Contains_ListOfIntsContainingPassedValue_ReturnsTrue()
         {
             var source = new List<int>() {1, 2, 3};
             Assert.That(source.Contains(3), Is.True);
         }
 
-        [Test]
+        [Fact]
         public void Count_Ints_ReturnsNumberOfElements()
         {
             Assert.That(Read(new[] { 12, 34, 56 }).Count(), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void Count_PredicateArg_Strings_CountsOnlyStringsWithEvenLength()
         {
             var source = new[] {"A", "AB", "ABC", "ABCD"};
             Assert.That(source.Count(s => s.Length % 2 == 0), Is.EqualTo(2));
         }
 
-        [Test]
+        [Fact]
         public void DefaultIfEmpty_Inegers_YieldsIntegersInOrder()
         {
             var source = Read(new[] { 12, 34, 56 });
             source.DefaultIfEmpty(1).AssertEquals(12, 34, 56);
         }
 
-        [Test]
+        [Fact]
         public void DefaultIfEmpty_EmptyIntegersSource_ReturnsZero()
         {
             var source = Read(new int[0]);
             source.DefaultIfEmpty().AssertEquals(0);
         }
 
-        [Test]
+        [Fact]
         public void DefaultIfEmpty_EmptyIntegersSourceWithNonZeroDefault_ReturnNonZeroDefault()
         {
             var source = Read(new int[0]);
             source.DefaultIfEmpty(5).AssertEquals(5);
         }
 
-        [Test]
+        [Fact]
         public void DefaultIfEmpty_DefaultValueArg_Integers_YieldsIntegersInOrder()
         {
             var source = Read(new[] { 12, 34, 56 });
             source.DefaultIfEmpty(5).AssertEquals(12, 34, 56);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Distinct_NullSource_ThrowsArgumentNullException()
         {
             Enumerable.Distinct<object>(null);
         }
 
-        [Test]
+        [Fact]
         public void Distinct_IntegersWithSomeDuplicates_YieldsIntegersInSourceOrderWithoutDuplicates()
         {
             var source = Read(new[] { 12, 34, 34, 56, 78, 78, 78, 910, 78 });
             source.Distinct().AssertEquals(12, 34, 56, 78, 910);
         }
 
-        [Test]
+        [Fact]
         public void Distinct_MixedSourceStringsWithCaseIgnoringComparer_YieldsFirstCaseOfEachDistinctStringInSourceOrder()
         {
             var source = Read("Foo Bar BAZ BaR baz FOo".Split());
             source.Distinct(StringComparer.InvariantCultureIgnoreCase).AssertEquals("Foo", "Bar", "BAZ");
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ElementAt_IndexOutOfRange_ThrowsArgumentOutOfRangeException()
         {
@@ -396,7 +395,7 @@ namespace BackLinq.Tests
             source.ElementAt(3);
         }
 
-        [Test]
+        [Fact]
         public void ElementAt_Integers_ReturnsCorrectValues()
         {
             var source = new[] { 15, 2, 7 };
@@ -405,7 +404,7 @@ namespace BackLinq.Tests
             Assert.That(Read(source).ElementAt(2), Is.EqualTo(7));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ElementAt_NegativeIndex_ThrowsArgumentOutOfRangeException()
         {
@@ -413,42 +412,42 @@ namespace BackLinq.Tests
             source.ElementAt(-1);
         }
         
-        [Test]
+        [Fact]
         public void ElementAtOrDefault_Integers_ReturnsZeroIfIndexOutOfRange()
         {
             var source = Read(new[] { 3, 6, 8 });
             Assert.That(source.ElementAtOrDefault(3), Is.EqualTo(0));
         }
 
-        [Test]
+        [Fact]
         public void ElementAtOrDefault_IntArray_ReturnsCorrectValue()
         {
             var source = Read(new[] { 3, 6, 9 });
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(9));
         }
 
-        [Test]
+        [Fact]
         public void ElementAtOrDefault_ListOfInts_ReturnsCorrectElement()
         {
             var source = new List<int>() {1, 2, 3, 4, 5, 6};
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void ElementAtOrDefault_NegativeIndex_ReturnsDefault()
         {
             var source = new[] {true, false, true, false};
             Assert.That(source.ElementAtOrDefault(-3), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void ElementAtOrDefault_ObjectArray_ReturnsNullIfIndexOutOfRange()
         {
             var source = Read(new[] { new object(), new object() });
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(null));
         }
 
-        [Test]
+        [Fact]
         public void ElementAtOrDefault_ObjectArray_ReturnsCorrectValue()
         {
             var first = new object();
@@ -456,14 +455,14 @@ namespace BackLinq.Tests
             Assert.That(source.ElementAt(0), Is.EqualTo(first));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Except_secondArg_ArgumentNull_ThrowsArgumentNullException()
         {
             Read<object>().Except(null);
         }
 
-        [Test]
+        [Fact]
         public void Except_SecondArg_ValidArgument_ReturnsCorrectEnumerable() // TODO Improve test name
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
@@ -471,7 +470,7 @@ namespace BackLinq.Tests
             source.Except(argument).AssertEquals(2, 4, 6, 8, 10);
         }
 
-        [Test]
+        [Fact]
         public void Except_SecondArgComparerArg_ComparerIsUsed()
         {
             var source = Read(new[] { "albert", "john", "simon" });
@@ -479,28 +478,28 @@ namespace BackLinq.Tests
             source.Except(argument, StringComparer.CurrentCultureIgnoreCase).AssertEquals("john", "simon");
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void First_EmptySource_ThrowsInvalidOperationException()
         {
             Read<int>().First();
         }
 
-        [Test]
+        [Fact]
         public void First_Integers_ReturnsFirst()
         {
             var source = Read(new[] { 12, 34, 56 });
             Assert.That(source.First(), Is.EqualTo(12));
         }
 
-        [Test]
+        [Fact]
         public void First_IntegersWithEvensPredicate_FirstEvenInteger()
         {
             var source = Read(new[] { 15, 20, 25, 30 });
             Assert.That(source.First(i => i % 2 == 0), Is.EqualTo(20));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void First_IntegersWithNonMatchingPredicate_ThrowsInvalidOperationException()
         {
@@ -508,13 +507,13 @@ namespace BackLinq.Tests
             Assert.That(source.First(i => i > 100), Is.EqualTo(0));
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefault_EmptyBooleanSource_ReturnsFalse()
         {
             Assert.That(Read<bool>().FirstOrDefault(), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefault_Objects_ReturnsFirstReference()
         {
             var first = new object();
@@ -522,7 +521,7 @@ namespace BackLinq.Tests
             Assert.That(source.FirstOrDefault(), Is.SameAs(first));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void FirstOrDefault_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
@@ -530,14 +529,14 @@ namespace BackLinq.Tests
             source.FirstOrDefault(null);
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefault_PredicateArg_ValidPredicate_ReturnsFirstMatchingItem()
         {
             var source = Read(new[] { 1, 4, 8 });
             Assert.That(source.FirstOrDefault(i => i % 2 == 0), Is.EqualTo(4));
         }
 
-        [Test]
+        [Fact]
         public void FirstOrDefault_PredicateArg_NoMatchesInArray_ReturnsDefaultValueOfType()
         {
             var source = Read(new[] { 1, 4, 6 });
@@ -561,14 +560,14 @@ namespace BackLinq.Tests
             }
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void GroupBy_KeySelectorArg_NullAsKeySelector_ThrowsArgumentNullException()
         {
             Read<object>().GroupBy<object, object>(null);
         }
 
-        [Test]
+        [Fact]
         public void GroupBy_KeySelectorArg_ValidArguments_CorrectGrouping()
         {
             var persons = Read(Person.CreatePersons());
@@ -592,7 +591,7 @@ namespace BackLinq.Tests
             return new List<T>(source).ToArray();
         }
 
-        [Test]
+        [Fact]
         // TODO: make better
         public void GroupBy_KeySelectorArg_ValidArguments_CorrectCaseSensitiveGrouping()
         {
@@ -621,7 +620,7 @@ namespace BackLinq.Tests
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void GroupBy_KeySelectorArgComparerArg_KeysThatDifferInCasingNonCaseSensitiveStringComparer_CorrectGrouping()
         {
             var persons = Read(new[]
@@ -646,7 +645,7 @@ namespace BackLinq.Tests
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void GroupBy_KeySelectorArgElementSelectorArg_ValidArguments_CorrectGroupingAndProjection()
         {
             var enumerable = Read(Person.CreatePersons());
@@ -663,7 +662,7 @@ namespace BackLinq.Tests
             Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(24));
         }
 
-        [Test]
+        [Fact]
         public void GroupBy_KeySelectorArgResultSelectorArg_ValidArguments_CorrectGroupingProcessing()
         {
             var persons = Read(Person.CreatePersons());
@@ -682,7 +681,7 @@ namespace BackLinq.Tests
             result.AssertEquals(43, 47);
         }
 
-        [Test]
+        [Fact]
         public void GroupByKey_KeySelectorArgElementSelectorArgComparerArg_ValidArguments_CorrectGroupingAndProcessing()
         {
             var persons = Read(new[]
@@ -706,7 +705,7 @@ namespace BackLinq.Tests
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void GroupBy_KeySelectorArgElementSelectorArgResultSelectorArg_ValidArguments_CorrectGroupingAndTransforming()
         {
             var persons = Read(Person.CreatePersons());
@@ -723,7 +722,7 @@ namespace BackLinq.Tests
             result.AssertEquals(43, 47);
         }
 
-        [Test]
+        [Fact]
         public void GroupBy_KeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming()
         {
             var persons = Read(new[]
@@ -747,7 +746,7 @@ namespace BackLinq.Tests
             result.AssertEquals(43, 47);
         }
 
-        [Test]
+        [Fact]
         public void GroupBy_KeySelectorArgElementSelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming()
         {
             var persons = Read(new[]
@@ -776,7 +775,7 @@ namespace BackLinq.Tests
             public string Owner { get; set; }
         }
 
-        [Test]
+        [Fact]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_ValidArguments_CorrectGroupingAndJoining()
         {
             var persons = Read(new[]
@@ -828,7 +827,7 @@ namespace BackLinq.Tests
             //}
         }
 
-        [Test]
+        [Fact]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndJoining()
         {
             var persons = Read(new[]
@@ -872,7 +871,7 @@ namespace BackLinq.Tests
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsOuterKeySelector_ThrowsArgumentNullException()
         {
@@ -897,14 +896,14 @@ namespace BackLinq.Tests
                               new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) });
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Intersect_NullSecondSource_ThrowsArgumentNullException()
         {
             Read<object>().Intersect(null);
         }
 
-        [Test]
+        [Fact]
         public void Intersect_IntegerSources_YieldsCommonSet()
         {
             var first = Read(new[] { 1, 2, 3 });
@@ -912,7 +911,7 @@ namespace BackLinq.Tests
             first.Intersect(second).AssertEquals(2, 3);
         }
 
-        [Test]
+        [Fact]
         public void Intersect_StringSourcesWithMixedCasingAndCaseInsensitiveComparer_YieldsCommonSetFromFirstSource()
         {
             var first = Read(new[] { "Heinrich", "Hubert", "Thomas" });
@@ -921,14 +920,14 @@ namespace BackLinq.Tests
             result.AssertEquals("Heinrich", "Hubert");
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsArgument_ThrowsArgumentNullException()
         {
             Read<object>().Join<object, object, object, object>(null, null, null, null);
         }
 
-        [Test]
+        [Fact]
         public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassingPetsAndOwners_PetsAreCorrectlyAssignedToOwners()
         {
             var persons = Read(Person.CreatePersons());
@@ -962,7 +961,7 @@ namespace BackLinq.Tests
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArgComparerArg_PetOwnersNamesCasingIsInconsistent_CaseInsensitiveJoinIsPerformed()
         {
             var persons = Read(Person.CreatePersons());
@@ -1001,35 +1000,35 @@ namespace BackLinq.Tests
             //}
         }
 
-        [Test]
+        [Fact]
         public void Last_Integers_ReturnsLastElement()
         {
             var source = Read(new[] { 1, 2, 3 });
             Assert.That(source.Last(), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void Last_IntegerListOptimization_ReturnsLastElementWithoutEnumerating()
         {
             var source = new NonEnumerableList<int>(new[] { 1, 2, 3 });
             Assert.That(source.Last(), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Last_EmptyIntegerListOptimization_ThrowsInvalidOperationException()
         {
             new NonEnumerableList<int>().Last();
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Last_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
             Read<object>().Last(null);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Last_PredicateArg_NoMatchingElement_ThrowsInvalidOperationException()
         {
@@ -1037,63 +1036,63 @@ namespace BackLinq.Tests
             source.Last(i => i > 10);
         }
 
-        [Test]
+        [Fact]
         public void Last_PredicateArg_ListOfInts_ReturnsLastMatchingElement()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             Assert.That(source.Last(i => i % 2 == 0), Is.EqualTo(4));
         }
 
-        [Test]
+        [Fact]
         public void LastOrDefault_EmptySource_ReturnsZero()
         {
             var source = Read(new int[0]);
             Assert.That(source.LastOrDefault(), Is.EqualTo(0));
         }
 
-        [Test]
+        [Fact]
         public void LastOrDefault_NonEmptyList_ReturnsLastElement()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             Assert.That(source.LastOrDefault(), Is.EqualTo(5));
         }
 
-        [Test]
+        [Fact]
         public void LastOrDefault_PredicateArg_ValidArguments_RetunsLastMatchingElement()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             Assert.That(source.LastOrDefault(i => i % 2 == 0), Is.EqualTo(4));
         }
 
-        [Test]
+        [Fact]
         public void LastOrDefault_PredicateArg_NoMatchingElement_ReturnsZero()
         {
             var source = Read(new[] { 1, 3, 5, 7 });
             Assert.That(source.LastOrDefault(i => i % 2 == 0), Is.EqualTo(0));
         }
 
-        [Test]
+        [Fact]
         public void LongCount_ValidArgument_ReturnsCorrectNumberOfElements()
         {
             var source = Read(new[] { 1, 4, 7, 10 });
             Assert.That(source.LongCount(), Is.EqualTo(4));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void LongCount_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
         {
             Read<object>().LongCount(null);
         }
 
-        [Test]
+        [Fact]
         public void LongCount_PredicateArg_ValidArguments_ReturnsCorrectNumerOfMatchingElements()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             Assert.That(source.LongCount(i => i % 2 == 0), Is.EqualTo(2));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Max_EmptyList_ThrowsInvalidOperationException()
         {
@@ -1101,62 +1100,62 @@ namespace BackLinq.Tests
             source.Max();
         }
 
-        [Test]
+        [Fact]
         public void Max_EmptyNullableIntegerArray_ReturnsNull()
         {
             Assert.That(Read(new int?[0]).Max(), Is.Null);
         }
 
-        [Test]
+        [Fact]
         public void Max_NullableIntegerArrayWithNullsOnly_ReturnsNull()
         {
             Assert.That(Read(new int?[] { null, null, null }).Max(), Is.Null);
         }
 
-        [Test]
+        [Fact]
         public void Max_Integers_ReturnsMaxValue()
         {
             var source = Read(new[] { 1000, 203, -9999 });
             Assert.That(source.Max(), Is.EqualTo(1000));
         }
 
-        [Test]
+        [Fact]
         public void Max_NullableLongs_ReturnsMaxValue()
         {
             Assert.That(Read(new long?[] {1L, 2L, 3L, null}).Max(), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void Max_NullableDoubles_ReturnsMaxValue() {
             Assert.That(Read(new double?[] { 1, 2, 3, null }).Max(), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void Max_NullableDecimals_ReturnsMaxValue() {
             Assert.That(Read(new decimal?[] { 1m, 2m, 3m, null }).Max(), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void Max_NullableFloats_ReturnsMaxValue()
         {
             Assert.That(Read(new float?[] {-1000, -100, -1, null}).Max(), Is.EqualTo(-1));
         }
 
-        [Test]
+        [Fact]
         public void Max_ListWithNullableType_ReturnsMaximum()
         {
             var source = Read(new int?[] { 1, 4, null, 10 });
             Assert.That(source.Max(), Is.EqualTo(10));
         }
 
-        [Test]
+        [Fact]
         public void Max_NullableList_ReturnsMaxNonNullValue()
         {
             var source = Read(new int?[] { -5, -2, null });
             Assert.That(source.Max(), Is.EqualTo(-2));
         }
 
-        [Test]
+        [Fact]
         public void Max_SelectorArg_ListOfObjects_ReturnsMaxSelectedValue()
         {
             var persons = Read(Person.CreatePersons());
@@ -1164,7 +1163,7 @@ namespace BackLinq.Tests
             Assert.That(persons.Max((Func<Person, int>)(p => p.Age)), Is.EqualTo(24));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Min_EmptyList_ThrowsInvalidOperationException()
         {
@@ -1172,49 +1171,49 @@ namespace BackLinq.Tests
             source.Min();
         }
 
-        [Test]
+        [Fact]
         public void Min_IntegersWithSomeNull_ReturnsMinimumNonNullValue()
         {
             var source = Read(new int?[] { 199, 15, null, 30 });
             Assert.That(source.Min(), Is.EqualTo(15));
         }
 
-        [Test]
+        [Fact]
         public void Min_NullableLongs_ReturnsMinimumNonNullValue()
         {
             var source = Read(new long?[] {199, 15, null, 30});
             Assert.That(source.Min(), Is.EqualTo(15));
         }
 
-        [Test]
+        [Fact]
         public void Min_NullableFloats_ReturnsMinimumNonNullValue()
         {
             var source = Read(new float?[] {1.111f, null, 2.222f});
             Assert.That(source.Min(), Is.EqualTo(1.111f).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         public void Min_NullableDoubles_ReturnsMinimumNonNullValue()
         {
             var source = Read(new double?[] {1.111, null, 2.222});
             Assert.That(source.Min(), Is.EqualTo(1.111).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         public void Min_NullableDecimals_ReturnsMinimumNonNullValue()
         {
             var source = Read(new decimal?[] {1.111m, null, 2.222m});
             Assert.That(source.Min(), Is.EqualTo(1.111m).Within(0.01));
         }
 
-        [Test]
+        [Fact]
         public void Min_StringsWithLengthSelector_ReturnsMinimumNonNullStringLength()
         {
             var strings = Read(new[] { "five", "four", null, "three", null, "two", "one", "zero" });
             Assert.That(strings.Min(s => s != null ? s.Length : (int?) null), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void OfType_EnumerableWithElementsOfDifferentTypes_OnlyDecimalsAreReturned()
         {
             // ...................V----V Needed for Mono (CS0029)
@@ -1223,14 +1222,14 @@ namespace BackLinq.Tests
             result.AssertEquals(1.234m);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void OrderBy_KeySelectorArg_NullAsKeySelector_ThrowsArgumentNullException()
         {
             Read<object>().OrderBy<object, object>(null);
         }
 
-        [Test]
+        [Fact]
         public void OrderBy_KeySelector_ArrayOfPersons_PersonsAreOrderedByAge()
         {
             var persons = Person.CreatePersons();
@@ -1246,7 +1245,7 @@ namespace BackLinq.Tests
             Assert.That(age, Is.EqualTo(25));
         }
 
-        [Test]
+        [Fact]
         public void OrderBy_KeySelector_DataWithDuplicateKeys_YieldsStablySortedData()
         {
             var data = new[]
@@ -1280,7 +1279,7 @@ namespace BackLinq.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void ThenBy_KeySelector_DataWithDuplicateKeys_YieldsStablySortedData()
         {
             var data = new[]
@@ -1306,14 +1305,14 @@ namespace BackLinq.Tests
             }
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ThenBy_NullSource_ThrowsArgumentNullException()
         {
             Enumerable.ThenBy<object, object>(null, e => { throw new NotImplementedException(); });
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ThenBy_NullKeySelector_ThrowsArgumentNullException()
         {
@@ -1330,7 +1329,7 @@ namespace BackLinq.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void ThenByDescending_KeySelectorArgComparerArg_StringArray_CorrectOrdering()
         {
             var source = Read(new string[] {"AA", "AB", "AC", "-BA", "-BB", "-BC"});
@@ -1338,7 +1337,7 @@ namespace BackLinq.Tests
             result.AssertEquals("-BA", "AA", "-BB", "AB", "-BC", "AC");
         }
 
-        [Test]
+        [Fact]
         public void OrderBy_KeySelectorArgComparerArg_ArrayOfPersonsAndReversecomparer_PersonsAreOrderedByAgeUsingReversecomparer()
         {
             var persons = Read(Person.CreatePersons());
@@ -1353,7 +1352,7 @@ namespace BackLinq.Tests
 
         }
 
-        [Test]
+        [Fact]
         public void OrderByDescending_KeySelectorArg_ArrayOfPersons_PersonsAreOrderedByAgeDescending()
         {
             var persons = Read(Person.CreatePersons());
@@ -1367,63 +1366,63 @@ namespace BackLinq.Tests
             Assert.That(age, Is.EqualTo(21));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Range_ProduceRangeThatLeadsToOverflow_ThrowsArgumentOutOfRangeException()
         {
             Enumerable.Range(int.MaxValue - 3, 5);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Range_NegativeCount_ThrowsArgumentOutOfRangeException()
         {
             Enumerable.Range(0, -1);
         }
 
-        [Test]
+        [Fact]
         public void Range_Start10Count5_IntsFrom10To14()
         {
             var result = Enumerable.Range(10, 5);
             result.AssertEquals(10, 11, 12, 13, 14);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Repeat_PassNegativeCount_ThrowsArgumentOutOfRangeException()
         {
             Enumerable.Repeat("Hello World", -2);
         }
 
-        [Test]
+        [Fact]
         public void Repeat_StringArgumentCount2_ReturnValueContainsStringArgumentTwice()
         {
             var result = Enumerable.Repeat("Hello World", 2);
             result.AssertEquals("Hello World", "Hello World");
         }
 
-        [Test]
+        [Fact]
         public void Reverse_SeriesOfInts_IntsAreCorrectlyReversed()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             source.Reverse().AssertEquals(5, 4, 3, 2, 1);
         }
 
-        [Test]
+        [Fact]
         public void Select_ArrayOfPersons_AgeOfPersonsIsSelectedAccordingToPassedLambdaExpression()
         {
             var persons = Read(Person.CreatePersons());
             persons.Select(p => p.Age).AssertEquals(21, 22, 23, 24);
         }
 
-        [Test]
+        [Fact]
         public void Select_SelectorArg_LambdaThatTakesIndexAsArgument_ReturnValueContainsElementsMultipliedByIndex()
         {
             var source = Read(new[] { 0, 1, 2, 3 });
             source.Select((i, index) => i * index).AssertEquals(0, 1, 4, 9);
         }
 
-        [Test]
+        [Fact]
         public void SelectMany_SelectorArg_ArrayOfPersons_ReturnsASequenceWithAllLettersOfFirstnames()
         {
             var persons = Read(Person.CreatePersons());
@@ -1443,7 +1442,7 @@ namespace BackLinq.Tests
             public List<string> Pets { get; set; }
         }
 
-        [Test]
+        [Fact]
         public void SelectMany_Selector3Arg_ArrayOfPetOwners_SelectorUsesElementIndexArgument()
         {
             var petOwners = Read(new[] 
@@ -1461,7 +1460,7 @@ namespace BackLinq.Tests
             result.AssertEquals("0Scruffy", "0Sam", "1Walker", "1Sugar", "2Scratches", "2Diesel", "3Dusty");
         }
 
-        [Test]
+        [Fact]
         public void SelectMany_CollectionSelectorArgResultSelectorArg_ArrayOfPetOwner_ResultContainsElementForEachPetAPetOwnerHas()
         {
             var petOwners = Read(new[]
@@ -1484,21 +1483,21 @@ namespace BackLinq.Tests
             Assert.That(sb.ToString(), Is.EqualTo("{ Name = Higa, petName = Scruffy }{ Name = Higa, petName = Sam }{ Name = Ashkenazi, petName = Walker }{ Name = Ashkenazi, petName = Sugar }{ Name = Price, petName = Scratches }{ Name = Price, petName = Diesel }{ Name = Hines, petName = Dusty }"));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void SequenceEqual_NullFirstSequence_ThrowsArgumentNullException()
         {
             Enumerable.SequenceEqual(null, Read<object>());
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void SequenceEqual_NullSecondSequence_ThrowsArgumentNullException()
         {
             Read<object>().SequenceEqual(null);
         }
 
-        [Test]
+        [Fact]
         public void SequenceEqual_EqualSequences_ReturnsTrue()
         {
             var source = Read(new[] { 1, 2, 3 });
@@ -1506,7 +1505,7 @@ namespace BackLinq.Tests
             Assert.That(source.SequenceEqual(argument), Is.True);
         }
 
-        [Test]
+        [Fact]
         public void SequenceEqual_DifferentSequences_ReturnsTrue()
         {
             var source = Read(new[] { 1, 2, 3 });
@@ -1514,7 +1513,7 @@ namespace BackLinq.Tests
             Assert.That(source.SequenceEqual(argument), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void SequenceEqual_LongerSecondSequence_ReturnsFalse()
         {
             var source = Read(new[] { 1, 2, 3 });
@@ -1522,7 +1521,7 @@ namespace BackLinq.Tests
             Assert.That(source.SequenceEqual(argument), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void SequenceEqual_ShorterSecondSequence_ReturnsFalse()
         {
             var first = Read(new[] { 1, 2, 3, 4 });
@@ -1530,7 +1529,7 @@ namespace BackLinq.Tests
             Assert.That(first.SequenceEqual(second), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void SequenceEqual_FloatsWithTolerantComparer_ComparerIsUsed()
         {
             var source = Read(new[] { 1f, 2f, 3f });
@@ -1550,7 +1549,7 @@ namespace BackLinq.Tests
             }
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_EmptySource_ThrowsInvalidOperationException()
         {
@@ -1558,7 +1557,7 @@ namespace BackLinq.Tests
             source.Single();
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_SourceWithMoreThanOneElement_ThrowsInvalidOperationException()
         {
@@ -1566,21 +1565,21 @@ namespace BackLinq.Tests
             source.Single();
         }
 
-        [Test]
+        [Fact]
         public void Single_SourceWithOneElement_ReturnsSingleElement()
         {
             var source = Read(new[] {1});
             Assert.That(source.Single(), Is.EqualTo(1));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Single_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
             Read<object>().Single(null);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_NoElementSatisfiesCondition_ThrowsInvalidOperationException()
         {
@@ -1588,7 +1587,7 @@ namespace BackLinq.Tests
             source.Single(i => i % 2 == 0);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_MoreThanOneElementSatisfiedCondition_ThrowsInvalidOperationException()
         {
@@ -1596,7 +1595,7 @@ namespace BackLinq.Tests
             source.Single(i => i % 2 == 0);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void Single_PredicateArg_SourceIsEmpty_ThrowsInvalidOperationException()
         {
@@ -1604,14 +1603,14 @@ namespace BackLinq.Tests
             source.Single(i => i % 2 == 0);
         }
 
-        [Test]
+        [Fact]
         public void Single_PredicateArg_ArrayOfIntWithOnlyOneElementSatisfyingCondition_ReturnsOnlyThisElement()
         {
             var source = Read(new[] { 1, 2, 3 });
             Assert.That(source.Single(i => i % 2 == 0), Is.EqualTo(2));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SingleOrDefault_MoreThanOneElementInSource_ThrowsInvalidOperationException()
         {
@@ -1619,35 +1618,35 @@ namespace BackLinq.Tests
             source.SingleOrDefault();
         }
 
-        [Test]
+        [Fact]
         public void SingleOrDefault_EmptySource_ReturnsZero()
         {
             var source = Read<int>();
             Assert.That(source.SingleOrDefault(), Is.EqualTo(0));
         }
 
-        [Test]
+        [Fact]
         public void SingleOrDefault_SourceWithOneElement_ReturnsSingleElement()
         {
             var source = Read(new[] { 5 });
             Assert.That(source.SingleOrDefault(), Is.EqualTo(5));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void SingleOrDefault_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
             Read<object>().SingleOrDefault(null);
         }
 
-        [Test]
+        [Fact]
         public void SingleOrDefault_PredicateArg_EmptySource_ReturnsZero()
         {
             var source = Read<int>();
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(InvalidOperationException))]
         public void SingleOrDefault_PredicateArg_MoreThanOneElementSatisfiesCondition_ThrowsInvalidOperationException()
         {
@@ -1655,56 +1654,56 @@ namespace BackLinq.Tests
             source.SingleOrDefault(i => i % 2 == 0);
         }
 
-        [Test]
+        [Fact]
         public void SingleOrDefault_PredicateArg_NoElementSatisfiesCondition_ReturnsZero()
         {
             var source = Read(new[] { 1, 3, 5 });
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(0));
         }
 
-        [Test]
+        [Fact]
         public void SingleOrDefault_PredicateArg_OneElementSatisfiesCondition_ReturnsCorrectElement()
         {
             var source = Read(new[] { 1, 2, 3 });
             Assert.That(source.SingleOrDefault(i => i % 2 == 0), Is.EqualTo(2));
         }
 
-        [Test]
+        [Fact]
         public void Skip_IntsFromOneToTenAndFifeAsSecondArg_IntsFromSixToTen()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             source.Skip(5).AssertEquals(6, 7, 8, 9, 10);
         }
 
-        [Test]
+        [Fact]
         public void Skip_PassNegativeValueAsCount_SameBehaviorAsMicrosoftImplementation()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             source.Skip(-5).AssertEquals(1, 2, 3, 4, 5);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void SkipWhile_PredicateArg_PassNullAsPredicate_ThrowsArgumentNullException()
         {
             Read<object>().SkipWhile((Func<object, bool>) null);
         }
 
-        [Test]
+        [Fact]
         public void SkipWhile_PredicateArg_IntsFromOneToFive_ElementsAreSkippedAsLongAsConditionIsSatisfied()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             source.SkipWhile(i => i < 3).AssertEquals(3, 4, 5);
         }
 
-        [Test]
+        [Fact]
         public void SkipWhile_PredicateArg_ArrayOfIntsWithElementsNotSatisfyingConditionAtTheEnd_IntsAtTheEndArePartOfResult()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 1, 2, 3 });
             source.SkipWhile(i => i < 3).AssertEquals(3, 4, 5, 1, 2, 3);
         }
 
-        [Test]
+        [Fact]
         public void SkipWhile_PredicateArg_PredicateAlwaysTrue_EmptyResult()
         {
             var source = Read(new[] { 1, 2, 3 });
@@ -1712,14 +1711,14 @@ namespace BackLinq.Tests
             Assert.That(result.GetEnumerator().MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         public void SkipWhile_Predicate3Arg_IntsFromOneToNine_ElementsAreSkippedWhileIndexLessThanFive()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
             source.SkipWhile((i, index) => index < 5).AssertEquals(6, 7, 8, 9);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(OverflowException))]
         public void Sum_SumOfArgumentsCausesOverflow_ThrowsOverflowException()
         {
@@ -1727,63 +1726,63 @@ namespace BackLinq.Tests
             source.Sum();
         }
 
-        [Test]
+        [Fact]
         public void Sum_IntsFromOneToTen_ResultIsFiftyFive()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             Assert.That(source.Sum(), Is.EqualTo(55));
         }
 
-        [Test]
+        [Fact]
         public void Sum_Longs_ReturnsSum()
         {
             Assert.That(Read(new[] {1L, 2L, 3L}).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_Floats_ReturnsSum()
         {
             Assert.That(Read(new[] {1F, 2F, 3F}).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_NullableFloats_ReturnsSum() {
             Assert.That(Read(new float?[] { 1F, 2F, 3F, null }).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_Doubles_ReturnsSum() {
             Assert.That(Read(new double[] { 1, 2, 3 }).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_NullableDoubles_ReturnsSum() {
             Assert.That(Read(new double?[] { 1, 2, 3, null }).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_Decimals_ReturnsSum() {
             Assert.That(Read(new[] { 1m, 2m, 3m }).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_NullableDecimals_ReturnsSum() {
             Assert.That(Read(new decimal?[] { 1m, 2m, 3m, null }).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_NullableLongs_ReturnsSum() {
             Assert.That(Read(new long?[] { 1L, 2L, 3L, null }).Sum(), Is.EqualTo(6));
         }
 
-        [Test]
+        [Fact]
         public void Sum_NullableIntsAsArguments_ReturnsCorrectSum()
         {
             var source = Read<int?>(new int?[] { 1, 2, null });
             Assert.That(source.Sum(), Is.EqualTo(3));
         }
 
-        [Test]
+        [Fact]
         public void Sum_SelectorArg_StringArray_ResultIsSumOfStringLengthes()
         {
             var source = Read(new[] { "dog", "cat", "eagle" });
@@ -1791,35 +1790,35 @@ namespace BackLinq.Tests
             Assert.That(source.Sum((Func<string, int>)(s => s.Length)), Is.EqualTo(11));
         }
 
-        [Test]
+        [Fact]
         public void Take_IntsFromOneToSixAndThreeAsCount_IntsFromOneToThreeAreReturned()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6 });
             source.Take(3).AssertEquals(1, 2, 3);
         }
 
-        [Test]
+        [Fact]
         public void Take_CountBiggerThanList_ReturnsAllElements()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             source.Take(10).AssertEquals(1, 2, 3, 4, 5);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void TakeWhile_PassNullAsPredicate_ThrowsArgumentNullException()
         {
             new object[0].TakeWhile((Func<object, bool>) null);
         }
 
-        [Test]
+        [Fact]
         public void TakeWhile_IntsFromOneToTenAndConditionThatSquareIsSmallerThan50_IntsFromOneToSeven()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
             source.TakeWhile(i => i * i < 50).AssertEquals(1, 2, 3, 4, 5, 6, 7);
         }
 
-        [Test]
+        [Fact]
         public void ToArray_IntsFromOneToTen_ResultIsIntArrayContainingAllElements()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
@@ -1828,7 +1827,7 @@ namespace BackLinq.Tests
             result.AssertEquals(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void ToDictionary_KeySelectorArg_KeySelectorYieldsNull_ThrowsArgumentNullException()
         {
@@ -1836,7 +1835,7 @@ namespace BackLinq.Tests
             source.ToDictionary<string, string>(s => null);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentException))]
         public void ToDictionary_KeySelectorArg_DuplicateKeys_ThrowsArgumentException()
         {
@@ -1844,7 +1843,7 @@ namespace BackLinq.Tests
             source.ToDictionary(s => s.Length);
         }
 
-        [Test]
+        [Fact]
         public void ToDictionary_KeySelectorArg_ValidArguments_KeySelectorIsUsedForKeysInDictionary()
         {
             var source = Read(new[] { "1", "2", "3" });
@@ -1859,7 +1858,7 @@ namespace BackLinq.Tests
             Assert.That(check, Is.EqualTo(4));
         }
 
-        [Test]
+        [Fact]
         public void ToDictionary_KeySelectorArgElementSelectorArg_IntsFromOneToTen_KeySelectorAndElementSelectorAreUsedForDictionaryElements()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
@@ -1873,7 +1872,7 @@ namespace BackLinq.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void ToList_IntsFromOneToTen_ReturnsListOfIntsContainingAllElements()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
@@ -1882,7 +1881,7 @@ namespace BackLinq.Tests
             result.AssertEquals(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         }
 
-        [Test]
+        [Fact]
         public void ToLookup_KeySelectorArg_Strings_ReturnsLookupArrayWithStringLengthAsKey()
         {
             var source = Read(new[] { "eagle", "dog", "cat", "bird", "camel" });
@@ -1893,7 +1892,7 @@ namespace BackLinq.Tests
             result[5].AssertEquals("eagle", "camel");
         }
 
-        [Test]
+        [Fact]
         public void ToLookup_KeySelectorArgElementSelectorArg_Strings_ElementSelectorIsUsed()
         {
             var source = Read(new[] { "eagle", "dog", "cat", "bird", "camel" });
@@ -1913,14 +1912,14 @@ namespace BackLinq.Tests
             Assert.That(enumerator.MoveNext(), Is.False);
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Union_SecondArg_PassNullAsArgument_ThrowsArgumentNullException()
         {
             Read<object>().Union(null);
         }
 
-        [Test]
+        [Fact]
         public void Union_SecondArg_ValidIntArguments_NoDuplicatesAndInSourceOrder()
         {
             var source = Read(new[] { 5, 3, 9, 7, 5, 9, 3, 7 });
@@ -1928,7 +1927,7 @@ namespace BackLinq.Tests
             source.Union(argument).AssertEquals(5, 3, 9, 7, 8, 6, 4, 1, 0);
         }
 
-        [Test]
+        [Fact]
         public void Union_SecondArgComparerArg_UpperCaseAndLowerCaseStrings_PassedComparerIsUsed()
         {
             var source = Read(new[] { "A", "B", "C", "D", "E", "F" });
@@ -1936,35 +1935,35 @@ namespace BackLinq.Tests
             source.Union(argument, StringComparer.CurrentCultureIgnoreCase).AssertEquals("A", "B", "C", "D", "E", "F");
         }
 
-        [Test]
+        [Fact]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Where_NullPredicate_ThrowsArgumentNullException()
         {
             Read<object>().Where((Func<object, bool>) null);
         }
 
-        [Test]
+        [Fact]
         public void Where_IntegersWithEvensPredicate_YieldsEvenIntegers()
         {
             var source = Read(new[] { 1, 2, 3, 4, 5 });
             source.Where(i => i % 2 == 0).AssertEquals(2, 4);
         }
 
-        [Test]
+        [Fact]
         public void Where_StringsWithEvenIndexPredicate_YieldsElementsWithEvenIndex()
         {
             var source = Read(new[] { "Camel", "Marlboro", "Parisienne", "Lucky Strike" });
             source.Where((s, i) => i % 2 == 0).AssertEquals("Camel", "Parisienne");
         }
 
-        [Test]
+        [Fact]
         public void AsEnumerable_NonNullSource_ReturnsSourceReference()
         {
             var source = new object[0];
             Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
         }
 
-        [Test]
+        [Fact]
         public void AsEnumerable_NullSource_ReturnsNull()
         {
             Assert.That(Enumerable.AsEnumerable<object>(null), Is.Null);
