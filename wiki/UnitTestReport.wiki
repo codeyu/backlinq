@@ -10,6 +10,8 @@
 || [http://www.albahari.com/nutshell/linqbridge.aspx LINQBridge] || 59 of 199 ||
 || [http://www.codeplex.com/LINQSQO LINQ-SQO] || 70 of 199 ||
 
+See also: [http://backlinq.googlecode.com/svn/www/ccreport.html Code Coverage Report]
+
 = Comparison =
 
 See also [ColoredUnitTestReport colored version of this report].
