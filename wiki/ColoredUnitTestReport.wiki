@@ -5,7 +5,7 @@
 || *Project* || *Tests Failed* ||
 || _BackLINQ_ || None ||
 || Microsoft LINQ  || None ||
-|| [http://www.mono-project.com/ Mono] 2.0.1 LINQ || 30 of 199 ||
+|| [http://www.mono-project.com/ Mono] 2.0.1 LINQ || 16 of 199 ||
 || [http://www.albahari.com/nutshell/linqbridge.aspx LINQBridge] || 59 of 199 ||
 || [http://www.codeplex.com/LINQSQO LINQ-SQO] || 70 of 199 ||
 
