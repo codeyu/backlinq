@@ -1507,7 +1507,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void SequenceEqual_DifferentSequences_ReturnsTrue()
+        public void SequenceEqual_DifferentSequences_ReturnsFalse()
         {
             var source = Read(new[] { 1, 2, 3 });
             var argument = Read(new[] { 1, 3, 2 });
