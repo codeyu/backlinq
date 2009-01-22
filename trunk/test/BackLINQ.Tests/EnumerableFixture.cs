@@ -552,8 +552,8 @@ namespace BackLinq.Tests
             {
                 return new[]
                            {
-                               new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                               new Person {FamilyName = "Müller", FirstName = "Herbert", Age = 22},
+                               new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                               new Person {FamilyName = "M\u00FCller", FirstName = "Herbert", Age = 22},
                                new Person {FamilyName = "Meier", FirstName = "Hubert", Age = 23},
                                new Person {FamilyName = "Meier", FirstName = "Isidor", Age = 24}   
                            };
@@ -574,7 +574,7 @@ namespace BackLinq.Tests
             var result = new Reader<IGrouping<string, Person>>(persons.GroupBy(person => person.FamilyName));
 
             var mueller = result.Read();
-            Assert.That(mueller.Key, Is.EqualTo("Müller"));
+            Assert.That(mueller.Key, Is.EqualTo("M\u00FCller"));
             Assert.That(Array.ConvertAll(ToArray(mueller), p => p.FirstName),
                         Is.EqualTo(new[] { "Peter", "Herbert" }));
 
@@ -597,18 +597,18 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter"},
-                new Person {FamilyName = "müller", FirstName = "Herbert"},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter"},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert"},
                 new Person {FamilyName = "Meier", FirstName = "Hubert"},
                 new Person {FamilyName = "meier", FirstName = "Isidor"}
             });
             var result = persons.GroupBy(person => person.FamilyName);
             var enumerator = result.GetEnumerator();
             enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
+            Assert.That(enumerator.Current.Key, Is.EqualTo("M\u00FCller"));
             Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
             enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("müller"));
+            Assert.That(enumerator.Current.Key, Is.EqualTo("m\u00FCller"));
             Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Herbert"));
             enumerator.MoveNext();
             Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
@@ -625,15 +625,15 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter"},
-                new Person {FamilyName = "müller", FirstName = "Herbert"},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter"},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert"},
                 new Person {FamilyName = "Meier", FirstName = "Hubert"},
                 new Person {FamilyName = "meier", FirstName = "Isidor"}
             });
             var result = persons.GroupBy(person => person.FamilyName, StringComparer.InvariantCultureIgnoreCase);
             var enumerator = result.GetEnumerator();
             enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
+            Assert.That(enumerator.Current.Key, Is.EqualTo("M\u00FCller"));
             Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
             Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Herbert"));
 
@@ -652,7 +652,7 @@ namespace BackLinq.Tests
             var result = enumerable.GroupBy(person => person.FamilyName, person => person.Age);
             var enumerator = result.GetEnumerator();
             enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Müller"));
+            Assert.That(enumerator.Current.Key, Is.EqualTo("M\u00FCller"));
             Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(21));
             Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(22));
 
@@ -686,8 +686,8 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
                 new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                 new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
             });
@@ -727,8 +727,8 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
                 new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                 new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
             });
@@ -751,8 +751,8 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
                 new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                 new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
             });
@@ -780,8 +780,8 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
                 new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                 new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
             });
@@ -832,8 +832,8 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
                 new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                 new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
             });
@@ -877,8 +877,8 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "Müller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "müller", FirstName = "Herbert", Age = 22},
+                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
                 new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
                 new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
             });
