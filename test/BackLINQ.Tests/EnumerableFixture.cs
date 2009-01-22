@@ -38,7 +38,6 @@ namespace BackLinq.Tests
     using System.Linq;
     using NUnit.Framework.SyntaxHelpers;
     using System.Diagnostics;
-    using System.Reflection;
 
     #endregion
 
