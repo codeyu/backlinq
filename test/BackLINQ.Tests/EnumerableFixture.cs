@@ -1784,7 +1784,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Sum_SelectorArg_StringArray_ResultIsSumOfStringLengthes()
+        public void Sum_SelectorArg_StringArray_ResultIsSumOfStringLengths()
         {
             var source = Read(new[] { "dog", "cat", "eagle" });
             // ....................V-----------------V Needed for Mono (CS0121)
