@@ -321,7 +321,7 @@ namespace BackLinq.Tests
         [Test]
         public void Contains_ListOfIntsContainingPassedValue_ReturnsTrue()
         {
-            var source = new List<int>() {1, 2, 3};
+            var source = new List<int> {1, 2, 3};
             Assert.That(source.Contains(3), Is.True);
         }
 
@@ -429,7 +429,7 @@ namespace BackLinq.Tests
         [Test]
         public void ElementAtOrDefault_ListOfInts_ReturnsCorrectElement()
         {
-            var source = new List<int>() {1, 2, 3, 4, 5, 6};
+            var source = new List<int> {1, 2, 3, 4, 5, 6};
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(3));
         }
 
@@ -1331,7 +1331,7 @@ namespace BackLinq.Tests
         [Test]
         public void ThenByDescending_KeySelectorArgComparerArg_StringArray_CorrectOrdering()
         {
-            var source = Read(new string[] {"AA", "AB", "AC", "-BA", "-BB", "-BC"});
+            var source = Read(new[] {"AA", "AB", "AC", "-BA", "-BB", "-BC"});
             var result = source.OrderBy(s => s.ToCharArray()[s.ToCharArray().Length - 1]).ThenByDescending(s => s.Length); /*.AssertEquals("butterfly", "elephant", "dog", "snake", "ape"); */
             result.AssertEquals("-BA", "AA", "-BB", "AB", "-BC", "AC");
         }
@@ -1777,7 +1777,7 @@ namespace BackLinq.Tests
         [Test]
         public void Sum_NullableIntsAsArguments_ReturnsCorrectSum()
         {
-            var source = Read<int?>(new int?[] { 1, 2, null });
+            var source = Read(new int?[] { 1, 2, null });
             Assert.That(source.Sum(), Is.EqualTo(3));
         }
 
