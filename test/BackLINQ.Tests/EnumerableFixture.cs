@@ -1160,8 +1160,7 @@ namespace BackLinq.Tests
         public void Max_SelectorArg_ListOfObjects_ReturnsMaxSelectedValue()
         {
             var persons = Read(Person.CreatePersons());
-            // .....................V-----------------V Needed for Mono (CS0121)
-            Assert.That(persons.Max((Func<Person, int>)(p => p.Age)), Is.EqualTo(24));
+            Assert.That(persons.Max(p => p.Age), Is.EqualTo(24));
         }
 
         [Test]
@@ -1787,8 +1786,7 @@ namespace BackLinq.Tests
         public void Sum_SelectorArg_StringArray_ResultIsSumOfStringLengths()
         {
             var source = Read(new[] { "dog", "cat", "eagle" });
-            // ....................V-----------------V Needed for Mono (CS0121)
-            Assert.That(source.Sum((Func<string, int>)(s => s.Length)), Is.EqualTo(11));
+            Assert.That(source.Sum(s => s.Length), Is.EqualTo(11));
         }
 
         [Test]
