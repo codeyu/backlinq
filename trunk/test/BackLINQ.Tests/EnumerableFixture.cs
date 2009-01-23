@@ -1979,7 +1979,7 @@ namespace BackLinq.Tests
         public void AsEnumerable_NonNullSource_ReturnsSourceReference()
         {
             var source = new object[0];
-            Assert.That(source.AsEnumerable(), Is.SameAs(source));
+            Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
         }
 
         [Test]
