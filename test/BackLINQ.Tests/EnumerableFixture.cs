@@ -6,6 +6,7 @@
 //  Author(s):
 //
 //      Dominik Hug, http://www.dominikhug.ch
+//      Atif Aziz, http://www.raboof.com
 //
 // This library is free software; you can redistribute it and/or modify it 
 // under the terms of the New BSD License, a copy of which should have 
@@ -70,7 +71,7 @@ namespace BackLinq.Tests
         public void Aggregate_EmptySource_ThrowsInvalidOperationException()
         {
             var source = Read<object>();
-            source.Aggregate((a, b) => { throw new NotImplementedException(); });
+            source.Aggregate(delegate { throw new NotImplementedException(); });
         }
 
         [Test]
@@ -93,7 +94,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void Aggregate_NullSource_ThrowsArgumentNullException()
         {
-            Enumerable.Aggregate<object>(null, (a, e) => { throw new NotImplementedException(); });
+            Enumerable.Aggregate<object>(null, delegate { throw new NotImplementedException(); });
         }
 
         [Test]
@@ -106,7 +107,7 @@ namespace BackLinq.Tests
         [Test]
         public void Empty_YieldsEmptySource()
         {
-            var source = Enumerable.Empty<String>();
+            var source = Enumerable.Empty<string>();
             Assert.That(source, Is.Not.Null);
             var e = source.GetEnumerator();
             Assert.That(e, Is.Not.Null);
@@ -194,7 +195,7 @@ namespace BackLinq.Tests
         public void Any_PredicateArg_EmptySource_ReturnsFalse()
         {
             var source = Read(new int[0]);
-            Assert.That(source.Any(i => { throw new NotImplementedException(); }), Is.False);
+            Assert.That(source.Any(delegate { throw new NotImplementedException(); }), Is.False);
         }
 
         [Test]
@@ -546,16 +547,16 @@ namespace BackLinq.Tests
         private class Person
         {
             public string FirstName { get; set; }
-            public string FamilyName { get; set; }
+            public string LastName { get; set; }
             public int Age { get; set; }
             public static Person[] CreatePersons()
             {
                 return new[]
                            {
-                               new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                               new Person {FamilyName = "M\u00FCller", FirstName = "Herbert", Age = 22},
-                               new Person {FamilyName = "Meier", FirstName = "Hubert", Age = 23},
-                               new Person {FamilyName = "Meier", FirstName = "Isidor", Age = 24}   
+                               new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                               new Person {LastName = "M\u00FCller", FirstName = "Herbert", Age = 22},
+                               new Person {LastName = "Meier", FirstName = "Hubert", Age = 23},
+                               new Person {LastName = "Meier", FirstName = "Isidor", Age = 24}   
                            };
             }
         }
@@ -571,7 +572,7 @@ namespace BackLinq.Tests
         public void GroupBy_KeySelectorArg_ValidArguments_CorrectGrouping()
         {
             var persons = Read(Person.CreatePersons());
-            var result = new Reader<IGrouping<string, Person>>(persons.GroupBy(person => person.FamilyName));
+            var result = new Reader<IGrouping<string, Person>>(persons.GroupBy(person => person.LastName));
 
             var mueller = result.Read();
             Assert.That(mueller.Key, Is.EqualTo("M\u00FCller"));
@@ -597,27 +598,33 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter"},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert"},
-                new Person {FamilyName = "Meier", FirstName = "Hubert"},
-                new Person {FamilyName = "meier", FirstName = "Isidor"}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter"},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert"},
+                new Person {LastName = "Meier", FirstName = "Hubert"},
+                new Person {LastName = "meier", FirstName = "Isidor"}
             });
-            var result = persons.GroupBy(person => person.FamilyName);
-            var enumerator = result.GetEnumerator();
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("M\u00FCller"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("m\u00FCller"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Herbert"));
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("meier"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Isidor"));
+            
+            var result = persons.GroupBy(person => person.LastName);
+            
+            var e = result.GetEnumerator();
+            
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("M\u00FCller"));
+            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
+            
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("m\u00FCller"));
+            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Herbert"));
+            
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("Meier"));
+            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
+            
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("meier"));
+            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Isidor"));
 
-            Assert.That(enumerator.MoveNext(), Is.False);
+            Assert.That(e.MoveNext(), Is.False);
         }
 
         [Test]
@@ -625,41 +632,46 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter"},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert"},
-                new Person {FamilyName = "Meier", FirstName = "Hubert"},
-                new Person {FamilyName = "meier", FirstName = "Isidor"}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter"},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert"},
+                new Person {LastName = "Meier", FirstName = "Hubert"},
+                new Person {LastName = "meier", FirstName = "Isidor"}
             });
-            var result = persons.GroupBy(person => person.FamilyName, StringComparer.InvariantCultureIgnoreCase);
-            var enumerator = result.GetEnumerator();
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("M\u00FCller"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
-            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Herbert"));
+            
+            var result = persons.GroupBy(person => person.LastName, StringComparer.InvariantCultureIgnoreCase);
+            
+            var e = result.GetEnumerator();
+            
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("M\u00FCller"));
+            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
+            Assert.That(e.Current.ElementAt(1).FirstName, Is.EqualTo("Herbert"));
 
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
-            Assert.That(enumerator.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
-            Assert.That(enumerator.Current.ElementAt(1).FirstName, Is.EqualTo("Isidor"));
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("Meier"));
+            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
+            Assert.That(e.Current.ElementAt(1).FirstName, Is.EqualTo("Isidor"));
 
-            Assert.That(enumerator.MoveNext(), Is.False);
+            Assert.That(e.MoveNext(), Is.False);
         }
 
         [Test]
         public void GroupBy_KeySelectorArgElementSelectorArg_ValidArguments_CorrectGroupingAndProjection()
         {
-            var enumerable = Read(Person.CreatePersons());
-            var result = enumerable.GroupBy(person => person.FamilyName, person => person.Age);
-            var enumerator = result.GetEnumerator();
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("M\u00FCller"));
-            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(21));
-            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(22));
+            var persons = Read(Person.CreatePersons());
+            var result = persons.GroupBy(person => person.LastName, person => person.Age);
+            
+            var e = result.GetEnumerator();
+            
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("M\u00FCller"));
+            Assert.That(e.Current.ElementAt(0), Is.EqualTo(21));
+            Assert.That(e.Current.ElementAt(1), Is.EqualTo(22));
 
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.Key, Is.EqualTo("Meier"));
-            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(23));
-            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(24));
+            e.MoveNext();
+            Assert.That(e.Current.Key, Is.EqualTo("Meier"));
+            Assert.That(e.Current.ElementAt(0), Is.EqualTo(23));
+            Assert.That(e.Current.ElementAt(1), Is.EqualTo(24));
         }
 
         [Test]
@@ -667,17 +679,15 @@ namespace BackLinq.Tests
         {
             var persons = Read(Person.CreatePersons());
 
-            IEnumerable<int> result = persons.GroupBy(person => person.FamilyName,
-                                                (key, group) =>
-                                                {
-                                                    int ageSum = 0;
-                                                    foreach (Person p in group)
-                                                    {
-                                                        ageSum += p.Age;
-                                                    }
-                                                    return ageSum;
-                                                }
-                                                );
+            var result = persons.GroupBy(
+                             p => p.LastName, 
+                             (key, group) => { // BUGBUG Use the key in some way otherwise its untested!
+                                 var ages = 0;
+                                 foreach (var p in group)
+                                     ages += p.Age;
+                                 return ages;
+                             });
+
             result.AssertEquals(43, 47);
         }
 
@@ -686,39 +696,42 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
+                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
             });
 
-            IEnumerable<IGrouping<string, int>> result = persons.GroupBy(person => person.FamilyName,
-                                                person => person.Age,
-                                                StringComparer.CurrentCultureIgnoreCase);
-            IEnumerator<IGrouping<string, int>> enumerator = result.GetEnumerator();
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(21));
-            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(22));
-            enumerator.MoveNext();
-            Assert.That(enumerator.Current.ElementAt(0), Is.EqualTo(23));
-            Assert.That(enumerator.Current.ElementAt(1), Is.EqualTo(24));
-            Assert.That(enumerator.MoveNext(), Is.False);
+            var result = persons.GroupBy(p => p.LastName, p => p.Age,
+                                         StringComparer.CurrentCultureIgnoreCase);
+            
+            var e = result.GetEnumerator();
+            
+            e.MoveNext();
+            Assert.That(e.Current.ElementAt(0), Is.EqualTo(21)); // BUGBUG Tests should not 
+            Assert.That(e.Current.ElementAt(1), Is.EqualTo(22)); // use another LINQ operator
+                                                                 // other than one it is testing!
+            e.MoveNext();
+            Assert.That(e.Current.ElementAt(0), Is.EqualTo(23));
+            Assert.That(e.Current.ElementAt(1), Is.EqualTo(24));
+            
+            Assert.That(e.MoveNext(), Is.False);
         }
 
         [Test]
         public void GroupBy_KeySelectorArgElementSelectorArgResultSelectorArg_ValidArguments_CorrectGroupingAndTransforming()
         {
             var persons = Read(Person.CreatePersons());
-            var result = persons.GroupBy(p => p.FamilyName, p => p.Age,
-                                                                      (name, enumerable2) =>
-                                                                      {
-                                                                          int totalAge = 0;
-                                                                          foreach (var i in enumerable2)
-                                                                          {
-                                                                              totalAge += i;
-                                                                          }
-                                                                          return totalAge;
-                                                                      });
+
+            var result = persons.GroupBy(p => p.LastName, p => p.Age,
+                                         (key, ages) => // BUGBUG Use the key in some way otherwise its untested!
+                                         {
+                                             var total = 0;
+                                             foreach (var age in ages)
+                                                  total += age;
+                                             return total;
+                                         });
+            
             result.AssertEquals(43, 47);
         }
 
@@ -727,22 +740,22 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
+                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
             });
-            var result = persons.GroupBy(p => p.FamilyName,
-                                                                      (name, enumerable2) =>
-                                                                      {
-                                                                          int totalAge = 0;
-                                                                          foreach (var i in enumerable2)
-                                                                          {
-                                                                              totalAge += i.Age;
-                                                                          }
-                                                                          return totalAge;
-                                                                      },
-                                                                      StringComparer.CurrentCultureIgnoreCase);
+            
+            var result = persons.GroupBy(p => p.LastName,
+                                         (key, values) => // BUGBUG Use the key in some way otherwise its untested!
+                                         {
+                                             var total = 0;
+                                             foreach (var person in values)
+                                                  total += person.Age;
+                                             return total;
+                                         },
+                                         StringComparer.CurrentCultureIgnoreCase);
+            
             result.AssertEquals(43, 47);
         }
 
@@ -751,21 +764,22 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
+                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
             });
-            var result = persons.GroupBy(p => p.FamilyName, p => p.Age,
-                                                                      (name, enumerable2) =>
-                                                                      {
-                                                                          int totalAge = 0;
-                                                                          foreach (var i in enumerable2)
-                                                                          {
-                                                                              totalAge += i;
-                                                                          }
-                                                                          return totalAge;
-                                                                      }, StringComparer.CurrentCultureIgnoreCase);
+            
+            var result = persons.GroupBy(p => p.LastName, p => p.Age,
+                                         (key, ages) => // BUGBUG Use the key in some way otherwise its untested!
+                                         {
+                                             var total = 0;
+                                             foreach (var i in ages)
+                                                 total += i;
+                                             return total;
+                                         }, 
+                                         StringComparer.CurrentCultureIgnoreCase);
+
             result.AssertEquals(43, 47);
         }
 
@@ -780,10 +794,10 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
+                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
             });
 
             var pets = Read(new[]
@@ -798,24 +812,29 @@ namespace BackLinq.Tests
                               (person, petCollection) =>
                               new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) });
 
-            var enumerator = result.GetEnumerator();
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Peter"));
-            var petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Barley"));
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Herbert"));
-            petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Boots"));
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Whiskers"));
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Hubert"));
-            petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Isidor"));
-            petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Daisy"));
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            Assert.That(enumerator.MoveNext(), Is.False);
+            var e = result.GetEnumerator();
+
+            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Peter"));            
+                var petEnumerator = e.Current.Pets.GetEnumerator();
+                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Barley"));
+                Assert.That(petEnumerator.MoveNext(), Is.False);
+            
+            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Herbert"));            
+                petEnumerator = e.Current.Pets.GetEnumerator();
+                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Boots"));
+                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Whiskers"));
+                Assert.That(petEnumerator.MoveNext(), Is.False);
+            
+            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Hubert"));
+                petEnumerator = e.Current.Pets.GetEnumerator();
+                Assert.That(petEnumerator.MoveNext(), Is.False);
+            
+            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Isidor"));
+                petEnumerator = e.Current.Pets.GetEnumerator();
+                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Daisy"));
+                Assert.That(petEnumerator.MoveNext(), Is.False);
+
+            Assert.That(e.MoveNext(), Is.False);
 
             //foreach (var owner in result) {
             //    Debug.WriteLine(owner.OwnerName);
@@ -832,10 +851,10 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
+                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
             });
 
             var pets = Read(new[]
@@ -851,24 +870,29 @@ namespace BackLinq.Tests
                               new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) },
                               StringComparer.CurrentCultureIgnoreCase);
 
-            var enumerator = result.GetEnumerator();
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Peter"));
-            var petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Barley"));
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Herbert"));
-            petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Boots"));
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Whiskers"));
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Hubert"));
-            petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            enumerator.MoveNext(); Assert.That(enumerator.Current.OwnerName, Is.EqualTo("Isidor"));
-            petEnumerator = enumerator.Current.Pets.GetEnumerator();
-            petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Daisy"));
-            Assert.That(petEnumerator.MoveNext(), Is.False);
-            Assert.That(enumerator.MoveNext(), Is.False);
+            var p = result.GetEnumerator();
+            
+            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Peter"));
+                var pp = p.Current.Pets.GetEnumerator();
+                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Barley"));
+                Assert.That(pp.MoveNext(), Is.False);
+            
+            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Herbert"));
+                pp = p.Current.Pets.GetEnumerator();
+                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Boots"));
+                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Whiskers"));
+                Assert.That(pp.MoveNext(), Is.False);
+
+            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Hubert"));
+                pp = p.Current.Pets.GetEnumerator();
+                Assert.That(pp.MoveNext(), Is.False);
+
+            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Isidor"));
+                pp = p.Current.Pets.GetEnumerator();
+                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Daisy"));
+                Assert.That(pp.MoveNext(), Is.False);
+
+            Assert.That(p.MoveNext(), Is.False);
         }
 
         [Test]
@@ -877,10 +901,10 @@ namespace BackLinq.Tests
         {
             var persons = Read(new[]
             {
-                new Person {FamilyName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {FamilyName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {FamilyName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {FamilyName = "meier", FirstName = "Isidor", Age = 24}
+                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
+                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
+                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
+                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
             });
 
             var pets = Read(new[]
@@ -931,6 +955,7 @@ namespace BackLinq.Tests
         public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassingPetsAndOwners_PetsAreCorrectlyAssignedToOwners()
         {
             var persons = Read(Person.CreatePersons());
+            
             var pets = new Reader<Pet>(new[]
                            {
                                new Pet {Name = "Barley", Owner = "Peter"},
@@ -938,33 +963,36 @@ namespace BackLinq.Tests
                                new Pet {Name = "Whiskers", Owner = "Herbert"},
                                new Pet {Name = "Daisy", Owner = "Isidor"}
                            });
+            
             var result = persons.Join(pets, aPerson => aPerson.FirstName, aPet => aPet.Owner,
                          (aPerson, aPet) => new { Owner = aPerson.FirstName, Pet = aPet.Name });
 
-            var enumerator = result.GetEnumerator();
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Peter"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Barley"));
+            var e = result.GetEnumerator();
+            
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Peter"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Barley"));
 
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Boots"));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Boots"));
 
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Whiskers"));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Whiskers"));
 
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Isidor"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Daisy"));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Isidor"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Daisy"));
 
-            Assert.That(enumerator.MoveNext(), Is.False);
+            Assert.That(e.MoveNext(), Is.False);
         }
 
         [Test]
         public void Join_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArgComparerArg_PetOwnersNamesCasingIsInconsistent_CaseInsensitiveJoinIsPerformed()
         {
             var persons = Read(Person.CreatePersons());
+            
             var pets = new Reader<Pet>(new[]
                            {
                                new Pet {Name = "Barley", Owner = "Peter"},
@@ -976,24 +1004,25 @@ namespace BackLinq.Tests
                          (aPerson, aPet) => new { Owner = aPerson.FirstName, Pet = aPet.Name },
                          StringComparer.CurrentCultureIgnoreCase);
 
-            var enumerator = result.GetEnumerator();
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Peter"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Barley"));
+            var e = result.GetEnumerator();
+            
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Peter"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Barley"));
 
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Boots"));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Boots"));
 
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Herbert"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Whiskers"));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Herbert"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Whiskers"));
 
-            Assert.That(enumerator.MoveNext(), Is.True);
-            Assert.That(enumerator.Current.Owner, Is.EqualTo("Isidor"));
-            Assert.That(enumerator.Current.Pet, Is.EqualTo("Daisy"));
+            Assert.That(e.MoveNext(), Is.True);
+            Assert.That(e.Current.Owner, Is.EqualTo("Isidor"));
+            Assert.That(e.Current.Pet, Is.EqualTo("Daisy"));
 
-            Assert.That(enumerator.MoveNext(), Is.False);
+            Assert.That(e.MoveNext(), Is.False);
 
             //foreach (var i in result) {
             //    Debug.WriteLine(String.Format("Owner = {0}; Pet = {1}", i.Owner, i.Pet));
@@ -1308,7 +1337,7 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentNullException))]
         public void ThenBy_NullSource_ThrowsArgumentNullException()
         {
-            Enumerable.ThenBy<object, object>(null, e => { throw new NotImplementedException(); });
+            Enumerable.ThenBy<object, object>(null, delegate { throw new NotImplementedException(); });
         }
 
         [Test]
@@ -1427,7 +1456,7 @@ namespace BackLinq.Tests
             var persons = Read(Person.CreatePersons());
             var result = persons.SelectMany(p => p.FirstName.ToCharArray());
             var check = "PeterHerbertHubertIsidor".ToCharArray();
-            int count = 0;
+            int count = 0; // BUGBUG Collapse loop-based check with array assertion!
             foreach (var c in result)
             {
                 Assert.That(c, Is.EqualTo(check[count]));
@@ -1438,47 +1467,39 @@ namespace BackLinq.Tests
         class PetOwner
         {
             public string Name { get; set; }
-            public List<string> Pets { get; set; }
+            public IList<string> Pets { get; set; }
         }
 
         [Test]
         public void SelectMany_Selector3Arg_ArrayOfPetOwners_SelectorUsesElementIndexArgument()
         {
-            var petOwners = Read(new[] 
-                { new PetOwner { Name="Higa, Sidney", 
-                      Pets = new List<string>{ "Scruffy", "Sam" } },
-                  new PetOwner { Name="Ashkenazi, Ronen", 
-                      Pets = new List<string>{ "Walker", "Sugar" } },
-                  new PetOwner { Name="Price, Vernette", 
-                      Pets = new List<string>{ "Scratches", "Diesel" } },
-                  new PetOwner { Name="Hines, Patrick", 
-                      Pets = new List<string>{ "Dusty" } } });
-            IEnumerable<string> result =
-                petOwners.SelectMany((petOwner, index) =>
-                             petOwner.Pets.Select(pet => index + pet));
+            var petOwners = Read(new[] { 
+                  new PetOwner { Name = "Higa, Sidney",     Pets = new[] { "Scruffy", "Sam" } },
+                  new PetOwner { Name = "Ashkenazi, Ronen", Pets = new[] { "Walker", "Sugar" } },
+                  new PetOwner { Name = "Price, Vernette",  Pets = new[] { "Scratches", "Diesel" } },
+                  new PetOwner { Name = "Hines, Patrick",   Pets = new[] { "Dusty" } } });
+            
+            var result = petOwners.SelectMany((po, index) => po.Pets.Select(pet => index + pet));
+            
             result.AssertEquals("0Scruffy", "0Sam", "1Walker", "1Sugar", "2Scratches", "2Diesel", "3Dusty");
         }
 
         [Test]
         public void SelectMany_CollectionSelectorArgResultSelectorArg_ArrayOfPetOwner_ResultContainsElementForEachPetAPetOwnerHas()
         {
-            var petOwners = Read(new[]
-                { new PetOwner { Name="Higa", 
-                      Pets = new List<string>{ "Scruffy", "Sam" } },
-                  new PetOwner { Name="Ashkenazi", 
-                      Pets = new List<string>{ "Walker", "Sugar" } },
-                  new PetOwner { Name="Price", 
-                      Pets = new List<string>{ "Scratches", "Diesel" } },
-                  new PetOwner { Name="Hines", 
-                      Pets = new List<string>{ "Dusty" } } });
-            var result = petOwners.SelectMany(petOwner => petOwner.Pets, (petOwner, petName) => new { petOwner.Name, petName });
+            var petOwners = Read(new[] { 
+                  new PetOwner { Name = "Higa",      Pets = new[] { "Scruffy", "Sam" } },
+                  new PetOwner { Name = "Ashkenazi", Pets = new[] { "Walker", "Sugar" } },
+                  new PetOwner { Name = "Price",     Pets = new[] { "Scratches", "Diesel" } },
+                  new PetOwner { Name = "Hines",     Pets = new[] { "Dusty" } } });
+
+            var result = petOwners.SelectMany(po => po.Pets, (po, petName) => new { po.Name, petName });
 
             // compare result with result from Microsoft implementation
             var sb = new StringBuilder();
             foreach (var s in result)
-            {
-                sb.Append(s.ToString());
-            }
+                sb.Append(s.ToString()); // FIXME: http://groups.google.com/group/mono-olive/msg/aedf2dacf34af0e8
+
             Assert.That(sb.ToString(), Is.EqualTo("{ Name = Higa, petName = Scruffy }{ Name = Higa, petName = Sam }{ Name = Ashkenazi, petName = Walker }{ Name = Ashkenazi, petName = Sugar }{ Name = Price, petName = Scratches }{ Name = Price, petName = Diesel }{ Name = Hines, petName = Dusty }"));
         }
 
@@ -1958,7 +1979,7 @@ namespace BackLinq.Tests
         public void AsEnumerable_NonNullSource_ReturnsSourceReference()
         {
             var source = new object[0];
-            Assert.That(Enumerable.AsEnumerable(source), Is.SameAs(source));
+            Assert.That(source.AsEnumerable(), Is.SameAs(source));
         }
 
         [Test]
