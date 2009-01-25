@@ -452,7 +452,7 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Except_secondArg_ArgumentNull_ThrowsArgumentNullException()
+        public void Except_SecondArg_ArgumentNull_ThrowsArgumentNullException()
         {
             Read<object>().Except(null);
         }
