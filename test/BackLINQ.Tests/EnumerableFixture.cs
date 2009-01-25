@@ -396,7 +396,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void ElementAt_Integers_ReturnsCorrectValues()
+        public void ElementAt_Integers_ReturnsValueAtGivenIndex()
         {
             var source = new[] { 15, 2, 7 };
             Assert.That(Read(source).ElementAt(0), Is.EqualTo(15));
@@ -408,51 +408,50 @@ namespace BackLinq.Tests
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ElementAt_NegativeIndex_ThrowsArgumentOutOfRangeException()
         {
-            var source = Read(1, 2, 3);
-            source.ElementAt(-1);
+            Read<int>().ElementAt(-1);
         }
         
         [Test]
-        public void ElementAtOrDefault_Integers_ReturnsZeroIfIndexOutOfRange()
+        public void ElementAtOrDefault_IntegersWithOutOfRangeIndex_ReturnsDefault()
         {
             var source = Read(3, 6, 8);
             Assert.That(source.ElementAtOrDefault(3), Is.EqualTo(0));
         }
 
         [Test]
-        public void ElementAtOrDefault_IntArray_ReturnsCorrectValue()
+        public void ElementAtOrDefault_Integers_ReturnsValueAtGivenIndex()
         {
             var source = Read(3, 6, 9);
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(9));
         }
 
         [Test]
-        public void ElementAtOrDefault_ListOfInts_ReturnsCorrectElement()
+        public void ElementAtOrDefault_ListOptimization_ReturnsValueAtGivenIndex()
         {
-            var source = new List<int> {1, 2, 3, 4, 5, 6};
+            var source = new NonEnumerableList<int>(new[] {1, 2, 3, 4, 5, 6});
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(3));
         }
 
         [Test]
-        public void ElementAtOrDefault_NegativeIndex_ReturnsDefault()
+        public void ElementAtOrDefault_BooleansAndNegativeIndex_ReturnsDefault()
         {
-            var source = new[] {true, false, true, false};
+            var source = Read(true, false, true, false);
             Assert.That(source.ElementAtOrDefault(-3), Is.False);
         }
 
         [Test]
-        public void ElementAtOrDefault_ObjectArray_ReturnsNullIfIndexOutOfRange()
+        public void ElementAtOrDefault_ObjectsWithOutOfRangeIndex_ReturnsNull()
         {
             var source = Read(new object(), new object());
             Assert.That(source.ElementAtOrDefault(2), Is.EqualTo(null));
         }
 
         [Test]
-        public void ElementAtOrDefault_ObjectArray_ReturnsCorrectValue()
+        public void ElementAtOrDefault_Objects_ReturnsValueAtGivenIndex()
         {
-            var first = new object();
-            var source = Read(first, new object());
-            Assert.That(source.ElementAt(0), Is.EqualTo(first));
+            var second = new object();
+            var source = Read(new object(), second, new object());
+            Assert.That(source.ElementAt(1), Is.EqualTo(second));
         }
 
         [Test]
