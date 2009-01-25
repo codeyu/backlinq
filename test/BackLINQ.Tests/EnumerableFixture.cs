@@ -326,7 +326,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Count_Ints_ReturnsNumberOfElements()
+        public void Count_Integers_ReturnsNumberOfElements()
         {
             Assert.That(Read(12, 34, 56).Count(), Is.EqualTo(3));
         }
