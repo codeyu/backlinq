@@ -300,24 +300,29 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Contains_IntsContainingPassedValue_ReturnsTrue()
+        public void Contains_SequenceContainingSoughtValue_ReturnsTrue()
         {
             var source = Read(12, -15, 21);
             Assert.That(source.Contains(21), Is.True);
         }
 
         [Test]
-        public void Contains_IntsThatDoNotContainPassedValue_ReturnsFalse()
+        public void Contains_SequenceWithoutSoughtValue_ReturnsFalse()
         {
             var source = Read(-2, 4, 8);
             Assert.That(source.Contains(9), Is.False);
         }
 
         [Test]
-        public void Contains_ListOfIntsContainingPassedValue_ReturnsTrue()
+        public void Contains_CollectionOptimization_ReturnsTrueWithoutEnumerating()
         {
-            var source = Read(1, 2, 3);
-            Assert.That(source.Contains(3), Is.True);
+            var source = new NonEnumerableList<int>(new[] { 1, 2, 3 });
+            
+            // IMPORTANT! Use the non-extension invocation style below
+            //            to avoid calling List<T>.Contains instead of 
+            //            Enumerable.Contains.
+            
+            Assert.That(Enumerable.Contains(source, 3), Is.True);
         }
 
         [Test]
