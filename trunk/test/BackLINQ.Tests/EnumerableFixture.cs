@@ -472,9 +472,9 @@ namespace BackLinq.Tests
         [Test]
         public void Except_SecondArgComparerArg_ComparerIsUsed()
         {
-            var source = Read("albert", "john", "simon");
-            var argument = Read("ALBERT");
-            source.Except(argument, StringComparer.CurrentCultureIgnoreCase).AssertEquals("john", "simon");
+            var first = Read("albert", "john", "simon");
+            var second = Read("ALBERT");
+            first.Except(second, StringComparer.CurrentCultureIgnoreCase).AssertEquals("john", "simon");
         }
 
         [Test]
