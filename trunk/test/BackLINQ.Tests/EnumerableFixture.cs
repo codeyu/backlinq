@@ -339,21 +339,21 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void DefaultIfEmpty_Inegers_YieldsIntegersInOrder()
+        public void DefaultIfEmpty_Integers_YieldsIntegersInOrder()
         {
             var source = Read(12, 34, 56);
             source.DefaultIfEmpty(1).AssertEquals(12, 34, 56);
         }
 
         [Test]
-        public void DefaultIfEmpty_EmptyIntegersSource_ReturnsZero()
+        public void DefaultIfEmpty_EmptyIntegerSequence_ReturnsZero()
         {
             var source = Read(new int[0]);
             source.DefaultIfEmpty().AssertEquals(0);
         }
 
         [Test]
-        public void DefaultIfEmpty_EmptyIntegersSourceWithNonZeroDefault_ReturnNonZeroDefault()
+        public void DefaultIfEmpty_DefaultValueArg_EmptyIntegerSequenceAndNonZeroDefault_ReturnNonZeroDefault()
         {
             var source = Read(new int[0]);
             source.DefaultIfEmpty(5).AssertEquals(5);
