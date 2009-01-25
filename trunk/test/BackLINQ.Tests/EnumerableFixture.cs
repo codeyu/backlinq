@@ -292,7 +292,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Concat_TwoSequencesOfIntegers_CombinedSequenceWhereElementsOfSecondFollowFirst()
+        public void Concat_TwoSequences_CombinedSequenceWhereElementsOfSecondFollowFirst()
         {
             var first = Read(12, 34, 56);
             var second = Read(78, 910, 1112);
