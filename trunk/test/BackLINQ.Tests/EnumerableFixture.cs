@@ -684,14 +684,14 @@ namespace BackLinq.Tests
 
             var result = persons.GroupBy(
                              p => p.LastName, 
-                             (key, group) => { // BUGBUG Use the key in some way otherwise its untested!
-                                 var ages = 0;
+                             (key, group) => {
+                                 var total = 0;
                                  foreach (var p in group)
-                                     ages += p.Age;
-                                 return ages;
+                                     total += p.Age;
+                                 return key + ":" + total;
                              });
 
-            result.AssertEquals(43, 47);
+            result.AssertEquals("M\u00FCller:43", "Meier:47");
         }
 
         [Test]
@@ -720,16 +720,17 @@ namespace BackLinq.Tests
         {
             var persons = Read(Person.CreatePersons());
 
-            var result = persons.GroupBy(p => p.LastName, p => p.Age,
-                                         (key, ages) => // BUGBUG Use the key in some way otherwise its untested!
-                                         {
-                                             var total = 0;
-                                             foreach (var age in ages)
-                                                  total += age;
-                                             return total;
-                                         });
-            
-            result.AssertEquals(43, 47);
+            var result = persons.GroupBy(
+                             p => p.LastName, 
+                             p => p.Age,
+                             (key, ages) => {
+                                 var total = 0;
+                                 foreach (var age in ages)
+                                      total += age;
+                                 return key + ":" + total;
+                             });
+
+            result.AssertEquals("M\u00FCller:43", "Meier:47");
         }
 
         [Test]
@@ -737,17 +738,17 @@ namespace BackLinq.Tests
         {
             var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
             
-            var result = persons.GroupBy(p => p.LastName,
-                                         (key, values) => // BUGBUG Use the key in some way otherwise its untested!
-                                         {
-                                             var total = 0;
-                                             foreach (var person in values)
-                                                  total += person.Age;
-                                             return total;
-                                         },
-                                         StringComparer.CurrentCultureIgnoreCase);
-            
-            result.AssertEquals(43, 47);
+            var result = persons.GroupBy(
+                             p => p.LastName,
+                             (key, values) => {
+                                 var total = 0;
+                                 foreach (var person in values)
+                                      total += person.Age;
+                                 return key + ":" + total;
+                             },
+                             StringComparer.CurrentCultureIgnoreCase);
+
+            result.AssertEquals("M\u00FCller:43", "Meier:47");
         }
 
         [Test]
@@ -755,17 +756,18 @@ namespace BackLinq.Tests
         {
             var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
             
-            var result = persons.GroupBy(p => p.LastName, p => p.Age,
-                                         (key, ages) => // BUGBUG Use the key in some way otherwise its untested!
-                                         {
-                                             var total = 0;
-                                             foreach (var i in ages)
-                                                 total += i;
-                                             return total;
-                                         }, 
-                                         StringComparer.CurrentCultureIgnoreCase);
+            var result = persons.GroupBy(
+                             p => p.LastName, 
+                             p => p.Age,
+                             (key, ages) => {
+                                 var total = 0;
+                                 foreach (var age in ages)
+                                      total += age;
+                                 return key + ":" + total;
+                             },
+                             StringComparer.CurrentCultureIgnoreCase);
 
-            result.AssertEquals(43, 47);
+            result.AssertEquals("M\u00FCller:43", "Meier:47");
         }
 
         class Pet
