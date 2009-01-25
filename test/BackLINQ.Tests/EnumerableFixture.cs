@@ -492,7 +492,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void First_IntegersWithEvensPredicate_FirstEvenInteger()
+        public void First_IntegersWithPredicateForEvens_FirstEvenInteger()
         {
             var source = Read(15, 20, 25, 30);
             Assert.That(source.First(i => i % 2 == 0), Is.EqualTo(20));
@@ -500,7 +500,7 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(InvalidOperationException))]
-        public void First_IntegersWithNonMatchingPredicate_ThrowsInvalidOperationException()
+        public void First_IntegerSequenceWithNoneMatchingPredicate_ThrowsInvalidOperationException()
         {
             var source = Read(12, 34, 56, 78);
             Assert.That(source.First(i => i > 100), Is.EqualTo(0));
@@ -522,24 +522,30 @@ namespace BackLinq.Tests
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void FirstOrDefault_PredicateArg_NullAsPredicate_ThrowsArgumentNullException()
+        public void FirstOrDefault_PredicateArg_NullPredicate_ThrowsArgumentNullException()
         {
-            var source = new[] { 3, 5, 7 };
-            source.FirstOrDefault(null);
+            Read<int>().FirstOrDefault(null);
         }
 
         [Test]
-        public void FirstOrDefault_PredicateArg_ValidPredicate_ReturnsFirstMatchingItem()
+        public void FirstOrDefault_PredicateArg_NonNullPredicate_ReturnsFirstMatchingItem()
         {
             var source = Read(1, 4, 8);
             Assert.That(source.FirstOrDefault(i => i % 2 == 0), Is.EqualTo(4));
         }
 
         [Test]
-        public void FirstOrDefault_PredicateArg_NoMatchesInArray_ReturnsDefaultValueOfType()
+        public void FirstOrDefault_PredicateArg_IntegerSequenceWithNonMatchingPredicate_ReturnsDefaultValue()
         {
             var source = Read(1, 4, 6);
             Assert.That(source.FirstOrDefault(i => i > 10), Is.EqualTo(0));
+        }
+
+        [Test]
+        public void First_IntegerListOptimization_ReturnsFirstElementWithoutEnumerating()
+        {
+            var source = new NonEnumerableList<int>(new[] { 123, 456, 789 });
+            Assert.That(source.First(), Is.EqualTo(123));
         }
 
         private class Person
