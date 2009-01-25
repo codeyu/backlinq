@@ -381,7 +381,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Distinct_MixedSourceStringsWithCaseIgnoringComparer_YieldsFirstCaseOfEachDistinctStringInSourceOrder()
+        public void Distinct_MixedCaseStringsWithCaseIgnoringComparer_YieldsFirstCaseOfEachDistinctStringInSourceOrder()
         {
             var source = Read("Foo Bar BAZ BaR baz FOo".Split());
             source.Distinct(StringComparer.InvariantCultureIgnoreCase).AssertEquals("Foo", "Bar", "BAZ");
