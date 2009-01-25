@@ -553,15 +553,26 @@ namespace BackLinq.Tests
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public int Age { get; set; }
+
             public static Person[] CreatePersons()
             {
-                return new[]
-                           {
-                               new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                               new Person {LastName = "M\u00FCller", FirstName = "Herbert", Age = 22},
-                               new Person {LastName = "Meier", FirstName = "Hubert", Age = 23},
-                               new Person {LastName = "Meier", FirstName = "Isidor", Age = 24}   
-                           };
+                return new[] 
+                {
+                    new Person { LastName = "M\u00FCller", FirstName = "Peter",   Age = 21 },
+                    new Person { LastName = "M\u00FCller", FirstName = "Herbert", Age = 22 },
+                    new Person { LastName = "Meier",       FirstName = "Hubert",  Age = 23 },
+                    new Person { LastName = "Meier",       FirstName = "Isidor",  Age = 24 }   
+                };
+            }
+
+            public static Person[] CreatePersonsWithNamesUsingMixedCase()
+            {
+                var persons = CreatePersons();
+                var herbert = persons[1];
+                herbert.LastName = herbert.LastName.ToLower();
+                var isidor = persons[3];
+                isidor.LastName = isidor.LastName.ToLower(); 
+                return persons;
             }
         }
 
@@ -578,55 +589,46 @@ namespace BackLinq.Tests
             var persons = Read(Person.CreatePersons());
             var result = new Reader<IGrouping<string, Person>>(persons.GroupBy(person => person.LastName));
 
-            var mueller = result.Read();
-            Assert.That(mueller.Key, Is.EqualTo("M\u00FCller"));
-            Assert.That(Array.ConvertAll(ToArray(mueller), p => p.FirstName),
-                        Is.EqualTo(new[] { "Peter", "Herbert" }));
+            var group1 = result.Read();
+            Assert.That(group1.Key, Is.EqualTo("M\u00FCller"));
+            var muellers = new Reader<Person>(group1);
+            Assert.That(muellers.Read().FirstName, Is.EqualTo("Peter"));
+            Assert.That(muellers.Read().FirstName, Is.EqualTo("Herbert"));
 
-            var meier = result.Read();
-            Assert.That(meier.Key, Is.EqualTo("Meier"));
-            Assert.That(Array.ConvertAll(ToArray(meier), p => p.FirstName),
-                        Is.EqualTo(new[] { "Hubert", "Isidor" }));
+            var group2 = result.Read();
+            Assert.That(group2.Key, Is.EqualTo("Meier"));
+            var meiers = new Reader<Person>(group2);
+            Assert.That(meiers.Read().FirstName, Is.EqualTo("Hubert"));
+            Assert.That(meiers.Read().FirstName, Is.EqualTo("Isidor"));
 
             result.AssertEnded();
         }
 
-        private static T[] ToArray<T>(IEnumerable<T> source)
-        {
-            return new List<T>(source).ToArray();
-        }
-
         [Test]
-        // TODO: make better
         public void GroupBy_KeySelectorArg_ValidArguments_CorrectCaseSensitiveGrouping()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter"},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert"},
-                new Person {LastName = "Meier", FirstName = "Hubert"},
-                new Person {LastName = "meier", FirstName = "Isidor"}
-            });
+            var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
             
             var result = persons.GroupBy(person => person.LastName);
             
             var e = result.GetEnumerator();
+            Func<IGrouping<string, Person>, Person> first = g => new Reader<Person>(g).Read();
             
             e.MoveNext();
             Assert.That(e.Current.Key, Is.EqualTo("M\u00FCller"));
-            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
+            Assert.That(first(e.Current).FirstName, Is.EqualTo("Peter"));
             
             e.MoveNext();
             Assert.That(e.Current.Key, Is.EqualTo("m\u00FCller"));
-            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Herbert"));
+            Assert.That(first(e.Current).FirstName, Is.EqualTo("Herbert"));
             
             e.MoveNext();
             Assert.That(e.Current.Key, Is.EqualTo("Meier"));
-            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
+            Assert.That(first(e.Current).FirstName, Is.EqualTo("Hubert"));
             
             e.MoveNext();
             Assert.That(e.Current.Key, Is.EqualTo("meier"));
-            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Isidor"));
+            Assert.That(first(e.Current).FirstName, Is.EqualTo("Isidor"));
 
             Assert.That(e.MoveNext(), Is.False);
         }
@@ -634,48 +636,45 @@ namespace BackLinq.Tests
         [Test]
         public void GroupBy_KeySelectorArgComparerArg_KeysThatDifferInCasingNonCaseSensitiveStringComparer_CorrectGrouping()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter"},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert"},
-                new Person {LastName = "Meier", FirstName = "Hubert"},
-                new Person {LastName = "meier", FirstName = "Isidor"}
-            });
+            var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
             
-            var result = persons.GroupBy(person => person.LastName, StringComparer.InvariantCultureIgnoreCase);
-            
-            var e = result.GetEnumerator();
-            
-            e.MoveNext();
-            Assert.That(e.Current.Key, Is.EqualTo("M\u00FCller"));
-            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Peter"));
-            Assert.That(e.Current.ElementAt(1).FirstName, Is.EqualTo("Herbert"));
+            var result = new Reader<IGrouping<string, Person>>(
+                persons.GroupBy(person => person.LastName, StringComparer.CurrentCultureIgnoreCase));
 
-            e.MoveNext();
-            Assert.That(e.Current.Key, Is.EqualTo("Meier"));
-            Assert.That(e.Current.ElementAt(0).FirstName, Is.EqualTo("Hubert"));
-            Assert.That(e.Current.ElementAt(1).FirstName, Is.EqualTo("Isidor"));
+            var group1 = result.Read();
+            Assert.That(group1.Key, Is.EqualTo("M\u00FCller"));
+            var muellers = new Reader<Person>(group1);
+            Assert.That(muellers.Read().FirstName, Is.EqualTo("Peter"));
+            Assert.That(muellers.Read().FirstName, Is.EqualTo("Herbert"));
 
-            Assert.That(e.MoveNext(), Is.False);
+            var group2 = result.Read();
+            Assert.That(group2.Key, Is.EqualTo("Meier"));
+            var meiers = new Reader<Person>(group2);
+            Assert.That(meiers.Read().FirstName, Is.EqualTo("Hubert"));
+            Assert.That(meiers.Read().FirstName, Is.EqualTo("Isidor"));
+
+            result.AssertEnded();
         }
 
         [Test]
         public void GroupBy_KeySelectorArgElementSelectorArg_ValidArguments_CorrectGroupingAndProjection()
         {
             var persons = Read(Person.CreatePersons());
-            var result = persons.GroupBy(person => person.LastName, person => person.Age);
-            
-            var e = result.GetEnumerator();
-            
-            e.MoveNext();
-            Assert.That(e.Current.Key, Is.EqualTo("M\u00FCller"));
-            Assert.That(e.Current.ElementAt(0), Is.EqualTo(21));
-            Assert.That(e.Current.ElementAt(1), Is.EqualTo(22));
 
-            e.MoveNext();
-            Assert.That(e.Current.Key, Is.EqualTo("Meier"));
-            Assert.That(e.Current.ElementAt(0), Is.EqualTo(23));
-            Assert.That(e.Current.ElementAt(1), Is.EqualTo(24));
+            var result = new Reader<IGrouping<string, int>>(
+                persons.GroupBy(person => person.LastName, person => person.Age));
+            
+            var group1 = result.Read();
+            Assert.That(group1.Key, Is.EqualTo("M\u00FCller"));
+            var muellers = new Reader<int>(group1);
+            Assert.That(muellers.Read(), Is.EqualTo(21));
+            Assert.That(muellers.Read(), Is.EqualTo(22));
+
+            var group2 = result.Read();
+            Assert.That(group2.Key, Is.EqualTo("Meier"));
+            var meiers = new Reader<int>(group2);
+            Assert.That(meiers.Read(), Is.EqualTo(23));
+            Assert.That(meiers.Read(), Is.EqualTo(24));
         }
 
         [Test]
@@ -698,28 +697,22 @@ namespace BackLinq.Tests
         [Test]
         public void GroupByKey_KeySelectorArgElementSelectorArgComparerArg_ValidArguments_CorrectGroupingAndProcessing()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
-            });
+            var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
 
-            var result = persons.GroupBy(p => p.LastName, p => p.Age,
-                                         StringComparer.CurrentCultureIgnoreCase);
-            
-            var e = result.GetEnumerator();
-            
-            e.MoveNext();
-            Assert.That(e.Current.ElementAt(0), Is.EqualTo(21)); // BUGBUG Tests should not 
-            Assert.That(e.Current.ElementAt(1), Is.EqualTo(22)); // use another LINQ operator
-                                                                 // other than one it is testing!
-            e.MoveNext();
-            Assert.That(e.Current.ElementAt(0), Is.EqualTo(23));
-            Assert.That(e.Current.ElementAt(1), Is.EqualTo(24));
-            
-            Assert.That(e.MoveNext(), Is.False);
+            var result = new Reader<IGrouping<string, int>>(
+                persons.GroupBy(p => p.LastName, p => p.Age, StringComparer.CurrentCultureIgnoreCase));
+
+            var group1 = result.Read();
+            Assert.That(group1.Key, Is.EqualTo("M\u00FCller"));
+            var muellers = new Reader<int>(group1);
+            Assert.That(muellers.Read(), Is.EqualTo(21));
+            Assert.That(muellers.Read(), Is.EqualTo(22));
+
+            var group2 = result.Read();
+            Assert.That(group2.Key, Is.EqualTo("Meier"));
+            var meiers = new Reader<int>(group2);
+            Assert.That(meiers.Read(), Is.EqualTo(23));
+            Assert.That(meiers.Read(), Is.EqualTo(24));
         }
 
         [Test]
@@ -742,13 +735,7 @@ namespace BackLinq.Tests
         [Test]
         public void GroupBy_KeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
-            });
+            var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
             
             var result = persons.GroupBy(p => p.LastName,
                                          (key, values) => // BUGBUG Use the key in some way otherwise its untested!
@@ -766,13 +753,7 @@ namespace BackLinq.Tests
         [Test]
         public void GroupBy_KeySelectorArgElementSelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndTransforming()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
-            });
+            var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
             
             var result = persons.GroupBy(p => p.LastName, p => p.Age,
                                          (key, ages) => // BUGBUG Use the key in some way otherwise its untested!
