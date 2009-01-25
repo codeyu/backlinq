@@ -458,11 +458,11 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Except_SecondArg_ValidArgument_ReturnsCorrectEnumerable() // TODO Improve test name
+        public void Except_SecondArg_ValidArgument_ReturnsDifference()
         {
-            var source = Read(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-            var argument = Read(1, 3, 5, 7, 9);
-            source.Except(argument).AssertEquals(2, 4, 6, 8, 10);
+            var first = Read(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+            var second = Read(1, 3, 5, 7, 9);
+            first.Except(second).AssertEquals(2, 4, 6, 8, 10);
         }
 
         [Test]
