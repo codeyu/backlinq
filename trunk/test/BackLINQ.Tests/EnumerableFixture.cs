@@ -822,15 +822,6 @@ namespace BackLinq.Tests
                 Assert.That(petEnumerator.MoveNext(), Is.False);
 
             Assert.That(e.MoveNext(), Is.False);
-
-            //foreach (var owner in result) {
-            //    Debug.WriteLine(owner.OwnerName);
-            //    Debug.Indent();
-            //    foreach (var petName in owner.Pets) {
-            //        Debug.WriteLine("    " + petName);
-            //    }
-            //    Debug.Unindent();
-            //}
         }
 
         [Test]
