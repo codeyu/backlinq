@@ -195,7 +195,7 @@ namespace BackLinq.Tests
         [Test]
         public void Any_PredicateArg_NonEmptySource_ReturnsTrue()
         {
-            Assert.That(Read(100).Any(i => i > 0), Is.True);
+            Assert.That(Read(1, 2, 3, 4, 5).Any(i => i > 2), Is.True);
         }
 
         [Test]
