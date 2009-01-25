@@ -154,7 +154,7 @@ namespace BackLinq.Tests
         public void All_SomeSourceElementsNotSatifyingPredicate_ReturnsFalse()
         {
             var source = Read(-100, -1, 0, 1, 100);
-            Assert.That(source.All(i => i >= 0), Is.False);
+            Assert.That(source.All(i => i < 0), Is.False);
         }
 
         [Test]
