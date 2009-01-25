@@ -1001,10 +1001,6 @@ namespace BackLinq.Tests
             Assert.That(e.Current.Pet, Is.EqualTo("Daisy"));
 
             Assert.That(e.MoveNext(), Is.False);
-
-            //foreach (var i in result) {
-            //    Debug.WriteLine(String.Format("Owner = {0}; Pet = {1}", i.Owner, i.Pet));
-            //}
         }
 
         [Test]
