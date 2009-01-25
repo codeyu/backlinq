@@ -126,13 +126,8 @@ namespace BackLinq.Tests
         public void Cast_InvalidSource_ThrowsInvalidCastException()
         {
             var source = Read(1000, "hello", new object());
-            var target = source.Cast<byte>();
-            // do something with the results so Cast will really be executed (deferred execution)
-            var sb = new StringBuilder();
-            foreach (var b in target)
-            {
-                sb.Append(b.ToString());
-            }
+            var e = source.Cast<byte>().GetEnumerator();
+            e.MoveNext(); // Do something so Cast will really run (deferred execution)
         }
 
         [Test]
