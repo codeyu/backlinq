@@ -205,18 +205,18 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Average_NullableLongs_ReturnsAverage()
+        public void Average_NullableLongsWithSomeNull_ReturnsAverage()
         {
-            Assert.That(Read<long?>(12L, 34L, null, 56L).Average(), Is.EqualTo(34.0));
+            Assert.That(Read<long?>(12L, null, 34L, null, 56L).Average(), Is.EqualTo(34.0));
         }
 
         [Test]
-        public void Average_NullableInts_ReturnsAverage() {
-            Assert.That(Read<int?>(12, 34, null, 56).Average(), Is.EqualTo(34.0));
+        public void Average_NullableIntegersWithSomeNull_ReturnsAverage() {
+            Assert.That(Read<int?>(12, null, 34, null, 56).Average(), Is.EqualTo(34.0));
         }
 
         [Test]
-        public void Average_Decimals_ReturnsToleratableAverage()
+        public void Average_Decimals_ReturnsAverage()
         {
             var source = Read(-10000m, 2.0001m, 50m);
             Assert.That(source.Average(), Is.EqualTo(-3315.999966).Within(0.00001));
@@ -257,23 +257,23 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Average_ArrayOfNullableFloats_ReturnsAverage() 
+        public void Average_NullableFloatsWithSomeNulls_ReturnsAverage() 
         {
-            var source = Read<float?>(-3.45F, 9.001F, 10000.01F, null);
+            var source = Read<float?>(-3.45F, null, 9.001F, null, 10000.01F);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
         [Test]
-        public void Average_NullableDoubles_ReturnsAverage()
+        public void Average_NullableDoublesWithSomeNulls_ReturnsAverage()
         {
-            var source = Read<double?>(-3.45, 9.001, 10000.01, null);
+            var source = Read<double?>(-3.45, null, 9.001, null, 10000.01);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
         [Test]
-        public void Average_NullableDecimals_ReturnsAverage()
+        public void Average_NullableDecimalsWithSomeNulls_ReturnsAverage()
         {
-            var source = Read<decimal?>(-3.45m, 9.001m, 10000.01m, null);
+            var source = Read<decimal?>(-3.45m, null, 9.001m, null, 10000.01m);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
         }
 
