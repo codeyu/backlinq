@@ -1319,16 +1319,6 @@ namespace BackLinq.Tests
         {
             Read<object>().OrderBy<object, object>(e => { throw new NotImplementedException(); }).ThenBy<object, object>(null);
         }
-        /// <summary>
-        /// To sort ints in descending order.
-        /// </summary>
-        class ReverseComparer : IComparer<int>
-        {
-            public int Compare(int x, int y)
-            {
-                return y.CompareTo(x);
-            }
-        }
 
         [Test]
         public void ThenByDescending_KeySelectorArgComparerArg_StringArray_CorrectOrdering()
@@ -1338,11 +1328,19 @@ namespace BackLinq.Tests
             result.AssertEquals("-BA", "AA", "-BB", "AB", "-BC", "AC");
         }
 
+        class ReverseComparer<T> : IComparer<T> where T : IComparable<T>
+        {
+            public int Compare(T x, T y)
+            {
+                return -1 * x.CompareTo(y);
+            }
+        }
+
         [Test]
         public void OrderBy_KeySelectorArgComparerArg_ArrayOfPersonsAndReversecomparer_PersonsAreOrderedByAgeUsingReversecomparer()
         {
             var persons = Read(Person.CreatePersons());
-            var result = persons.OrderBy(p => p.Age, new ReverseComparer());
+            var result = persons.OrderBy(p => p.Age, new ReverseComparer<int>());
             var age = 25;
             foreach (var person in result)
             {
