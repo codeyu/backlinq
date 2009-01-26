@@ -1872,34 +1872,47 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void ToLookup_KeySelectorArg_Strings_ReturnsLookupArrayWithStringLengthAsKey()
+        public void ToLookup_KeySelectorArg_Strings_StringsByLength()
         {
             var source = Read("eagle", "dog", "cat", "bird", "camel");
-            var result = source.ToLookup(s => s.Length);
+            var lookup = source.ToLookup(s => s.Length);
 
-            result[3].AssertEquals("dog", "cat");
-            result[4].AssertEquals("bird");
-            result[5].AssertEquals("eagle", "camel");
+            Assert.That(lookup.Count, Is.EqualTo(3));
+
+            Assert.That(lookup.Contains(3), Is.True);
+            lookup[3].AssertEquals("dog", "cat");
+
+            Assert.That(lookup.Contains(4), Is.True);
+            lookup[4].AssertEquals("bird");
+            
+            Assert.That(lookup.Contains(5), Is.True);
+            lookup[5].AssertEquals("eagle", "camel");
         }
 
         [Test]
-        public void ToLookup_KeySelectorArgElementSelectorArg_Strings_ElementSelectorIsUsed()
+        public void ToLookup_KeySelectorArgElementSelectorArg_Strings_ProjecetedStringsByLength()
         {
             var source = Read("eagle", "dog", "cat", "bird", "camel");
-            var result = source.ToLookup(s => s.Length, str => str.ToCharArray().Reverse());
-            var enumerator = result[3].GetEnumerator();
-            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("dog".ToCharArray().Reverse().ToString()));
-            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("cat".ToCharArray().Reverse().ToString()));
-            Assert.That(enumerator.MoveNext(), Is.False);
+            var lookup = source.ToLookup(s => s.Length, str => str.ToUpperInvariant());
 
-            enumerator = result[4].GetEnumerator();
-            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("bird".ToCharArray().Reverse().ToString()));
-            Assert.That(enumerator.MoveNext(), Is.False);
+            Assert.That(lookup.Count, Is.EqualTo(3));
 
-            enumerator = result[5].GetEnumerator();
-            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("eagle".ToCharArray().Reverse().ToString()));
-            enumerator.MoveNext(); Assert.That(enumerator.Current.ToString(), Is.EqualTo("camel".ToCharArray().Reverse().ToString()));
-            Assert.That(enumerator.MoveNext(), Is.False);
+            Assert.That(lookup.Contains(3), Is.True);
+            var e = lookup[3].GetEnumerator();
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo("DOG"));
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo("CAT"));
+            Assert.That(e.MoveNext(), Is.False);
+
+            Assert.That(lookup.Contains(4), Is.True);
+            e = lookup[4].GetEnumerator();
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo("BIRD"));
+            Assert.That(e.MoveNext(), Is.False);
+
+            Assert.That(lookup.Contains(5), Is.True);
+            e = lookup[5].GetEnumerator();
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo("EAGLE"));
+            e.MoveNext(); Assert.That(e.Current, Is.EqualTo("CAMEL"));
+            Assert.That(e.MoveNext(), Is.False);
         }
 
         [Test]
