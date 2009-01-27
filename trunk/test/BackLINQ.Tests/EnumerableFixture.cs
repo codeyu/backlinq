@@ -695,7 +695,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void GroupByKey_KeySelectorArgElementSelectorArgComparerArg_ValidArguments_CorrectGroupingAndProcessing()
+        public void GroupBy_KeySelectorArgElementSelectorArgComparerArg_ValidArguments_CorrectGroupingAndProcessing()
         {
             var persons = Read(Person.CreatePersonsWithNamesUsingMixedCase());
 
