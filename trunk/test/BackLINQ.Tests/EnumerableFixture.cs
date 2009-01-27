@@ -282,13 +282,13 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Average_EmptyArrayOfNullableIntegers_ReturnsNull()
+        public void Average_EmptyNullableIntegerSource_ReturnsNull()
         {
             Assert.That(Read<int?>().Average(), Is.Null);
         }
 
         [Test]
-        public void Average_Selector_ArrayOfPersons_AverageAge()
+        public void Average_SelectorArg_ArrayOfPersons_AverageAge()
         {
             var source = Read(Person.CreatePersons());
             Assert.That(source.Average(p => p.Age).Equals(22.5));
@@ -302,7 +302,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Average_ArrayOfDoubles_ReturnsAverage() 
+        public void Average_Doubles_ReturnsAverage() 
         {
             var source = Read(-3.45, 9.001, 10000.01);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
@@ -323,7 +323,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Average_ArrayOfFloats_ReturnsAverage()
+        public void Average_Floats_ReturnsAverage()
         {
             var source = Read(-3.45F, 9.001F, 10000.01F);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
