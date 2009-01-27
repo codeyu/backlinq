@@ -528,7 +528,14 @@ namespace BackLinq.Tests
         {
             Read<int>().ElementAt(-1);
         }
-        
+
+        [Test]
+        public void ElementAt_ListOptimization_ReturnsValueAtGivenIndex()
+        {
+            var source = new NonEnumerableList<int>(new[] { 1, 2, 3, 4, 5, 6 });
+            Assert.That(source.ElementAt(2), Is.EqualTo(3));
+        }
+
         [Test]
         public void ElementAtOrDefault_IntegersWithOutOfRangeIndex_ReturnsDefault()
         {
