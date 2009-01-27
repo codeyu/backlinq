@@ -288,10 +288,9 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Average_SelectorArg_ArrayOfPersons_AverageAge()
+        public void Average_SelectorArg_Integers_ReturnsAverage()
         {
-            var source = Read(Person.CreatePersons());
-            Assert.That(source.Average(p => p.Age).Equals(22.5));
+            Assert.That(Read(21, 22, 23, 24).Average(n => n * 2).Equals(45));
         }
 
         [Test]
