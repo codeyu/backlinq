@@ -869,7 +869,7 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Intersect_StringSourcesWithMixedCasingAndCaseInsensitiveComparer_YieldsCommonSetFromFirstSource()
+        public void Intersect_MixedStringsAndCaseInsensitiveComparer_YieldsCommonSetFromFirstSource()
         {
             var first = Read("Heinrich", "Hubert", "Thomas");
             var second = Read("Heinrich", "hubert", "Joseph");
