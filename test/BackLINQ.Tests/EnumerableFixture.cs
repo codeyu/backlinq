@@ -779,123 +779,78 @@ namespace BackLinq.Tests
         [Test]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_ValidArguments_CorrectGroupingAndJoining()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
-            });
+            var persons = Read(Person.CreatePersons());
 
-            var pets = Read(new[]
-            {
-                new Pet {Name = "Barley", Owner = "Peter"},
-                new Pet {Name = "Boots", Owner = "Herbert"},
-                new Pet {Name = "Whiskers", Owner = "Herbert"},
-                new Pet {Name = "Daisy", Owner = "Isidor"}
-            });
+            var barley   = new Pet { Name = "Barley",   Owner = "Peter"   };
+            var boots    = new Pet { Name = "Boots",    Owner = "Herbert" };
+            var whiskers = new Pet { Name = "Whiskers", Owner = "Herbert" };
+            var daisy    = new Pet { Name = "Daisy",    Owner = "Isidor"  };
+
+            var pets = Read(barley, boots, whiskers, daisy);
 
             var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
-                              (person, petCollection) =>
-                              new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) });
+                              (person, ppets) => new { Owner = person, Pets = ppets });
 
-            var e = result.GetEnumerator();
+            using (var e = result.GetEnumerator())
+            {
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Peter"));
+                e.Current.Pets.AssertThat(Is.SameAs, barley);
 
-            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Peter"));            
-                var petEnumerator = e.Current.Pets.GetEnumerator();
-                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Barley"));
-                Assert.That(petEnumerator.MoveNext(), Is.False);
-            
-            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Herbert"));            
-                petEnumerator = e.Current.Pets.GetEnumerator();
-                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Boots"));
-                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Whiskers"));
-                Assert.That(petEnumerator.MoveNext(), Is.False);
-            
-            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Hubert"));
-                petEnumerator = e.Current.Pets.GetEnumerator();
-                Assert.That(petEnumerator.MoveNext(), Is.False);
-            
-            e.MoveNext(); Assert.That(e.Current.OwnerName, Is.EqualTo("Isidor"));
-                petEnumerator = e.Current.Pets.GetEnumerator();
-                petEnumerator.MoveNext(); Assert.That(petEnumerator.Current, Is.EqualTo("Daisy"));
-                Assert.That(petEnumerator.MoveNext(), Is.False);
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Herbert"));
+                e.Current.Pets.AssertThat(Is.SameAs, boots, whiskers);
 
-            Assert.That(e.MoveNext(), Is.False);
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Hubert"));
+                e.Current.Pets.AssertThat(Is.SameAs); // empty
+
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Isidor"));
+                e.Current.Pets.AssertThat(Is.SameAs, daisy);
+
+                Assert.That(e.MoveNext(), Is.False);
+            }
         }
 
         [Test]
         public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArgComparerArg_ValidArguments_CorrectGroupingAndJoining()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
-            });
+            var persons = Read(Person.CreatePersons());
 
-            var pets = Read(new[]
-            {
-                new Pet {Name = "Barley", Owner = "Peter"},
-                new Pet {Name = "Boots", Owner = "Herbert"},
-                new Pet {Name = "Whiskers", Owner = "herbert"}, // This pet is not associated to "Herbert"
-                new Pet {Name = "Daisy", Owner = "Isidor"}
-            });
+            var barley   = new Pet { Name = "Barley",   Owner = "Peter"   };
+            var boots    = new Pet { Name = "Boots",    Owner = "Herbert" };
+            var whiskers = new Pet { Name = "Whiskers", Owner = "HeRbErT" };
+            var daisy    = new Pet { Name = "Daisy",    Owner = "Isidor"  };
+
+            var pets = Read(barley, boots, whiskers, daisy);
 
             var result = persons.GroupJoin(pets, person => person.FirstName, pet => pet.Owner,
-                              (person, petCollection) =>
-                              new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) },
+                              (person, ppets) => new { Owner = person, Pets = ppets },
                               StringComparer.CurrentCultureIgnoreCase);
 
-            var p = result.GetEnumerator();
-            
-            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Peter"));
-                var pp = p.Current.Pets.GetEnumerator();
-                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Barley"));
-                Assert.That(pp.MoveNext(), Is.False);
-            
-            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Herbert"));
-                pp = p.Current.Pets.GetEnumerator();
-                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Boots"));
-                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Whiskers"));
-                Assert.That(pp.MoveNext(), Is.False);
+            using (var e = result.GetEnumerator())
+            {
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Peter"));
+                e.Current.Pets.AssertThat(Is.SameAs, barley);
 
-            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Hubert"));
-                pp = p.Current.Pets.GetEnumerator();
-                Assert.That(pp.MoveNext(), Is.False);
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Herbert"));
+                e.Current.Pets.AssertThat(Is.SameAs, boots, whiskers);
 
-            p.MoveNext(); Assert.That(p.Current.OwnerName, Is.EqualTo("Isidor"));
-                pp = p.Current.Pets.GetEnumerator();
-                pp.MoveNext(); Assert.That(pp.Current, Is.EqualTo("Daisy"));
-                Assert.That(pp.MoveNext(), Is.False);
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Hubert"));
+                e.Current.Pets.AssertThat(Is.SameAs); // empty
 
-            Assert.That(p.MoveNext(), Is.False);
+                e.MoveNext(); Assert.That(e.Current.Owner.FirstName, Is.EqualTo("Isidor"));
+                e.Current.Pets.AssertThat(Is.SameAs, daisy);
+
+                Assert.That(e.MoveNext(), Is.False);
+            }
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_PassNullAsOuterKeySelector_ThrowsArgumentNullException()
+        public void GroupJoin_InnerArgOuterKeySelectorArgInnerKeySelectorArgResultSelectorArg_NullOuterKeySelector_ThrowsArgumentNullException()
         {
-            var persons = Read(new[]
-            {
-                new Person {LastName = "M\u00FCller", FirstName = "Peter", Age = 21},
-                new Person {LastName = "m\u00FCller", FirstName = "Herbert", Age = 22},
-                new Person {LastName = "Meier", FirstName = "Hubert", Age= 23},
-                new Person {LastName = "meier", FirstName = "Isidor", Age = 24}
-            });
-
-            var pets = Read(new[]
-            {
-                new Pet {Name = "Barley", Owner = "Peter"},
-                new Pet {Name = "Boots", Owner = "Herbert"},
-                new Pet {Name = "Whiskers", Owner = "Herbert"},
-                new Pet {Name = "Daisy", Owner = "Isidor"}
-            });
-
-            persons.GroupJoin(pets, null, pet => pet.Owner,
-                              (person, petCollection) =>
-                              new { OwnerName = person.FirstName, Pets = petCollection.Select(pet => pet.Name) });
+            new object[0].GroupJoin<object, object, object, object>(
+                new object[0], null,
+                delegate { throw new NotImplementedException(); },
+                delegate { throw new NotImplementedException(); });
         }
 
         [Test]
