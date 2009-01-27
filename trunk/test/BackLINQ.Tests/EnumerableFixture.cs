@@ -1550,14 +1550,13 @@ namespace BackLinq.Tests
                   new PetOwner { Name = "Price",     Pets = new[] { "Scratches", "Diesel" } },
                   new PetOwner { Name = "Hines",     Pets = new[] { "Dusty" } } });
 
-            var result = petOwners.SelectMany(po => po.Pets, (po, petName) => new { po.Name, petName });
+            var result = petOwners.SelectMany(po => po.Pets, (po, pet) => po.Name + "+" + pet);
 
-            // compare result with result from Microsoft implementation
-            var sb = new StringBuilder();
-            foreach (var s in result)
-                sb.Append(s.ToString()); // FIXME: http://groups.google.com/group/mono-olive/msg/aedf2dacf34af0e8
-
-            Assert.That(sb.ToString(), Is.EqualTo("{ Name = Higa, petName = Scruffy }{ Name = Higa, petName = Sam }{ Name = Ashkenazi, petName = Walker }{ Name = Ashkenazi, petName = Sugar }{ Name = Price, petName = Scratches }{ Name = Price, petName = Diesel }{ Name = Hines, petName = Dusty }"));
+            result.AssertEquals(
+                "Higa+Scruffy", "Higa+Sam", 
+                "Ashkenazi+Walker", "Ashkenazi+Sugar", 
+                "Price+Scratches", "Price+Diesel", 
+                "Hines+Dusty");
         }
 
         [Test]
