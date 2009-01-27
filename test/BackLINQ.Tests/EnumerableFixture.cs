@@ -1289,10 +1289,16 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Min_Chars_ReturnsMinimumBySortOrder()
+        {
+            Assert.That("qwertzuioplkjhgfdsayxcvbnm".ToCharArray().Min(), Is.EqualTo('a'));
+        }
+
+        [Test]
         public void Min_StringsWithLengthSelector_ReturnsMinimumNonNullStringLength()
         {
             var strings = Read("five", "four", null, "three", null, "two", "one", "zero");
-            Assert.That(strings.Min(s => s != null ? s.Length : (int?) null), Is.EqualTo(3));
+            Assert.That(strings.Min(s => s != null ? s.Length : (int?)null), Is.EqualTo(3));
         }
 
         [Test]
