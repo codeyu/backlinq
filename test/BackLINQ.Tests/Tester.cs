@@ -29,8 +29,10 @@ namespace BackLinq.Tests
 {
     #region Imports
 
+    using System;
     using System.Collections.Generic;
     using NUnit.Framework;
+    using NUnit.Framework.Constraints;
     using NUnit.Framework.SyntaxHelpers;
 
     #endregion
@@ -39,12 +41,17 @@ namespace BackLinq.Tests
     {
         public static void AssertEquals<T>(this IEnumerable<T> actuals, params T[] expectations)
         {
+            actuals.AssertThat(a => Is.EqualTo(a), expectations);
+        }
+
+        public static void AssertThat<T>(this IEnumerable<T> actuals, Func<T, Constraint> constrainer, params T[] expectations)
+        {
             using (var e = actuals.GetEnumerator())
             {
                 foreach (var expected in expectations)
                 {
                     e.MoveNext();
-                    Assert.That(e.Current, Is.EqualTo(expected));
+                    Assert.That(e.Current, constrainer(expected));
                 }
 
                 Assert.That(e.MoveNext(), Is.False);
