@@ -199,9 +199,28 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Average_EmptyLongSource_ThrowsInvalidOperationException()
+        {
+            Read<long>().Average();
+        }
+
+        [Test]
         public void Average_Longs_ReturnsAverage()
         {
             Assert.That(Read(25L, 75L).Average(), Is.EqualTo(50));
+        }
+
+        [Test]
+        public void Average_SelectorArg_Longs_ReturnsAverage()
+        {
+            Assert.That(Read(25L, 75L).Average(n => n * 2L), Is.EqualTo(100));
+        }
+
+        [Test]
+        public void Average_EmptyNullableLongSource_Null()
+        {
+            Assert.That(Read<long?>().Average(), Is.Null);
         }
 
         [Test]
@@ -211,8 +230,34 @@ namespace BackLinq.Tests
         }
 
         [Test]
-        public void Average_NullableIntegersWithSomeNull_ReturnsAverage() {
+        public void Average_SelectorArg_NullableLongsWithSomeNull_ReturnsAverage()
+        {
+            Assert.That(Read<long?>(12L, null, 34L, null, 56L).Average(n => n * 2L), Is.EqualTo(68.0));
+        }
+
+        [Test]
+        public void Average_EmptyNullableIntegerSource_Null()
+        {
+            Assert.That(Read<int?>().Average(), Is.Null);
+        }
+
+        [Test]
+        public void Average_NullableIntegersWithSomeNull_ReturnsAverage() 
+        {
             Assert.That(Read<int?>(12, null, 34, null, 56).Average(), Is.EqualTo(34.0));
+        }
+
+        [Test]
+        public void Average_SelectorArg_NullableIntegersWithSomeNull_ReturnsAverage()
+        {
+            Assert.That(Read<int?>(12, null, 34, null, 56).Average(n => n * 2), Is.EqualTo(68.0));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Average_EmptyDecimalSource_ThrowsInvalidOperationException()
+        {
+            Read<decimal>().Average();
         }
 
         [Test]
@@ -220,6 +265,13 @@ namespace BackLinq.Tests
         {
             var source = Read(-10000m, 2.0001m, 50m);
             Assert.That(source.Average(), Is.EqualTo(-3315.999966).Within(0.00001));
+        }
+
+        [Test]
+        public void Average_SelectorArg_Decimals_ReturnsAverage()
+        {
+            var source = Read(-10000m, 2.0001m, 50m);
+            Assert.That(source.Average(n => n * 2m), Is.EqualTo(-6631.999933).Within(0.00001));
         }
 
         [Test]
@@ -243,10 +295,31 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Average_EmptyDoubleSource_ThrowsInvalidOperationException()
+        {
+            Read<double>().Average();
+        }
+
+        [Test]
         public void Average_ArrayOfDoubles_ReturnsAverage() 
         {
             var source = Read(-3.45, 9.001, 10000.01);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
+        }
+
+        [Test]
+        public void Average_SelectorArg_Doubles_ReturnsAverage()
+        {
+            var source = Read(-3.45, 9.001, 10000.01);
+            Assert.That(source.Average(n => n * 2.0), Is.EqualTo(6670.374).Within(0.01));
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Average_EmptyFloatSource_ThrowsInvalidOperationException()
+        {
+            Read<float>().Average();
         }
 
         [Test]
@@ -257,10 +330,36 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Average_SelectorArg_Floats_ReturnsAverage()
+        {
+            var source = Read(-3.45F, 9.001F, 10000.01F);
+            Assert.That(source.Average(n => n * 2F), Is.EqualTo(6670.37354).Within(0.01));
+        }
+
+        [Test]
+        public void Average_EmptyNullableFloatSource_Null()
+        {
+            Assert.That(Read<float?>().Average(), Is.Null);
+        }
+
+        [Test]
         public void Average_NullableFloatsWithSomeNulls_ReturnsAverage() 
         {
             var source = Read<float?>(-3.45F, null, 9.001F, null, 10000.01F);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
+        }
+
+        [Test]
+        public void Average_SelectorArg_NullableFloatsWithSomeNulls_ReturnsAverage()
+        {
+            var source = Read<float?>(-3.45F, null, 9.001F, null, 10000.01F);
+            Assert.That(source.Average(n => n * 2F), Is.EqualTo(6670.37354).Within(0.01));
+        }
+
+        [Test]
+        public void Average_EmptyNullableDoubleSource_Null()
+        {
+            Assert.That(Read<double?>().Average(), Is.Null);
         }
 
         [Test]
@@ -271,10 +370,30 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Average_SelectorArg_NullableDoublesWithSomeNulls_ReturnsAverage()
+        {
+            var source = Read<double?>(-3.45, null, 9.001, null, 10000.01);
+            Assert.That(source.Average(n => n * 2.0), Is.EqualTo(6670.374).Within(0.01));
+        }
+
+        [Test]
+        public void Average_EmptyNullableDecimalSource_Null()
+        {
+            Assert.That(Read<decimal?>().Average(), Is.Null);
+        }
+
+        [Test]
         public void Average_NullableDecimalsWithSomeNulls_ReturnsAverage()
         {
             var source = Read<decimal?>(-3.45m, null, 9.001m, null, 10000.01m);
             Assert.That(source.Average(), Is.EqualTo(3335.187).Within(0.01));
+        }
+
+        [Test]
+        public void Average_SelectorArg_NullableDecimalsWithSomeNulls_ReturnsAverage()
+        {
+            var source = Read<decimal?>(-3.45m, null, 9.001m, null, 10000.01m);
+            Assert.That(source.Average(n => n * 2m), Is.EqualTo(6670.374m).Within(0.01));
         }
 
         [Test]
