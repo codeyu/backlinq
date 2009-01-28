@@ -1816,9 +1816,27 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Sum_SelectorArg_Longs_ReturnsSum()
+        {
+            Assert.That(Read(123L, 456L, 789L).Sum(n => n * 2L), Is.EqualTo(2736L));
+        }
+
+        [Test]
+        public void Sum_SelectorArg_NullableLongsWithSomeNulls_ReturnsSum()
+        {
+            Assert.That(Read<long?>(123L, null, 456L, null, 789L).Sum(n => n * 2L), Is.EqualTo(2736L));
+        }
+
+        [Test]
         public void Sum_Floats_ReturnsSum()
         {
             Assert.That(Read(1F, 2F, 3F).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_SelectorArg_Floats_ReturnsSum()
+        {
+            Assert.That(Read(123.4F, 567.8F, 91011.12F).Sum(n => n * 2.5F), Is.EqualTo(229255.8F));
         }
 
         [Test]
@@ -1827,8 +1845,20 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Sum_SelectorArg_NullableFloatsWithSomeNulls_ReturnsSum()
+        {
+            Assert.That(Read<float?>(123.4F, null, 567.8F, null, 91011.12F).Sum(n => n * 2.5F), Is.EqualTo(229255.8F));
+        }
+
+        [Test]
         public void Sum_Doubles_ReturnsSum() {
             Assert.That(Read(1.0, 2.0, 3.0).Sum(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void Sum_SelectorArg_Doubles_ReturnsSum()
+        {
+            Assert.That(Read(123.4, 567.8, 91011.12).Sum(n => n * 2.5), Is.EqualTo(229255.8));
         }
 
         [Test]
@@ -1837,13 +1867,31 @@ namespace BackLinq.Tests
         }
 
         [Test]
+        public void Sum_SelectorArg_NullableDoublesWithSomeNulls_ReturnsSum()
+        {
+            Assert.That(Read<double?>(123.4, null, 567.8, null, 91011.12).Sum(n => n * 2.5), Is.EqualTo(229255.8));
+        }
+
+        [Test]
         public void Sum_Decimals_ReturnsSum() {
             Assert.That(Read(1m, 2m, 3m ).Sum(), Is.EqualTo(6));
         }
 
         [Test]
+        public void Sum_SelectorArg_Decimals_ReturnsSum()
+        {
+            Assert.That(Read(123.4m, 567.8m, 91011.12m).Sum(n => n * 2.5m), Is.EqualTo(229255.8m));
+        }
+
+        [Test]
         public void Sum_NullableDecimals_ReturnsSum() {
             Assert.That(Read<decimal?>(1m, 2m, 3m, null).Sum(), Is.EqualTo(6)); // TODO Improve test data
+        }
+
+        [Test]
+        public void Sum_SelectorArg_NullableDecimalsWithSomeNulls_ReturnsSum()
+        {
+            Assert.That(Read<decimal?>(123.4m, null, 567.8m, null, 91011.12m).Sum(n => n * 2.5m), Is.EqualTo(229255.8m));
         }
 
         [Test]
@@ -1856,6 +1904,13 @@ namespace BackLinq.Tests
         {
             var source = Read<int?>(1, 2, null);
             Assert.That(source.Sum(), Is.EqualTo(3));
+        }
+
+        [Test]
+        public void Sum_SelectorArgNullableIntegersWithSomeNulls_ReturnsSum()
+        {
+            var source = Read<int?>(123, null, 456, null, 789);
+            Assert.That(source.Sum(n => n * 2), Is.EqualTo(2736));
         }
 
         [Test]
