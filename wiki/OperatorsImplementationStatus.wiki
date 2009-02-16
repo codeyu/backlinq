@@ -22,7 +22,7 @@ All of the following standard query operators are implemented and supported by B
 == Concatenation operator ==
   * [http://msdn.microsoft.com/en-us/library/bb302894.aspx Concat]
 == Ordering operators ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby.aspx OrderBy]/[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ThenBy.aspx ThenBy]
+  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.orderby.aspx OrderBy]/[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.thenby.aspx ThenBy]
   * [http://msdn.microsoft.com/en-us/library/bb358497.aspx Reverse]
 == Grouping operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.groupby.aspx GroupBy]
