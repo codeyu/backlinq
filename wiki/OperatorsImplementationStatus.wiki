@@ -12,18 +12,18 @@ All of the following standard query operators are implemented and supported by B
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Select.aspx Select]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.SelectMany.aspx SelectMany]
 == Partitioning operators ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Take.aspx Take]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Skip.aspx Skip]
+  * [http://msdn.microsoft.com/en-us/library/bb503062.aspx Take]
+  * [http://msdn.microsoft.com/en-us/library/bb358985.aspx Skip]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.TakeWhile.aspx TakeWhile]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.SkipWhile.aspx SkipWhile]
 == Join operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Join.aspx Join]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupJoin.aspx GroupJoin]
 == Concatenation operator ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Concat.aspx Concat]
+  * [http://msdn.microsoft.com/en-us/library/bb302894.aspx Concat]
 == Ordering operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OrderBy.aspx OrderBy]/[http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ThenBy.aspx ThenBy]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Reverse.aspx Reverse]
+  * [http://msdn.microsoft.com/en-us/library/bb358497.aspx Reverse]
 == Grouping operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.GroupBy.aspx GroupBy]
 == Set operators ==
@@ -32,12 +32,12 @@ All of the following standard query operators are implemented and supported by B
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Intersect.aspx Intersect]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Except.aspx Except]
 == Conversion operators ==
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToArray.aspx ToArray]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToList.aspx ToList]
+  * [http://msdn.microsoft.com/en-us/library/bb298736.aspx ToArray]
+  * [http://msdn.microsoft.com/en-us/library/bb342261.aspx ToList]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToDictionary.aspx ToDictionary]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ToLookup.aspx ToLookup]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.OfType.aspx OfType]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Cast.aspx Cast]
+  * [http://msdn.microsoft.com/en-us/library/bb360913.aspx OfType]
+  * [http://msdn.microsoft.com/en-us/library/bb341406.aspx Cast]
 == Equality operator ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.SequenceEqual.aspx SequenceEqual]
 == Element operators ==
@@ -47,16 +47,16 @@ All of the following standard query operators are implemented and supported by B
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.LastOrDefault.aspx LastOrDefault]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Single.aspx Single]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.SingleOrDefault.aspx SingleOrDefault]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ElementAt.aspx ElementAt]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.ElementAtOrDefault.aspx ElementAtOrDefault]
+  * [http://msdn.microsoft.com/en-us/library/bb299233.aspx ElementAt]
+  * [http://msdn.microsoft.com/en-us/library/bb494386.aspx ElementAtOrDefault]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.DefaultIfEmpty.aspx DefaultIfEmpty]
 == Generation operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Range.aspx Range]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Repeat.aspx Repeat]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Empty.aspx Empty]
+  * [http://msdn.microsoft.com/en-us/library/bb348899.aspx Repeat]
+  * [http://msdn.microsoft.com/en-us/library/bb341042.aspx Empty]
 == Quantifiers ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Any.aspx Any]
-  * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.All.aspx All]
+  * [http://msdn.microsoft.com/en-us/library/bb548541.aspx All]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Contains.aspx Contains]
 == Aggregate operators ==
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Count.aspx Count]
@@ -66,3 +66,5 @@ All of the following standard query operators are implemented and supported by B
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Max.aspx Max]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Average.aspx Average]
   * [http://msdn.microsoft.com/en-us/library/system.linq.enumerable.Aggregate.aspx Aggregate]
+== Other ==
+  * [http://msdn.microsoft.com/en-us/library/bb335435.aspx AsEnumerable]
